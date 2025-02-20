@@ -8,6 +8,7 @@ pub struct Commitment {
     pub product: String,
     pub version: String,
     pub commitment: String,
+    // pub vulnerabilities: Vec<String>,
 }
 
 /// Initialize the Commitment database

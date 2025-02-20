@@ -1,4 +1,7 @@
 use log::{info, error};
+use serde_json::from_str;
+use binary_merkle_tree::MerkleProof;
+use sp_core::H256;
 
 mod cli {
     pub mod cli;
@@ -40,6 +43,17 @@ mod zkp {
     pub mod verify_proof;
 }
 
+
+mod merkle {
+    pub mod merkle;
+}
+
+
+// fn main() {
+//     println!("Hello, world!");
+//     merkle();
+// }
+
 fn main() {
     // Initialize the logger
     env_logger::init();
@@ -77,9 +91,11 @@ fn main() {
             get_zk_proof(api_key, commitment, vulnerability);
         }
         Some(("verify", sub_matches)) => {
-            let commitment = sub_matches.get_one::<String>("commitment").unwrap();
-            let zkproof = sub_matches.get_one::<String>("zkproof").unwrap();
-            verify(commitment, zkproof);
+            // let commitment = sub_matches.get_one::<String>("commitment").unwrap();
+            let proof_str = sub_matches.get_one::<String>("zkproof").unwrap();
+            // Convert the proof_str to MerkleProof<H256, H256>
+            let proof: MerkleProof<H256, H256> = from_str(proof_str).unwrap();
+            verify(proof);
         }
         _ => {
             error!("No valid subcommand provided. Use --help for usage information.");

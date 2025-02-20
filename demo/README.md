@@ -7,7 +7,7 @@
 Upload a SBOM to the private DB.
 
 ```Rust
-RUST_LOG=debug cargo run -- upload --sbom ./_demo-data/simple_example.json --vendor example_vendor --product example_product --version 1.2
+RUST_LOG=debug cargo run -- upload --sbom ./input/simple_example.json --vendor example_vendor --product example_product --version 1.2
 ```
 
 ### Get Commitment

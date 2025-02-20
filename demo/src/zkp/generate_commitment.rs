@@ -1,6 +1,7 @@
 use core::panic;
 
 use log::debug;
+use sp_core::H256;
 
 use crate::db::db_sbom::{Sbom, init_sbom_db, get_specific_sbom};
 use crate::db::db_commitment::{Commitment, init_commitment_db, insert_commitment};
@@ -8,6 +9,7 @@ use crate::db::db_commitment::{Commitment, init_commitment_db, insert_commitment
 use serde_json::Value;
 use rusqlite::Result;
 
+use crate::merkle::merkle::{get_root, generate_merkle_proof, verify_merkle_proof};
 
 pub fn generate_commitment(sbom_path: &str, vendor: &str, product: &str,version: &str) {
     debug!("Generating commitment...");
@@ -23,11 +25,12 @@ pub fn generate_commitment(sbom_path: &str, vendor: &str, product: &str,version:
     debug!("Vulnerabilities: {:?}", vulnerabilities);
 
     // Generate the commitment using the vulnerabilities
-
-
+    let commitment = get_root(vulnerabilities);
+    
+    
 
     // Add the commitment to the database
-    let e = add_commitment_to_db(vendor, product,version, "example_commitment");
+    let e = add_commitment_to_db(vendor, product,version, &commitment);
     if e.is_err() {
         panic!("Failed to add commitment to database: {}", e.err().unwrap());
     }
@@ -69,7 +72,7 @@ fn extract_vulnerabilities(sbom: &Sbom) -> Vec<String> {
 }
 
 
-fn add_commitment_to_db(vendor: &str, product: &str,version: &str, commitment: &str) -> Result<()> {
+fn add_commitment_to_db(vendor: &str, product: &str,version: &str, commitment: &H256) -> Result<()> {
     let commitment_conn = init_commitment_db().unwrap();
 
     let commitment = Commitment {

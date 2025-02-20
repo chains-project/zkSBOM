@@ -1,4 +1,9 @@
-// fn verify_proof(tree: &MerkleTree<Vec<u8>>, proof: &Proof<Vec<u8>>, value: &str) -> bool {
-//     let hashed_value = hash(value);
-//     tree.verify(proof, &hashed_value)
-// }
+use binary_merkle_tree::MerkleProof;
+use sp_core::H256;
+
+use crate::merkle::merkle::{verify_merkle_proof};
+
+pub fn verify_proof(proof: MerkleProof<H256, H256>) -> bool {
+    let is_valid = verify_merkle_proof(proof);
+    return is_valid;
+}

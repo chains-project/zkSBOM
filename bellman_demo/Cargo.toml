@@ -1,0 +1,17 @@
+[package]
+name = "bellman_demo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bellman = "0.14.0"
+bitvec = "1"
+blake2s_simd = "1"
+ff = "0.13"
+group = "0.13"
+pairing = "0.23.0"
+byteorder = "1"
+subtle = "2.2.1"
+bls12_381 = "0.8.0"
+rand = "0.9.0"
+sha2 = "0.10.8"

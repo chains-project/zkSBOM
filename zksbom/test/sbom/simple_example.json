@@ -1,0 +1,23 @@
+{
+    "lib": {
+        "some_value": "on",
+        "some_list": {
+            "title": "Some Title",
+            "name": "Some Name",
+            "width": 123,
+            "height": 456
+        },
+        "vulnerabilities": [
+            "CVE-123",
+            "CVE-456",
+            "CVE-789",
+            "CVE-012",
+            "CVE-345",
+            "CVE-678",
+            "CVE-901",
+            "CVE-234",
+            "CVE-567",
+            "CVE-890"
+        ]
+    }
+}
