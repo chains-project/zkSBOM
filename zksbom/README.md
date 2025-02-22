@@ -3,7 +3,7 @@
 ## Command Examples
 
 ```Bash
-cargo run -- upload_sbom --api-key 123 --sbom ./test/sbom/example.cdx.json
+cargo run -- upload_sbom --api-key 123 --sbom ../sboms/valid_sbom-1.4_trivy-0.36.1_alpine-3.13.1.cdx.json
 ```
 
 ```Bash
