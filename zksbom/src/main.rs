@@ -105,7 +105,7 @@ fn parse_cli() {
             debug!("API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Vulnerability: {}", api_key, method, vendor, product, version, vulnerability);
             error!("Implement get_zkp");
         }
-        _ => println!("No subcommand matched"),
+        _ => error!("No subcommand matched"),
     }
 }
 

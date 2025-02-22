@@ -59,7 +59,6 @@ pub fn generate_proof(root: String, vulnerability: String) -> MerkleProof<H256, 
     let index = 0;
     if let Some(index) = hashed_leaves_list.iter().position(|&leaf| leaf == vulnerability_string) {
         debug!("Vulnerability found at index {}", index);
-        // index = index;
     } else {
         debug!("Vulnerability not found");
     }

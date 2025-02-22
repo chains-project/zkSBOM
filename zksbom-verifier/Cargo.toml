@@ -4,3 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+log = "0.4"
+env_logger = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+clap = { version = "4.0", features = ["derive"] }
+
+binary-merkle-tree = "16.0.0"
+sp-core = "35.0.0"
+sp-runtime = "40.1.0"
+
+hex = "0.4"
