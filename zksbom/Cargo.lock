@@ -3099,6 +3099,7 @@ dependencies = [
  "log",
  "rusqlite",
  "serde",
+ "serde_json",
  "sp-core",
  "sp-runtime",
  "toml",

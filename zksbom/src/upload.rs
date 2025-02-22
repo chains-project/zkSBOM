@@ -1,4 +1,4 @@
-use log::{debug, error};
+use log::{debug, info, error};
 
 use crate::database::db_sbom::{SbomDbEntry, insert_sbom};
 use crate::database::db_commitment::{CommitmentDbEntry, insert_commitment};
@@ -6,7 +6,17 @@ use crate::database::db_vulnerability::{VulnerabilityDbEntry, insert_vulnerabili
 
 use crate::method::method_handler::{create_commitment};
 
+use serde_json::{Value, from_str};
+use std::fs::File;
+use std::io::Read;
 
+#[derive(Debug, Default)]
+struct SbomParsed {
+    vendor: String,
+    product: String,
+    version: String,
+    vulnerabilities: Vec<String>,
+}
 
 
 pub fn upload(api_key: &str, sbom_path: &str) {
@@ -14,17 +24,18 @@ pub fn upload(api_key: &str, sbom_path: &str) {
 
     // Step 1: Get the SBOM file content
     let sbom_content = get_file_content(&sbom_path);
-    debug!("SBOM Content: {}", &sbom_content);
+    // debug!("SBOM Content: {}", &sbom_content);
     
     // Step 2: Parse SBOM file for vulnerabilities, vendor, product, and version
-    // let parsed_sbom = parse_sbom(&sbom_content);
-    let parsed_sbom = test(&sbom_content);
+    let parsed_sbom = parse_sbom(&sbom_content);
+    debug!("Parsed SBOM: {:?}", parsed_sbom);
 
     
-    let vendor = parsed_sbom.0;
-    let product = parsed_sbom.1;
-    let version = parsed_sbom.2;
-    let vulnerabilities = parsed_sbom.3;
+    let vendor = parsed_sbom.vendor;
+    let product = parsed_sbom.product;
+    let version = parsed_sbom.version;
+    let vulnerabilities : Vec<&str> = parsed_sbom.vulnerabilities.iter().map(|s| s.as_str()).collect();
+    error!("Vendor: {}, Product: {}, Version: {}, Vulnerabilities: {:?}", vendor, product, version, vulnerabilities);
 
     // Step 3: Save SBOM to database
     let sbom_entry = SbomDbEntry {
@@ -73,20 +84,60 @@ fn get_file_content(file_path: &str) -> String {
     sbom_string
 }
 
-fn parse_sbom(sbom_content: &str) -> (String, String, String, Vec<&str>) {
-    //
-    // "vendor": "aquasecurity",
-    // "name": "trivy",
-    // "version": "0.36.1"
-    //
-    let vendor = "vendor"; // TODO: Parse vendor from SBOM
-    let product = "product"; // TODO: Parse product from SBOM
-    let version = "version"; // TODO: Parse version from SBOM
 
-    let vulnerabilities = vec![
-        "vuln1", "vuln2", "vuln3", "vuln4",
-        "vuln5", "vuln6", "vuln7", "vuln8",
-    ]; // TODO: Parse vulnerabilities from SBOM
+fn parse_sbom(sbom_content: &str) -> SbomParsed {
+    let json_str = sbom_content;
+    let mut sbom_parsed = SbomParsed::default(); // Initialize with default values
 
-    (vendor.to_string(), product.to_string(), version.to_string(), vulnerabilities)
+    // 2. Deserialize the JSON
+    let json: Value = from_str(&json_str).expect("Failed to parse JSON");
+
+    // 3. Extract component information
+    if let Some(components) = json["components"].as_array() {
+        if let Some(metadata) = json["metadata"].as_object() {
+            if let Some(tools) = metadata["tools"].as_array() {
+                for tool in tools {
+                    let vendor = tool["vendor"].as_str().unwrap_or("unknown").to_string();
+                    let product = tool["name"].as_str().unwrap_or("unknown").to_string();
+                    let version = tool["version"].as_str().unwrap_or("unknown").to_string();
+
+                    debug!("  Vendor: {}, Product: {}, Version: {}", vendor, product, version);
+
+                    // Store the LAST tool's info.  If you need all, use a Vec<ToolInfo>
+                    sbom_parsed.vendor = vendor;
+                    sbom_parsed.product = product;
+                    sbom_parsed.version = version;
+                }
+            } else {
+                error!("No tools found in the metadata.");
+            }
+        } else {
+            error!("No metadata found in the SBOM.");
+        }
+    } else {
+        error!("No components array found in the SBOM."); // Handle missing components
+    }
+
+
+    // 4. Extract vulnerability information (if present)
+    if let Some(vulnerabilities) = json["vulnerabilities"].as_array() {
+        let mut all_vulnerabilities = Vec::new();
+
+        for vulnerability in vulnerabilities {
+            if let Some(id) = vulnerability["id"].as_str() {
+                all_vulnerabilities.push(id.to_string());
+            }
+        }
+
+        if !all_vulnerabilities.is_empty() {
+            debug!("Vulnerabilities: {}", all_vulnerabilities.join(", "));
+        } else {
+            error!("No vulnerabilities found.");
+        }
+        sbom_parsed.vulnerabilities = all_vulnerabilities; // Store vulnerabilities
+    } else {
+        error!("No vulnerabilities array found in the SBOM.");
+    }
+
+    sbom_parsed // Return the populated struct
 }
