@@ -12,6 +12,7 @@ pub struct Config {
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
     pub log_level: String,
+    pub output: String,
 }
 
 #[derive(Debug, Deserialize)]

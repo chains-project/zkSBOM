@@ -3096,6 +3096,7 @@ dependencies = [
  "binary-merkle-tree",
  "clap",
  "env_logger",
+ "hex",
  "log",
  "rusqlite",
  "serde",

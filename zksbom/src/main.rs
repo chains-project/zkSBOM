@@ -26,7 +26,7 @@ pub mod method{
     pub mod method_handler;
     pub mod merkle_tree;
 }
-use method::method_handler::get_commitment as mh_get_commitment;
+use method::method_handler::{get_commitment as mh_get_commitment, get_zkp};
 
 
 fn main() {
@@ -85,7 +85,7 @@ fn parse_cli() {
             let version = sub_matches.get_one::<String>("version").unwrap();
             debug!("Vendor: {}, Product: {}, Version: {}", vendor, product, version);
             let commitment = mh_get_commitment(&vendor, &product, &version);
-            debug!("Commitment: {}", commitment);
+            println!("Commitment: {}", commitment);
         }
         Some(("get_zkp", sub_matches)) => {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();
@@ -93,7 +93,7 @@ fn parse_cli() {
             let commitment = sub_matches.get_one::<String>("commitment").unwrap();
             let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
             debug!("API Key: {}, Method: {}, Commitment: {}, Vulnerability: {}", api_key, method, commitment, vulnerability);
-            error!("Implement get_zkp");
+            get_zkp(&api_key, &method, &commitment, &vulnerability);
         }
         Some(("get_zkp_full", sub_matches)) => {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();

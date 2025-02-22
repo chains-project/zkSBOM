@@ -1,5 +1,6 @@
 [app]
 log_level = "debug"
+output = "./tmp/output/proof.txt"
 
 [db_commitment]
 path = "./tmp/database/commitment.db"
