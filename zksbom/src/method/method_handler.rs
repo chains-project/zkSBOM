@@ -1,18 +1,9 @@
-use crate::method::merkle_tree::{
-    create_commitment as create_merkle_commitment, generate_proof, MerkleRootLeaves,
-};
-use binary_merkle_tree::{merkle_proof, merkle_root, verify_proof, MerkleProof};
-use clap::error;
-use log::{debug, error, info, warn};
-use sp_core::{Hasher, H256};
-use sp_runtime::traits::BlakeTwo256;
-
-use crate::database::db_commitment::{
-    delete_db_commitment, get_commitment as get_db_commitment, init_db_commitment,
-    insert_commitment, CommitmentDbEntry,
-};
-
 use crate::config::load_config;
+use crate::database::db_commitment::get_commitment as get_db_commitment;
+use crate::method::merkle_tree::{create_commitment as create_merkle_commitment, generate_proof};
+use binary_merkle_tree::MerkleProof;
+use log::{debug, error, info};
+use sp_core::H256;
 use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::Path;

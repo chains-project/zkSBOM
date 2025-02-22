@@ -72,7 +72,6 @@ fn init_dbs() {
     init_db_commitment();
     init_db_sbom();
     init_db_vulnerability();
-    // test_dbs();
 }
 
 fn parse_cli() {
@@ -123,43 +122,4 @@ fn parse_cli() {
         }
         _ => error!("No subcommand matched"),
     }
-}
-
-// TODO: Remove this test function
-fn test_dbs() {
-    // Test commitment database
-    insert_commitment(CommitmentDbEntry {
-        vendor: "vendor".to_string(),
-        product: "product".to_string(),
-        version: "version".to_string(),
-        commitment: "this is a test commitment".to_string(),
-    });
-    let commitment = get_commitment(
-        "vendor".to_string(),
-        "product".to_string(),
-        "version".to_string(),
-    );
-    debug!("{:?}", commitment);
-
-    // Test sbom database
-    insert_sbom(SbomDbEntry {
-        vendor: "vendor".to_string(),
-        product: "product".to_string(),
-        version: "version".to_string(),
-        sbom: "this is a test sbom".to_string(),
-    });
-    let sbom = get_sbom(
-        "vendor".to_string(),
-        "product".to_string(),
-        "version".to_string(),
-    );
-    debug!("{:?}", sbom);
-
-    // Test vulnerability database
-    insert_vulnerability(VulnerabilityDbEntry {
-        vulnerabilities: "vulnerabilities".to_string(),
-        commitment: "commitment".to_string(),
-    });
-    let vulnerability = get_vulnerabilities("commitment".to_string());
-    debug!("{:?}", vulnerability);
 }

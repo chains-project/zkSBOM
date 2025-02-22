@@ -1,12 +1,9 @@
-use clap::error;
 use log::{debug, error, info, LevelFilter};
 use std::str::FromStr;
 pub mod config;
 use config::load_config;
-
 pub mod cli;
 use cli::build_cli;
-
 pub mod merkle;
 use merkle::verify_merkle;
 

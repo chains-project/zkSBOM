@@ -1,13 +1,8 @@
-use clap::error;
-use log::{debug, error, info};
-
-use binary_merkle_tree::{merkle_proof, merkle_root, verify_proof, MerkleProof};
-use serde::de;
-use sp_core::{Hasher, H256};
-use sp_runtime::traits::BlakeTwo256;
-
+use binary_merkle_tree::verify_proof;
 use hex;
-
+use log::debug;
+use sp_core::H256;
+use sp_runtime::traits::BlakeTwo256;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;

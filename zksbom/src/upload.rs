@@ -1,14 +1,9 @@
-use log::{debug, error, warn, info};
-
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
 use crate::database::db_vulnerability::{insert_vulnerability, VulnerabilityDbEntry};
-
 use crate::method::method_handler::create_commitment;
-
+use log::{debug, error, warn};
 use serde_json::{from_str, Value};
-use std::fs::File;
-use std::io::Read;
 
 #[derive(Debug, Default)]
 struct SbomParsed {
@@ -96,32 +91,44 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
     let json: Value = from_str(&json_str).expect("Failed to parse JSON");
 
     // 3. Extract component information
-    if let Some(components) = json["components"].as_array() {
-        if let Some(metadata) = json["metadata"].as_object() {
-            if let Some(tools) = metadata["tools"].as_array() {
-                for tool in tools {
-                    let vendor = tool["vendor"].as_str().unwrap_or("unknown").to_string();
-                    let product = tool["name"].as_str().unwrap_or("unknown").to_string();
-                    let version = tool["version"].as_str().unwrap_or("unknown").to_string();
-
-                    debug!(
-                        "  Vendor: {}, Product: {}, Version: {}",
-                        vendor, product, version
-                    );
-
-                    // Store the LAST tool's info.  If you need all, use a Vec<ToolInfo>
-                    sbom_parsed.vendor = vendor;
-                    sbom_parsed.product = product;
-                    sbom_parsed.version = version;
+    if let Some(metadata) = json["metadata"].as_object() {
+        if let Some(component) = metadata["component"].as_object() {
+            let vendor = component
+                .get("vendor")
+                .and_then(|v| v.as_str())
+                .unwrap_or("unknown")
+                .to_string();
+            let mut product = component["name"].as_str().unwrap_or("unknown").to_string(); // Make product mutable
+            let version = if product.contains(":") {
+                let parts: Vec<&str> = product.split(":").collect();
+                if parts.len() == 2 {
+                    let product_name = parts[0].to_string();
+                    let product_version = parts[1].to_string();
+                    product = product_name; // Update product with just the name
+                    product_version
+                } else {
+                    "unknown".to_string()
                 }
             } else {
-                error!("No tools found in the metadata.");
-            }
+                component["version"]
+                    .as_str()
+                    .unwrap_or("unknown")
+                    .to_string()
+            };
+
+            debug!(
+                "Vendor: {}, Product: {}, Version: {}",
+                vendor, product, version
+            );
+
+            sbom_parsed.vendor = vendor;
+            sbom_parsed.product = product;
+            sbom_parsed.version = version;
         } else {
-            error!("No metadata found in the SBOM.");
+            error!("No component found in the metadata.");
         }
     } else {
-        error!("No components array found in the SBOM."); // Handle missing components
+        error!("No metadata found in the SBOM.");
     }
 
     // 4. Extract vulnerability information (if present)
@@ -137,12 +144,12 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
         if !all_vulnerabilities.is_empty() {
             debug!("Vulnerabilities: {}", all_vulnerabilities.join(", "));
         } else {
-            error!("No vulnerabilities found.");
+            warn!("No vulnerabilities array found in the SBOM. This might be because there are no vulnerabilities in the SBOM.");
         }
-        sbom_parsed.vulnerabilities = all_vulnerabilities; // Store vulnerabilities
+        sbom_parsed.vulnerabilities = all_vulnerabilities;
     } else {
         warn!("No vulnerabilities array found in the SBOM. This might be because there are no vulnerabilities in the SBOM.");
     }
 
-    sbom_parsed // Return the populated struct
+    sbom_parsed
 }

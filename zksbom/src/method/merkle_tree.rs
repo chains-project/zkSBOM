@@ -1,16 +1,9 @@
-use log::{debug, error, info};
-
+use crate::database::db_vulnerability::get_vulnerabilities;
+use binary_merkle_tree::{merkle_proof, merkle_root, MerkleProof};
+use hex;
+use log::debug;
 use sp_core::{Hasher, H256};
 use sp_runtime::traits::BlakeTwo256;
-
-use binary_merkle_tree::{merkle_proof, merkle_root, verify_proof, MerkleProof};
-
-use crate::database::db_vulnerability::{
-    delete_db_vulnerability, get_vulnerabilities, init_db_vulnerability, insert_vulnerability,
-    VulnerabilityDbEntry,
-};
-
-use hex;
 
 pub struct MerkleRootLeaves {
     pub root: String,
