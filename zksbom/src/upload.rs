@@ -61,6 +61,9 @@ pub fn upload(api_key: &str, sbom_path: &str) {
         commitment: commitment.to_string(),
     };
 
+    error!("Commitment: {}", commitment);
+    error!("Commitment to str: {}", commitment.to_string());
+
     insert_commitment(commitment_entry);
 
     // Step 6: Save vulnerabilities to database

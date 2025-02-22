@@ -85,7 +85,7 @@ fn parse_cli() {
             let version = sub_matches.get_one::<String>("version").unwrap();
             debug!("Vendor: {}, Product: {}, Version: {}", vendor, product, version);
             let commitment = mh_get_commitment(&vendor, &product, &version);
-            println!("Commitment: {}", commitment);
+            debug!("Commitment: {}", commitment);
         }
         Some(("get_zkp", sub_matches)) => {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();

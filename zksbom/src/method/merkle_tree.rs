@@ -22,10 +22,14 @@ pub fn create_commitment(vulnerabilities: Vec<&str>) -> MerkleRootLeaves {
      let root = merkle_root::<BlakeTwo256, _>(&hashed_leaves);
 
      debug!("Merkle root: {:?}", root);
+     let root_string = format!("{:x}", root); // Lowercase hex string
+     debug!("Merkle root string: {}", root_string);
+
+     error!("Leaves: {:?}", hashed_leaves);
 
      return MerkleRootLeaves {
-         root: root.to_string(),
-         leaves: hashed_leaves.iter().map(|v| v.to_string()).collect(),
+         root: root_string,
+         leaves: hashed_leaves.iter().map(|v| format!("{:x}", v)).collect(), // Lowercase
      };
 }
 
