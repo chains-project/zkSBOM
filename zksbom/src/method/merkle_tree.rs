@@ -41,10 +41,6 @@ pub fn create_commitment(vulnerabilities: Vec<&str>) -> MerkleRootLeaves {
 }
 
 pub fn generate_proof(root: String, vulnerability: String) -> MerkleProof<H256, H256> {
-    error!("Implement generate_proof");
-    error!("Root: {}", root);
-    error!("Vulnerability: {}", vulnerability);
-
     // 1. Get the hashed leaves from the database
     let hashed_leaves = get_vulnerabilities(root).vulnerabilities;
     let hashed_leaves_list: Vec<&str> = hashed_leaves.split(",").collect();

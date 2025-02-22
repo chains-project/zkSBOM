@@ -39,8 +39,6 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str) -> String {
 }
 
 pub fn get_zkp(api_key: &str, method: &str, commitment: &str, vulnerability: &str) {
-    error!("Implement get_zkp");
-
     match method {
         "Merkle Tree" => {
             info!("Merkle Tree");
