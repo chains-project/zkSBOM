@@ -58,9 +58,9 @@ fn init_logger() {
 
 fn init_dbs() {
     // TODO: Remove delete
-    delete_db_commitment();
-    delete_db_sbom();
-    delete_db_vulnerability();
+    // delete_db_commitment();
+    // delete_db_sbom();
+    // delete_db_vulnerability();
 
     init_db_commitment();
     init_db_sbom();

@@ -23,9 +23,8 @@ pub fn create_commitment(vulnerabilities: Vec<&str>) -> MerkleRootLeaves {
 
      debug!("Merkle root: {:?}", root);
      let root_string = format!("{:x}", root); // Lowercase hex string
-     debug!("Merkle root string: {}", root_string);
 
-     error!("Leaves: {:?}", hashed_leaves);
+     debug!("Leaves: {:?}", hashed_leaves);
 
      return MerkleRootLeaves {
          root: root_string,

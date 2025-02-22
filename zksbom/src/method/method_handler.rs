@@ -7,10 +7,8 @@ pub fn create_commitment(vulnerabilities: Vec<&str>) -> (String, Vec<String>) {
     // TODO: Implement handling for different methods
     let merkle_root_leaves = create_merkle_commitment(vulnerabilities);
     let commitment = merkle_root_leaves.root;
-    error!("Commitment: {}", commitment);
     let vulnerabilities = merkle_root_leaves.leaves;
-    error!("Vulnerabilities: {:?}", vulnerabilities);
-
+    
     return (commitment, vulnerabilities);
 }
 

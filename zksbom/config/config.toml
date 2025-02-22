@@ -1,5 +1,5 @@
 [app]
-log_level = "error"
+log_level = "debug"
 
 [db_commitment]
 path = "./tmp/database/commitment.db"

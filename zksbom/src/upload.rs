@@ -35,7 +35,7 @@ pub fn upload(api_key: &str, sbom_path: &str) {
     let product = parsed_sbom.product;
     let version = parsed_sbom.version;
     let vulnerabilities : Vec<&str> = parsed_sbom.vulnerabilities.iter().map(|s| s.as_str()).collect();
-    error!("Vendor: {}, Product: {}, Version: {}, Vulnerabilities: {:?}", vendor, product, version, vulnerabilities);
+    debug!("Vendor: {}, Product: {}, Version: {}, Vulnerabilities: {:?}", vendor, product, version, vulnerabilities);
 
     // Step 3: Save SBOM to database
     let sbom_entry = SbomDbEntry {
@@ -60,9 +60,6 @@ pub fn upload(api_key: &str, sbom_path: &str) {
         version: version.to_string(),
         commitment: commitment.to_string(),
     };
-
-    error!("Commitment: {}", commitment);
-    error!("Commitment to str: {}", commitment.to_string());
 
     insert_commitment(commitment_entry);
 
