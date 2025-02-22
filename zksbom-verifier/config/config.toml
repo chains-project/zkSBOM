@@ -1,2 +1,2 @@
 [app]
-log_level = "error"
+log_level = "warn"

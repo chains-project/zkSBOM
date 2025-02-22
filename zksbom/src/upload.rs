@@ -1,4 +1,4 @@
-use log::{debug, error, info};
+use log::{debug, error, warn, info};
 
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
@@ -141,7 +141,7 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
         }
         sbom_parsed.vulnerabilities = all_vulnerabilities; // Store vulnerabilities
     } else {
-        error!("No vulnerabilities array found in the SBOM.");
+        warn!("No vulnerabilities array found in the SBOM. This might be because there are no vulnerabilities in the SBOM.");
     }
 
     sbom_parsed // Return the populated struct
