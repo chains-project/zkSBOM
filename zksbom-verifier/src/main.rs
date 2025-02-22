@@ -1,5 +1,5 @@
 use clap::error;
-use log::{debug, info, error, LevelFilter};
+use log::{debug, error, info, LevelFilter};
 use std::str::FromStr;
 pub mod config;
 use config::load_config;
@@ -29,7 +29,10 @@ fn init_logger() {
         }
         Err(_) => {
             env_logger::init_from_env(env_logger::Env::new().default_filter_or("warn"));
-            error!("Invalid log level '{}' in config.toml. Using default 'warn'.", &log_level);
+            error!(
+                "Invalid log level '{}' in config.toml. Using default 'warn'.",
+                &log_level
+            );
         }
     };
 }
@@ -42,8 +45,9 @@ fn parse_cli() {
         Some(("verify_merkle", sub_matches)) => {
             let commitment = sub_matches.get_one::<String>("commitment").unwrap();
             let proof_path = sub_matches.get_one::<String>("proof_path").unwrap();
-            verify_merkle(commitment, proof_path);
+            let is_valid = verify_merkle(commitment, proof_path);
+            println!("Proof is valid: {}", is_valid);
         }
-    _ => error!("No subcommand matched"),
+        _ => error!("No subcommand matched"),
     }
 }

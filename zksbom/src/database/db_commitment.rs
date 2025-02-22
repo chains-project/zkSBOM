@@ -1,8 +1,8 @@
 use crate::config::load_config;
-use rusqlite::{Connection, params};
-use log::{debug, info, error};
-use std::path::Path;
+use log::{debug, error, info};
+use rusqlite::{params, Connection};
 use std::fs;
+use std::path::Path;
 
 /// Represents a Commitment entry
 #[derive(Debug)]
@@ -73,7 +73,12 @@ pub fn insert_commitment(commitment: CommitmentDbEntry) {
 
     match conn.execute(
         "INSERT INTO commitment (vendor, product, version, commitment) VALUES (?1, ?2, ?3, ?4)",
-        params![commitment.vendor, commitment.product, commitment.version, commitment.commitment],
+        params![
+            commitment.vendor,
+            commitment.product,
+            commitment.version,
+            commitment.commitment
+        ],
     ) {
         Ok(_) => info!("Commitment inserted into the database."),
         Err(e) => error!("Error inserting commitment into the database: {}", e),

@@ -24,4 +24,4 @@ pub fn build_cli() -> Command {
                         .required(true),
                 ),
         )
-    }
+}

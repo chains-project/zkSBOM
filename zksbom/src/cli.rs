@@ -93,7 +93,7 @@ pub fn build_cli() -> Command {
                         .value_name("VULNERABILITY")
                         .help("Vulnerability to check")
                         .required(true),
-                )
+                ),
         )
         .subcommand(
             Command::new("get_zkp")
@@ -116,7 +116,7 @@ pub fn build_cli() -> Command {
                     Arg::new("commitment")
                         .long("commitment")
                         .value_name("COMMITMENT")
-                        .help("The commitment hash (required if method is 'commitment')")
+                        .help("The commitment hash (required if method is 'commitment')"),
                 )
                 .arg(
                     Arg::new("vulnerability")
@@ -124,6 +124,6 @@ pub fn build_cli() -> Command {
                         .value_name("VULNERABILITY")
                         .help("Vulnerability to check")
                         .required(true),
-                )
+                ),
         )
 }

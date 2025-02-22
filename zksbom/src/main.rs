@@ -1,18 +1,24 @@
-use log::{debug, info, error, LevelFilter};
+use log::{debug, error, info, LevelFilter};
 use std::str::FromStr;
 
 pub mod config;
 use config::load_config;
 
-mod database{
+mod database {
     pub mod db_commitment;
     pub mod db_sbom;
     pub mod db_vulnerability;
 }
 use database::{
-    db_commitment::{CommitmentDbEntry, init_db_commitment, insert_commitment, get_commitment, delete_db_commitment},
-    db_sbom::{SbomDbEntry, init_db_sbom, insert_sbom, get_sbom, delete_db_sbom},
-    db_vulnerability::{VulnerabilityDbEntry, init_db_vulnerability, insert_vulnerability, get_vulnerabilities, delete_db_vulnerability},
+    db_commitment::{
+        delete_db_commitment, get_commitment, init_db_commitment, insert_commitment,
+        CommitmentDbEntry,
+    },
+    db_sbom::{delete_db_sbom, get_sbom, init_db_sbom, insert_sbom, SbomDbEntry},
+    db_vulnerability::{
+        delete_db_vulnerability, get_vulnerabilities, init_db_vulnerability, insert_vulnerability,
+        VulnerabilityDbEntry,
+    },
 };
 
 pub mod cli;
@@ -21,18 +27,16 @@ use cli::build_cli;
 pub mod upload;
 use upload::upload;
 
-
-pub mod method{
-    pub mod method_handler;
+pub mod method {
     pub mod merkle_tree;
+    pub mod method_handler;
 }
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp};
-
 
 fn main() {
     init_logger();
     debug!("Logger initialized.");
-    
+
     debug!("Initializing the databases...");
     init_dbs();
 
@@ -51,7 +55,10 @@ fn init_logger() {
         }
         Err(_) => {
             env_logger::init_from_env(env_logger::Env::new().default_filter_or("warn"));
-            error!("Invalid log level '{}' in config.toml. Using default 'warn'.", &log_level);
+            error!(
+                "Invalid log level '{}' in config.toml. Using default 'warn'.",
+                &log_level
+            );
         }
     };
 }
@@ -83,7 +90,10 @@ fn parse_cli() {
             let vendor = sub_matches.get_one::<String>("vendor").unwrap();
             let product = sub_matches.get_one::<String>("product").unwrap();
             let version = sub_matches.get_one::<String>("version").unwrap();
-            debug!("Vendor: {}, Product: {}, Version: {}", vendor, product, version);
+            debug!(
+                "Vendor: {}, Product: {}, Version: {}",
+                vendor, product, version
+            );
             let commitment = mh_get_commitment(&vendor, &product, &version);
             println!("Commitment: {}", commitment);
         }
@@ -92,7 +102,10 @@ fn parse_cli() {
             let method = sub_matches.get_one::<String>("method").unwrap();
             let commitment = sub_matches.get_one::<String>("commitment").unwrap();
             let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
-            debug!("API Key: {}, Method: {}, Commitment: {}, Vulnerability: {}", api_key, method, commitment, vulnerability);
+            debug!(
+                "API Key: {}, Method: {}, Commitment: {}, Vulnerability: {}",
+                api_key, method, commitment, vulnerability
+            );
             get_zkp(&api_key, &method, &commitment, &vulnerability);
         }
         Some(("get_zkp_full", sub_matches)) => {
@@ -102,7 +115,10 @@ fn parse_cli() {
             let product = sub_matches.get_one::<String>("product").unwrap();
             let version = sub_matches.get_one::<String>("version").unwrap();
             let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
-            debug!("API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Vulnerability: {}", api_key, method, vendor, product, version, vulnerability);
+            debug!(
+                "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Vulnerability: {}",
+                api_key, method, vendor, product, version, vulnerability
+            );
             error!("Implement get_zkp");
         }
         _ => error!("No subcommand matched"),
@@ -118,7 +134,11 @@ fn test_dbs() {
         version: "version".to_string(),
         commitment: "this is a test commitment".to_string(),
     });
-    let commitment = get_commitment("vendor".to_string(), "product".to_string(), "version".to_string());
+    let commitment = get_commitment(
+        "vendor".to_string(),
+        "product".to_string(),
+        "version".to_string(),
+    );
     debug!("{:?}", commitment);
 
     // Test sbom database
@@ -128,7 +148,11 @@ fn test_dbs() {
         version: "version".to_string(),
         sbom: "this is a test sbom".to_string(),
     });
-    let sbom = get_sbom("vendor".to_string(), "product".to_string(), "version".to_string());
+    let sbom = get_sbom(
+        "vendor".to_string(),
+        "product".to_string(),
+        "version".to_string(),
+    );
     debug!("{:?}", sbom);
 
     // Test vulnerability database

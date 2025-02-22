@@ -1,5 +1,5 @@
 [app]
-log_level = "debug"
+log_level = "error"
 output = "./tmp/output/proof.txt"
 
 [db_commitment]

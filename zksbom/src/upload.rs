@@ -1,12 +1,12 @@
-use log::{debug, info, error};
+use log::{debug, error, info};
 
-use crate::database::db_sbom::{SbomDbEntry, insert_sbom};
-use crate::database::db_commitment::{CommitmentDbEntry, insert_commitment};
-use crate::database::db_vulnerability::{VulnerabilityDbEntry, insert_vulnerability};
+use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
+use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
+use crate::database::db_vulnerability::{insert_vulnerability, VulnerabilityDbEntry};
 
-use crate::method::method_handler::{create_commitment};
+use crate::method::method_handler::create_commitment;
 
-use serde_json::{Value, from_str};
+use serde_json::{from_str, Value};
 use std::fs::File;
 use std::io::Read;
 
@@ -18,24 +18,29 @@ struct SbomParsed {
     vulnerabilities: Vec<String>,
 }
 
-
 pub fn upload(api_key: &str, sbom_path: &str) {
     debug!("Uploading SBOM...");
 
     // Step 1: Get the SBOM file content
     let sbom_content = get_file_content(&sbom_path);
     // debug!("SBOM Content: {}", &sbom_content);
-    
+
     // Step 2: Parse SBOM file for vulnerabilities, vendor, product, and version
     let parsed_sbom = parse_sbom(&sbom_content);
     debug!("Parsed SBOM: {:?}", parsed_sbom);
 
-    
     let vendor = parsed_sbom.vendor;
     let product = parsed_sbom.product;
     let version = parsed_sbom.version;
-    let vulnerabilities : Vec<&str> = parsed_sbom.vulnerabilities.iter().map(|s| s.as_str()).collect();
-    debug!("Vendor: {}, Product: {}, Version: {}, Vulnerabilities: {:?}", vendor, product, version, vulnerabilities);
+    let vulnerabilities: Vec<&str> = parsed_sbom
+        .vulnerabilities
+        .iter()
+        .map(|s| s.as_str())
+        .collect();
+    debug!(
+        "Vendor: {}, Product: {}, Version: {}, Vulnerabilities: {:?}",
+        vendor, product, version, vulnerabilities
+    );
 
     // Step 3: Save SBOM to database
     let sbom_entry = SbomDbEntry {
@@ -51,7 +56,6 @@ pub fn upload(api_key: &str, sbom_path: &str) {
     let commitment_vulnerabilities = create_commitment(vulnerabilities);
     let commitment = commitment_vulnerabilities.0;
     let vulnerabilities = commitment_vulnerabilities.1;
-
 
     // Step 5: Save Commitment to database
     let commitment_entry = CommitmentDbEntry {
@@ -84,7 +88,6 @@ fn get_file_content(file_path: &str) -> String {
     sbom_string
 }
 
-
 fn parse_sbom(sbom_content: &str) -> SbomParsed {
     let json_str = sbom_content;
     let mut sbom_parsed = SbomParsed::default(); // Initialize with default values
@@ -101,7 +104,10 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
                     let product = tool["name"].as_str().unwrap_or("unknown").to_string();
                     let version = tool["version"].as_str().unwrap_or("unknown").to_string();
 
-                    debug!("  Vendor: {}, Product: {}, Version: {}", vendor, product, version);
+                    debug!(
+                        "  Vendor: {}, Product: {}, Version: {}",
+                        vendor, product, version
+                    );
 
                     // Store the LAST tool's info.  If you need all, use a Vec<ToolInfo>
                     sbom_parsed.vendor = vendor;
@@ -117,7 +123,6 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
     } else {
         error!("No components array found in the SBOM."); // Handle missing components
     }
-
 
     // 4. Extract vulnerability information (if present)
     if let Some(vulnerabilities) = json["vulnerabilities"].as_array() {
