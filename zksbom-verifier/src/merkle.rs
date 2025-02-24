@@ -11,7 +11,7 @@ pub fn verify_merkle(commitment: &str, proof_path: &str) -> bool {
     debug!("Commitment: {}, Proof Path: {}", commitment, proof_path);
 
     let commitment_h256 = str_to_h256(commitment).unwrap();
-    let (root, proof, number_of_leaves, leaf_index, leaf) = parse_proof_file(proof_path).unwrap();
+    let (_root, proof, number_of_leaves, leaf_index, leaf) = parse_proof_file(proof_path).unwrap();
 
     // Proof
     let proof_h256 = string_to_h256_vec(&proof).unwrap();
