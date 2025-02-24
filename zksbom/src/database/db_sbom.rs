@@ -80,7 +80,7 @@ pub fn insert_sbom(sbom: SbomDbEntry) {
     };
 }
 
-pub fn get_sbom(vendor: String, product: String, version: String) -> SbomDbEntry {
+pub fn _get_sbom(vendor: String, product: String, version: String) -> SbomDbEntry {
     debug!("Getting sbom from the database...");
     let conn = get_db_sbom_conneciton();
 

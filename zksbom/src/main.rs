@@ -10,15 +10,9 @@ mod database {
     pub mod db_vulnerability;
 }
 use database::{
-    db_commitment::{
-        delete_db_commitment, get_commitment, init_db_commitment, insert_commitment,
-        CommitmentDbEntry,
-    },
-    db_sbom::{delete_db_sbom, get_sbom, init_db_sbom, insert_sbom, SbomDbEntry},
-    db_vulnerability::{
-        delete_db_vulnerability, get_vulnerabilities, init_db_vulnerability, insert_vulnerability,
-        VulnerabilityDbEntry,
-    },
+    db_commitment::{delete_db_commitment, init_db_commitment},
+    db_sbom::{delete_db_sbom, init_db_sbom},
+    db_vulnerability::{delete_db_vulnerability, init_db_vulnerability},
 };
 
 pub mod cli;
@@ -36,6 +30,10 @@ use method::method_handler::{get_commitment as mh_get_commitment, get_zkp};
 fn main() {
     init_logger();
     debug!("Logger initialized.");
+
+    let config = load_config().unwrap();
+    let is_clean_init = config.app.clean_init_dbs;
+    delete_dbs(is_clean_init);
 
     debug!("Initializing the databases...");
     init_dbs();
@@ -64,14 +62,18 @@ fn init_logger() {
 }
 
 fn init_dbs() {
-    // TODO: Remove delete
-    // delete_db_commitment();
-    // delete_db_sbom();
-    // delete_db_vulnerability();
-
     init_db_commitment();
     init_db_sbom();
     init_db_vulnerability();
+}
+
+// TODO: Delete function
+fn delete_dbs(is_clean_init: bool) {
+    if is_clean_init {
+        delete_db_commitment();
+        delete_db_sbom();
+        delete_db_vulnerability();
+    }
 }
 
 fn parse_cli() {

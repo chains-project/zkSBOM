@@ -29,7 +29,7 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str) -> String {
     return commitment;
 }
 
-pub fn get_zkp(api_key: &str, method: &str, commitment: &str, vulnerability: &str) {
+pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &str) {
     match method {
         "Merkle Tree" => {
             info!("Merkle Tree");

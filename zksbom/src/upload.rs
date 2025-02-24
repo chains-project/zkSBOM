@@ -13,7 +13,7 @@ struct SbomParsed {
     vulnerabilities: Vec<String>,
 }
 
-pub fn upload(api_key: &str, sbom_path: &str) {
+pub fn upload(_api_key: &str, sbom_path: &str) {
     debug!("Uploading SBOM...");
 
     // Step 1: Get the SBOM file content

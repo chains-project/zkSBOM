@@ -13,6 +13,7 @@ pub struct Config {
 pub struct AppConfig {
     pub log_level: String,
     pub output: String,
+    pub clean_init_dbs: bool,
 }
 
 #[derive(Debug, Deserialize)]
