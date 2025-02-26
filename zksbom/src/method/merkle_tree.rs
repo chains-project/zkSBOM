@@ -44,15 +44,15 @@ pub fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H25
     debug!("Hashed dependency: {:?}", hashed_dependency);
     let dependency_string = format!("0x{:x}", hashed_dependency); // Lowercase hex string
 
-    let index = 0;
-    if let Some(index) = hashed_leaves_list
+    let index = if let Some(found_index) = hashed_leaves_list
         .iter()
         .position(|&leaf| leaf == dependency_string)
     {
-        debug!("Dependency found at index {}", index);
+        debug!("Dependency found at index {}", found_index);
+        found_index as u32
     } else {
         panic!("Dependency not found");
-    }
+    };
 
     // 3. Generate the proof
     let hashed_leaves: Vec<H256> = hashed_leaves_list
