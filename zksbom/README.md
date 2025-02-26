@@ -7,7 +7,6 @@ zkSBOM is a proof of concept (PoC) for disclosing limited but verifiable SBOM in
 ### Uploading an SBOM as a Vendor
 
 This command uploads the specified SBOM to the system.
-Currently, the SBOM must include a vulnerability section, which can be generated using tools like [trivy](https://trivy.dev/).
 
 ```Bash
 cargo run -- upload_sbom --api-key 123 --sbom ../sboms/zksbom-verifier.cdx.json
@@ -28,7 +27,7 @@ There are two ways to retrieve the ZKP:
 1. Provide the commitment of the product to be verified.
 2. Provide the vendor name, product name, and product version for verification.
 
-Additionally, the vulnerability to be checked must be specified.
+Additionally, the dependency to be checked must be specified.
 
 #### Retrieving ZKP Using a Commitment
 
