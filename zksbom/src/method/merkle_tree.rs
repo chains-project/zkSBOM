@@ -44,7 +44,6 @@ pub fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H25
     debug!("Hashed dependency: {:?}", hashed_dependency);
     let dependency_string = format!("0x{:x}", hashed_dependency); // Lowercase hex string
 
-    // TODO: fix to check what to do when dependency is not found
     let index = 0;
     if let Some(index) = hashed_leaves_list
         .iter()
@@ -52,7 +51,7 @@ pub fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H25
     {
         debug!("Dependency found at index {}", index);
     } else {
-        debug!("Dependency not found");
+        panic!("Dependency not found");
     }
 
     // 3. Generate the proof

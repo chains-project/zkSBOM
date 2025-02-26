@@ -66,7 +66,7 @@ fn print_proof(proof: MerkleProof<H256, H256>) {
     if let Some(parent) = path.parent() {
         if let Err(e) = create_dir_all(parent) {
             error!("Error creating directory: {}", e);
-            return; // Exit early on error
+            return;
         }
     }
 
@@ -74,14 +74,10 @@ fn print_proof(proof: MerkleProof<H256, H256>) {
         Ok(file) => file,
         Err(e) => {
             error!("Error creating file: {}", e);
-            return; // Exit early on error
+            return;
         }
     };
 
-    if let Err(e) = writeln!(file, "Root: {:?}", proof.root) {
-        error!("Error writing to file: {}", e);
-        return;
-    }
     if let Err(e) = writeln!(file, "Proof: {:?}", proof.proof) {
         error!("Error writing to file: {}", e);
         return;
