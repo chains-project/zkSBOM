@@ -6,6 +6,62 @@ pub fn build_cli() -> Command {
         .version("1.0")
         .author("Tom Sorger <sorger@kth.se>")
         .about("A tool.")
+        .arg(
+            Arg::new("log_level")
+                .long("log_level")
+                .value_name("LOG_LEVEL")
+                .help("")
+                .global(true),
+        )
+        .arg(
+            Arg::new("output")
+                .long("output")
+                .value_name("OUTPUT")
+                .help("")
+                .global(true),
+        )
+        .arg(
+            Arg::new("clean_init_dbs")
+                .long("clean_init_dbs")
+                .value_name("CLEAN_INIT_DBS")
+                .help("")
+                .global(true),
+        )
+        .arg(
+            Arg::new("check_dependencies")
+                .long("check_dependencies")
+                .value_name("CHECK_DEPENDENCIES")
+                .help("")
+                .global(true),
+        )
+        .arg(
+            Arg::new("check_dependencies_output")
+                .long("check_dependencies_output")
+                .value_name("CHECK_DEPENDENCIES_OUTPUT")
+                .help("")
+                .global(true),
+        )
+        .arg(
+            Arg::new("db_commitment_path")
+                .long("db_commitment_path")
+                .value_name("DB_COMMITMENT_PATH")
+                .help("")
+                .global(true),
+        )
+        .arg(
+            Arg::new("db_sbom_path")
+                .long("db_sbom_path")
+                .value_name("DB_SBOM_PATH")
+                .help("")
+                .global(true),
+        )
+        .arg(
+            Arg::new("db_dependency_path")
+                .long("db_dependency_path")
+                .value_name("DB_DEPENDENCY_PATH")
+                .help("")
+                .global(true),
+        )
         .subcommand(
             Command::new("upload_sbom")
                 .about("Upload or update an SBOM")
