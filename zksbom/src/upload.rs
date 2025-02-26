@@ -96,7 +96,7 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
     if let Some(metadata) = json["metadata"].as_object() {
         if let Some(component) = metadata["component"].as_object() {
             let vendor = component
-                .get("vendor")
+                .get("author")
                 .and_then(|v| v.as_str())
                 .unwrap_or("unknown")
                 .to_string();

@@ -1,6 +1,7 @@
 [package]
 name = "zksbom"
 version = "0.1.0"
+authors = ["Tom Sorger <sorger@kth.se>"]
 edition = "2021"
 
 [dependencies]
