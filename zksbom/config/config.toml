@@ -1,7 +1,7 @@
 [app]
 log_level = "warn"
 output = "./tmp/output/proof.txt"
-clean_init_dbs = true
+clean_init_dbs = false
 
 [db_commitment]
 path = "./tmp/database/commitment.db"
