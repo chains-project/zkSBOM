@@ -15,7 +15,7 @@ cargo run -- get_zkp --api-key 123 --method "Merkle Tree" --commitment "0x28e2f1
 ```
 
 ```Bash
-cargo run -- get_zkp_full --api-key 123 --method "Merkle Tree" --vendor "My Vendor" --product "My Product" --version "My Verison" --vulnerability "A vulnerability"
+cargo run -- get_zkp_full --api-key 123 --method "Merkle Tree" --vendor "unknown" --product "alpine" --version "3.13.1" --vulnerability "CVE-2022-37434"
 ```
 
 ```Bash

@@ -46,8 +46,20 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
     }
 }
 
+pub fn get_zkp_full(
+    _api_key: &str,
+    method: &str,
+    vendor: &str,
+    product: &str,
+    version: &str,
+    vulnerability: &str,
+) {
+    let commitment = get_commitment(vendor, product, version);
+    get_zkp(_api_key, method, &commitment, vulnerability);
+}
+
 fn print_proof(proof: MerkleProof<H256, H256>) {
-    let config = load_config().unwrap(); // This will panic on error!
+    let config = load_config().unwrap();
     let output_path = config.app.output;
 
     let path = Path::new(&output_path);

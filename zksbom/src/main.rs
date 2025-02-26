@@ -25,7 +25,7 @@ pub mod method {
     pub mod merkle_tree;
     pub mod method_handler;
 }
-use method::method_handler::{get_commitment as mh_get_commitment, get_zkp};
+use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
 
 fn main() {
     init_logger();
@@ -120,7 +120,14 @@ fn parse_cli() {
                 "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Vulnerability: {}",
                 api_key, method, vendor, product, version, vulnerability
             );
-            error!("Implement get_zkp");
+            get_zkp_full(
+                &api_key,
+                &method,
+                &vendor,
+                &product,
+                &version,
+                &vulnerability,
+            );
         }
         _ => error!("No subcommand matched"),
     }
