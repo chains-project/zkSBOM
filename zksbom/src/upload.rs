@@ -1,6 +1,8 @@
+use crate::check_dependencies::check_dependencies;
+use crate::config::load_config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
-use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
+use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
 use crate::method::method_handler::create_commitment;
 use log::{debug, error, warn};
 use serde_json::{from_str, Value};
@@ -85,7 +87,7 @@ fn get_file_content(file_path: &str) -> String {
 
 fn parse_sbom(sbom_content: &str) -> SbomParsed {
     let json_str = sbom_content;
-    let mut sbom_parsed = SbomParsed::default(); // Initialize with default values
+    let mut sbom_parsed = SbomParsed::default();
 
     // 2. Deserialize the JSON
     let json: Value = from_str(&json_str).expect("Failed to parse JSON");
@@ -104,7 +106,7 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
                 if parts.len() == 2 {
                     let product_name = parts[0].to_string();
                     let product_version = parts[1].to_string();
-                    product = product_name; // Update product with just the name
+                    product = product_name;
                     product_version
                 } else {
                     "unknown".to_string()
@@ -136,20 +138,26 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
         let mut all_dependencies = Vec::new();
 
         for component in components {
-            if let (Some(name), Some(version)) = (component["name"].as_str(), component["version"].as_str()) {
+            if let (Some(name), Some(version)) =
+                (component["name"].as_str(), component["version"].as_str())
+            {
                 all_dependencies.push(format!("{}@{}", name, version));
             }
         }
 
-        if !all_dependencies.is_empty() {
-            println!("dependencies: {}", all_dependencies.join(", "));
-        } else {
+        if all_dependencies.is_empty() {
             warn!("No components with name and version found in the SBOM.");
         }
-        sbom_parsed.dependencies = all_dependencies;
+        sbom_parsed.dependencies = all_dependencies.clone();
+
+        // 5. Check dependencies
+        let config = load_config().unwrap();
+        if config.app.check_dependencies {
+            check_dependencies(&all_dependencies);
+        }
     } else {
         warn!("No components array found in the SBOM.");
     }
-    
+
     sbom_parsed
 }

@@ -14,6 +14,8 @@ pub struct AppConfig {
     pub log_level: String,
     pub output: String,
     pub clean_init_dbs: bool,
+    pub check_dependencies: bool,
+    pub check_dependencies_output: String,
 }
 
 #[derive(Debug, Deserialize)]

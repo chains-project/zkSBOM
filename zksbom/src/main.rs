@@ -6,13 +6,13 @@ use config::load_config;
 
 mod database {
     pub mod db_commitment;
-    pub mod db_sbom;
     pub mod db_dependency;
+    pub mod db_sbom;
 }
 use database::{
     db_commitment::{delete_db_commitment, init_db_commitment},
-    db_sbom::{delete_db_sbom, init_db_sbom},
     db_dependency::{delete_db_dependency, init_db_dependency},
+    db_sbom::{delete_db_sbom, init_db_sbom},
 };
 
 pub mod cli;
@@ -26,6 +26,8 @@ pub mod method {
     pub mod method_handler;
 }
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
+
+pub mod check_dependencies;
 
 fn main() {
     init_logger();
@@ -120,14 +122,7 @@ fn parse_cli() {
                 "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Dependency: {}",
                 api_key, method, vendor, product, version, dependency
             );
-            get_zkp_full(
-                &api_key,
-                &method,
-                &vendor,
-                &product,
-                &version,
-                &dependency,
-            );
+            get_zkp_full(&api_key, &method, &vendor, &product, &version, &dependency);
         }
         _ => error!("No subcommand matched"),
     }

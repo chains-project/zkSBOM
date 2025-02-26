@@ -65,7 +65,7 @@ fn print_proof(proof: MerkleProof<H256, H256>) {
     let path = Path::new(&output_path);
     if let Some(parent) = path.parent() {
         if let Err(e) = create_dir_all(parent) {
-            eprintln!("Error creating directory: {}", e);
+            error!("Error creating directory: {}", e);
             return; // Exit early on error
         }
     }
@@ -73,29 +73,29 @@ fn print_proof(proof: MerkleProof<H256, H256>) {
     let mut file = match File::create(&output_path) {
         Ok(file) => file,
         Err(e) => {
-            eprintln!("Error creating file: {}", e);
+            error!("Error creating file: {}", e);
             return; // Exit early on error
         }
     };
 
     if let Err(e) = writeln!(file, "Root: {:?}", proof.root) {
-        eprintln!("Error writing to file: {}", e);
+        error!("Error writing to file: {}", e);
         return;
     }
     if let Err(e) = writeln!(file, "Proof: {:?}", proof.proof) {
-        eprintln!("Error writing to file: {}", e);
+        error!("Error writing to file: {}", e);
         return;
     }
     if let Err(e) = writeln!(file, "Number of Leaves: {:?}", proof.number_of_leaves) {
-        eprintln!("Error writing to file: {}", e);
+        error!("Error writing to file: {}", e);
         return;
     }
     if let Err(e) = writeln!(file, "Leaf Index: {:?}", proof.leaf_index) {
-        eprintln!("Error writing to file: {}", e);
+        error!("Error writing to file: {}", e);
         return;
     }
     if let Err(e) = writeln!(file, "Leaf: {:?}", proof.leaf) {
-        eprintln!("Error writing to file: {}", e);
+        error!("Error writing to file: {}", e);
         return;
     }
 
