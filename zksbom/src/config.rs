@@ -6,7 +6,7 @@ pub struct Config {
     pub app: AppConfig,
     pub db_commitment: DatabaseConfig,
     pub db_sbom: DatabaseConfig,
-    pub db_vulnerability: DatabaseConfig,
+    pub db_dependency: DatabaseConfig,
 }
 
 #[derive(Debug, Deserialize)]

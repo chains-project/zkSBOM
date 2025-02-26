@@ -8,13 +8,13 @@ use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::Path;
 
-pub fn create_commitment(vulnerabilities: Vec<&str>) -> (String, Vec<String>) {
+pub fn create_commitment(dependencies: Vec<&str>) -> (String, Vec<String>) {
     // TODO: Implement handling for different methods
-    let merkle_root_leaves = create_merkle_commitment(vulnerabilities);
+    let merkle_root_leaves = create_merkle_commitment(dependencies);
     let commitment = merkle_root_leaves.root;
-    let vulnerabilities = merkle_root_leaves.leaves;
+    let dependencies = merkle_root_leaves.leaves;
 
-    return (commitment, vulnerabilities);
+    return (commitment, dependencies);
 }
 
 pub fn get_commitment(vendor: &str, product: &str, version: &str) -> String {
@@ -29,11 +29,11 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str) -> String {
     return commitment;
 }
 
-pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &str) {
+pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, dependency: &str) {
     match method {
         "Merkle Tree" => {
             info!("Merkle Tree");
-            let proof = generate_proof(commitment.to_string(), vulnerability.to_string());
+            let proof = generate_proof(commitment.to_string(), dependency.to_string());
 
             print_proof(proof);
         }
@@ -52,10 +52,10 @@ pub fn get_zkp_full(
     vendor: &str,
     product: &str,
     version: &str,
-    vulnerability: &str,
+    dependency: &str,
 ) {
     let commitment = get_commitment(vendor, product, version);
-    get_zkp(_api_key, method, &commitment, vulnerability);
+    get_zkp(_api_key, method, &commitment, dependency);
 }
 
 fn print_proof(proof: MerkleProof<H256, H256>) {

@@ -1,6 +1,6 @@
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
-use crate::database::db_vulnerability::{insert_vulnerability, VulnerabilityDbEntry};
+use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::method::method_handler::create_commitment;
 use log::{debug, error, warn};
 use serde_json::{from_str, Value};
@@ -10,7 +10,7 @@ struct SbomParsed {
     vendor: String,
     product: String,
     version: String,
-    vulnerabilities: Vec<String>,
+    dependencies: Vec<String>,
 }
 
 pub fn upload(_api_key: &str, sbom_path: &str) {
@@ -20,21 +20,21 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     let sbom_content = get_file_content(&sbom_path);
     // debug!("SBOM Content: {}", &sbom_content);
 
-    // Step 2: Parse SBOM file for vulnerabilities, vendor, product, and version
+    // Step 2: Parse SBOM file for dependencies, vendor, product, and version
     let parsed_sbom = parse_sbom(&sbom_content);
     debug!("Parsed SBOM: {:?}", parsed_sbom);
 
     let vendor = parsed_sbom.vendor;
     let product = parsed_sbom.product;
     let version = parsed_sbom.version;
-    let vulnerabilities: Vec<&str> = parsed_sbom
-        .vulnerabilities
+    let dependencies: Vec<&str> = parsed_sbom
+        .dependencies
         .iter()
         .map(|s| s.as_str())
         .collect();
     debug!(
-        "Vendor: {}, Product: {}, Version: {}, Vulnerabilities: {:?}",
-        vendor, product, version, vulnerabilities
+        "Vendor: {}, Product: {}, Version: {}, dependencies: {:?}",
+        vendor, product, version, dependencies
     );
 
     // Step 3: Save SBOM to database
@@ -48,9 +48,9 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     insert_sbom(sbom_entry);
 
     // Step 4: Generate Commitment
-    let commitment_vulnerabilities = create_commitment(vulnerabilities);
-    let commitment = commitment_vulnerabilities.0;
-    let vulnerabilities = commitment_vulnerabilities.1;
+    let commitment_dependencies = create_commitment(dependencies);
+    let commitment = commitment_dependencies.0;
+    let dependencies = commitment_dependencies.1;
 
     // Step 5: Save Commitment to database
     let commitment_entry = CommitmentDbEntry {
@@ -62,13 +62,13 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
 
     insert_commitment(commitment_entry);
 
-    // Step 6: Save vulnerabilities to database
-    let vulnerability_entry = VulnerabilityDbEntry {
-        vulnerabilities: vulnerabilities.join(","),
+    // Step 6: Save dependencies to database
+    let dependency_entry = DependencyDbEntry {
+        dependencies: dependencies.join(","),
         commitment: commitment.to_string(),
     };
 
-    insert_vulnerability(vulnerability_entry);
+    insert_dependency(dependency_entry);
 }
 
 fn get_file_content(file_path: &str) -> String {
@@ -131,25 +131,25 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
         error!("No metadata found in the SBOM.");
     }
 
-    // 4. Extract vulnerability information (if present)
-    if let Some(vulnerabilities) = json["vulnerabilities"].as_array() {
-        let mut all_vulnerabilities = Vec::new();
+    // 4. Extract dependency information (if present)
+    if let Some(components) = json["components"].as_array() {
+        let mut all_dependencies = Vec::new();
 
-        for vulnerability in vulnerabilities {
-            if let Some(id) = vulnerability["id"].as_str() {
-                all_vulnerabilities.push(id.to_string());
+        for component in components {
+            if let (Some(name), Some(version)) = (component["name"].as_str(), component["version"].as_str()) {
+                all_dependencies.push(format!("{}@{}", name, version));
             }
         }
 
-        if !all_vulnerabilities.is_empty() {
-            debug!("Vulnerabilities: {}", all_vulnerabilities.join(", "));
+        if !all_dependencies.is_empty() {
+            println!("dependencies: {}", all_dependencies.join(", "));
         } else {
-            warn!("No vulnerabilities array found in the SBOM. This might be because there are no vulnerabilities in the SBOM.");
+            warn!("No components with name and version found in the SBOM.");
         }
-        sbom_parsed.vulnerabilities = all_vulnerabilities;
+        sbom_parsed.dependencies = all_dependencies;
     } else {
-        warn!("No vulnerabilities array found in the SBOM. This might be because there are no vulnerabilities in the SBOM.");
+        warn!("No components array found in the SBOM.");
     }
-
+    
     sbom_parsed
 }

@@ -7,12 +7,12 @@ use config::load_config;
 mod database {
     pub mod db_commitment;
     pub mod db_sbom;
-    pub mod db_vulnerability;
+    pub mod db_dependency;
 }
 use database::{
     db_commitment::{delete_db_commitment, init_db_commitment},
     db_sbom::{delete_db_sbom, init_db_sbom},
-    db_vulnerability::{delete_db_vulnerability, init_db_vulnerability},
+    db_dependency::{delete_db_dependency, init_db_dependency},
 };
 
 pub mod cli;
@@ -64,7 +64,7 @@ fn init_logger() {
 fn init_dbs() {
     init_db_commitment();
     init_db_sbom();
-    init_db_vulnerability();
+    init_db_dependency();
 }
 
 // TODO: Delete function
@@ -72,7 +72,7 @@ fn delete_dbs(is_clean_init: bool) {
     if is_clean_init {
         delete_db_commitment();
         delete_db_sbom();
-        delete_db_vulnerability();
+        delete_db_dependency();
     }
 }
 
@@ -102,12 +102,12 @@ fn parse_cli() {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();
             let method = sub_matches.get_one::<String>("method").unwrap();
             let commitment = sub_matches.get_one::<String>("commitment").unwrap();
-            let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
+            let dependency = sub_matches.get_one::<String>("dependency").unwrap();
             debug!(
-                "API Key: {}, Method: {}, Commitment: {}, Vulnerability: {}",
-                api_key, method, commitment, vulnerability
+                "API Key: {}, Method: {}, Commitment: {}, Dependency: {}",
+                api_key, method, commitment, dependency
             );
-            get_zkp(&api_key, &method, &commitment, &vulnerability);
+            get_zkp(&api_key, &method, &commitment, &dependency);
         }
         Some(("get_zkp_full", sub_matches)) => {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();
@@ -115,10 +115,10 @@ fn parse_cli() {
             let vendor = sub_matches.get_one::<String>("vendor").unwrap();
             let product = sub_matches.get_one::<String>("product").unwrap();
             let version = sub_matches.get_one::<String>("version").unwrap();
-            let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
+            let dependency = sub_matches.get_one::<String>("dependency").unwrap();
             debug!(
-                "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Vulnerability: {}",
-                api_key, method, vendor, product, version, vulnerability
+                "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Dependency: {}",
+                api_key, method, vendor, product, version, dependency
             );
             get_zkp_full(
                 &api_key,
@@ -126,7 +126,7 @@ fn parse_cli() {
                 &vendor,
                 &product,
                 &version,
-                &vulnerability,
+                &dependency,
             );
         }
         _ => error!("No subcommand matched"),

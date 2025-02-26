@@ -88,10 +88,10 @@ pub fn build_cli() -> Command {
                         .required(true),
                 )
                 .arg(
-                    Arg::new("vulnerability")
-                        .long("vulnerability")
-                        .value_name("VULNERABILITY")
-                        .help("Vulnerability to check")
+                    Arg::new("dependency")
+                        .long("dependency")
+                        .value_name("DEPENDENCY")
+                        .help("Dependency to check")
                         .required(true),
                 ),
         )
@@ -119,10 +119,10 @@ pub fn build_cli() -> Command {
                         .help("The commitment hash (required if method is 'commitment')"),
                 )
                 .arg(
-                    Arg::new("vulnerability")
-                        .long("vulnerability")
-                        .value_name("VULNERABILITY")
-                        .help("Vulnerability to check")
+                    Arg::new("dependency")
+                        .long("dependency")
+                        .value_name("DEPENDENCY")
+                        .help("Dependency to check")
                         .required(true),
                 ),
         )
