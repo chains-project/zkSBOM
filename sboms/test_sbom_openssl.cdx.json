@@ -1,0 +1,47 @@
+{
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.3",
+    "version": 1,
+    "serialNumber": "urn:uuid:e687979b-b06b-46a9-8172-df9cb3915251",
+    "metadata": {
+        "timestamp": "2025-02-26T16:23:27.111173000Z",
+        "tools": [
+            {
+                "vendor": "CycloneDX",
+                "name": "cargo-cyclonedx",
+                "version": "0.5.7"
+            }
+        ],
+        "authors": [
+            {
+                "name": "Tom Sorger",
+                "email": "sorger@kth.se"
+            }
+        ],
+        "component": {
+            "type": "application",
+            "bom-ref": "path+file:///Users/tom/Repos/University/zksbom/zksbom#0.1.0",
+            "author": "Tom Sorger <sorger@kth.se>",
+            "name": "test_openssl",
+            "version": "0.1.0"
+        }
+    },
+    "components": [
+        {
+            "type": "library",
+            "name": "openssl",
+            "version": "0.10.1"
+        },
+        {
+            "type": "library",
+            "name": "openssl",
+            "version": "0.11.1"
+        },
+        {
+            "type": "library",
+            "name": "openssl",
+            "version": "0.12.1"
+        }
+    ],
+    "dependencies": []
+}

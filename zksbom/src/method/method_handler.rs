@@ -1,12 +1,18 @@
 use crate::config::load_config;
 use crate::database::db_commitment::get_commitment as get_db_commitment;
+use crate::database::db_dependency::get_dependencies;
 use crate::method::merkle_tree::{create_commitment as create_merkle_commitment, generate_proof};
 use binary_merkle_tree::MerkleProof;
 use log::{debug, error, info};
+use std::process::Command;
+use std::str;
 use sp_core::H256;
 use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::Path;
+use semver::Version;
+use semver::VersionReq;
+use std::collections::HashMap;
 
 pub fn create_commitment(dependencies: Vec<&str>) -> (String, Vec<String>) {
     // TODO: Implement handling for different methods
@@ -39,6 +45,27 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, dependency: &str)
         }
         "zkp" => {
             info!("ZKP");
+        }
+        "test" => {
+            let dep_vul_map = map_dependencies_vulnerabilities(commitment.to_string());
+            for (key, values) in &dep_vul_map {
+                debug!("Dependency: {}, Vulnerabilities: {:?}", key, values);
+            }
+        
+            // TODO: Use different input for this; use dependency input for now as vulnerability.
+            let vulnerability = dependency;
+
+            for (key, values) in &dep_vul_map {
+                if values.contains(&vulnerability.to_string()) {
+                    debug!("Dependency: {} is vulnerable to: {}", key, vulnerability);
+                    
+                    let proof = generate_proof(commitment.to_string(), key.to_string());
+
+                    print_proof(proof);
+
+                    break; // Break the loop after finding the first match
+                }
+            }
         }
         _ => {
             error!("Unknown method: {}", method);
@@ -96,4 +123,100 @@ fn print_proof(proof: MerkleProof<H256, H256>) {
     }
 
     println!("Proof written to: {}", output_path);
+}
+
+
+// Function to map dependencies and its vulnerabilities
+pub fn map_dependencies_vulnerabilities(commitment: String) -> HashMap<String, Vec<String>> {
+    // Get dependencies from the database
+    let dependencies: Vec<String> = get_dependencies(commitment).dependencies_clear_text.split(",").map(|s| s.to_string()).collect();
+    debug!("Dependencies: {:?}", dependencies);
+
+    // Create List of dependencies with vulnerabilities
+    let mut dependency_vulnerabilities_map: HashMap<String, Vec<String>> = HashMap::new();
+
+    for dependency in dependencies {
+        let parts: Vec<&str> = dependency.split("@").collect();
+        let name = parts[0];
+        let version = parts[1];
+        debug!("Checking for vulnerabilities in: {}@{}", name, version);
+
+        let vulnerabilities = check_vulnerabilities(name, version);
+
+        dependency_vulnerabilities_map.insert(dependency, vulnerabilities);
+    }
+
+    return dependency_vulnerabilities_map;
+}
+
+fn check_vulnerabilities(name: &str, version: &str) -> Vec<String> {
+    // Construct GraphQL query
+    // TODO: Hardcoded ecosystem for now
+    let query = format!(
+        r#"{{"query": "{{ securityVulnerabilities(first: 1, ecosystem: RUST, package: \"{}\") {{ nodes {{ package {{ name ecosystem }} vulnerableVersionRange firstPatchedVersion {{ identifier }} advisory {{ ghsaId summary severity permalink }} }} }} }}"}}"#,
+        name
+    );
+
+    // Debugging: Print the actual query to check for correctness
+    debug!("Query: {}", query);
+
+    // Load GitHub token from the config
+    let config = load_config().unwrap();
+    let token = config.app.github_token;
+
+    // Execute the curl request to GitHub's GraphQL API
+    let output = Command::new("curl")
+        .arg("-X")
+        .arg("POST")
+        .arg("-H")
+        .arg(format!("Authorization: Bearer {}", token))
+        .arg("-H")
+        .arg("Content-Type: application/json")
+        .arg("-d")
+        .arg(query)
+        .arg("https://api.github.com/graphql")
+        .output()
+        .expect("Failed to execute curl command");
+
+    // Check and print the response
+    let response = str::from_utf8(&output.stdout).unwrap();
+    debug!("Response: {}", response);
+
+    if !output.status.success() {
+        error!("Error: {:?}", &output.stdout);
+    }
+
+    let mut list_vulnerabilities: Vec<String> = Vec::new();
+
+    // Parse the response
+    let response_json: serde_json::Value = serde_json::from_str(response).unwrap();
+    if let Some(vulnerabilities) = response_json["data"]["securityVulnerabilities"]["nodes"].as_array() {
+        for vulnerability in vulnerabilities {
+            let vulnerable_version_range = vulnerability["vulnerableVersionRange"].as_str().unwrap();
+            let ghsa_id = vulnerability["advisory"]["ghsaId"].as_str().unwrap();
+            let first_patched_version = vulnerability["firstPatchedVersion"]["identifier"].as_str().unwrap();
+            let severity = vulnerability["advisory"]["severity"].as_str().unwrap();
+            let permalink = vulnerability["advisory"]["permalink"].as_str().unwrap();
+
+            debug!("GHSA ID: {}", ghsa_id);
+            debug!("Vulnerable version range: {}", vulnerable_version_range);
+            debug!("First patched version: {}", first_patched_version);
+            debug!("Severity: {}", severity);
+            debug!("Advisory: {}", permalink);
+
+            // Compare your version with the vulnerable version range
+            let version_req = VersionReq::parse(vulnerable_version_range).unwrap();
+            let current_version = Version::parse(version).unwrap();
+
+            if version_req.matches(&current_version) {
+                debug!("Your version {} is affected by this vulnerability!", version);
+                // TODO: Change with CVE ID
+                list_vulnerabilities.push(ghsa_id.to_string());
+            } else {
+                debug!("Your version {} is not affected by this vulnerability.", version);
+            }
+        }
+    }
+
+    return list_vulnerabilities;
 }

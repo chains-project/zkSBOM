@@ -18,6 +18,7 @@ pub struct AppConfig {
     pub clean_init_dbs: bool,
     pub check_dependencies: bool,
     pub check_dependencies_output: String,
+    pub github_token: String,
 }
 
 #[derive(Debug, Deserialize)]

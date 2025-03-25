@@ -50,6 +50,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     insert_sbom(sbom_entry);
 
     // Step 4: Generate Commitment
+    let dependencies_clear_text = dependencies.clone();
     let commitment_dependencies = create_commitment(dependencies);
     let commitment = commitment_dependencies.0;
     let dependencies = commitment_dependencies.1;
@@ -68,6 +69,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     let dependency_entry = DependencyDbEntry {
         dependencies: dependencies.join(","),
         commitment: commitment.to_string(),
+        dependencies_clear_text: dependencies_clear_text.join(",")
     };
 
     insert_dependency(dependency_entry);
@@ -138,6 +140,7 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
         let mut all_dependencies = Vec::new();
 
         for component in components {
+            debug!("Component: {:?}", component);
             if let (Some(name), Some(version)) =
                 (component["name"].as_str(), component["version"].as_str())
             {

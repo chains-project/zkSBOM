@@ -9,6 +9,7 @@ use std::path::Path;
 pub struct DependencyDbEntry {
     pub dependencies: String,
     pub commitment: String,
+    pub dependencies_clear_text: String,
 }
 
 pub fn init_db_dependency() {
@@ -35,6 +36,7 @@ pub fn init_db_dependency() {
                 "CREATE TABLE IF NOT EXISTS dependency (
                     dependencies TEXT NOT NULL,
                     commitment TEXT NOT NULL,
+                    dependencies_clear_text TEXT NOT NULL,
                     PRIMARY KEY (commitment)
                 )",
                 [],
@@ -68,8 +70,8 @@ pub fn insert_dependency(dependency: DependencyDbEntry) {
     let conn = get_db_dependency_conneciton();
 
     match conn.execute(
-        "INSERT INTO dependency (dependencies, commitment) VALUES (?1, ?2)",
-        params![dependency.dependencies, dependency.commitment],
+        "INSERT INTO dependency (dependencies, commitment, dependencies_clear_text) VALUES (?1, ?2, ?3)",
+        params![dependency.dependencies, dependency.commitment, dependency.dependencies_clear_text],
     ) {
         Ok(_) => info!("Dependency inserted into the database."),
         Err(e) => error!("Error inserting dependency into the database: {}", e),
@@ -81,12 +83,13 @@ pub fn get_dependencies(commitment: String) -> DependencyDbEntry {
     let conn = get_db_dependency_conneciton();
 
     let dependency = match conn.query_row(
-        "SELECT dependencies, commitment FROM dependency WHERE commitment = ?1",
+        "SELECT dependencies, commitment, dependencies_clear_text FROM dependency WHERE commitment = ?1",
         rusqlite::params![commitment],
         |row| {
             Ok(DependencyDbEntry {
                 dependencies: row.get(0)?,
                 commitment: row.get(1)?,
+                dependencies_clear_text: row.get(2)?,
             })
         },
     ) {
@@ -96,6 +99,7 @@ pub fn get_dependencies(commitment: String) -> DependencyDbEntry {
             DependencyDbEntry {
                 dependencies: "".to_string(),
                 commitment: "".to_string(),
+                dependencies_clear_text: "".to_string(),
             }
         }
     };
