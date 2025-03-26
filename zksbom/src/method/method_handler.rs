@@ -3,7 +3,7 @@ use crate::database::db_commitment::get_commitment as get_db_commitment;
 use crate::database::db_dependency::get_dependencies;
 use crate::method::merkle_tree::{create_commitment as create_merkle_commitment, generate_proof};
 use binary_merkle_tree::MerkleProof;
-use log::{debug, error, info};
+use log::{debug, error, info, warn};
 use reqwest;
 use semver::Version;
 use semver::VersionReq;
@@ -158,7 +158,7 @@ fn check_vulnerabilities(name: &str, version: &str) -> Vec<String> {
     // Construct GraphQL query
     // TODO: Hardcoded ecosystem for now
     let query = format!(
-        r#"{{"query": "{{ securityVulnerabilities(first: 1, ecosystem: RUST, package: \"{}\") {{ nodes {{ package {{ name ecosystem }} vulnerableVersionRange firstPatchedVersion {{ identifier }} advisory {{ ghsaId summary severity permalink }} }} }} }}"}}"#,
+        r#"{{"query": "{{ securityVulnerabilities(first: 5, ecosystem: RUST, package: \"{}\") {{ nodes {{ package {{ name ecosystem }} vulnerableVersionRange firstPatchedVersion {{ identifier }} advisory {{ ghsaId summary severity permalink }} }} }} }}"}}"#,
         name
     );
 
@@ -224,12 +224,14 @@ fn check_vulnerabilities(name: &str, version: &str) -> Vec<String> {
                     version
                 );
 
-                // TODO: Change with CVE ID
+                // Get the CVE ID from the GHSA ID
                 let cve = get_cve_id(ghsa_id);
                 debug!("GHSA ID '{}' relates to CVE ID: '{}'", ghsa_id, cve);
 
-                // Add vulnerability to list
-                list_vulnerabilities.push(cve.to_string());
+                // Add vulnerability to list if not empty sting
+                if cve != String::new() {
+                    list_vulnerabilities.push(cve);
+                }
             } else {
                 debug!(
                     "Your version {} is not affected by this vulnerability.",
@@ -274,7 +276,7 @@ fn get_cve_id(ghsa_id: &str) -> String {
     if let Some(cve_id) = json.get("cve_id").and_then(|v| v.as_str()) {
         return cve_id.to_string();
     } else {
-        error!("CVE ID not found for GHSA ID: {}", ghsa_id);
+        warn!("CVE ID not found for GHSA ID: {}", ghsa_id);
         return String::new();
     }
 }
