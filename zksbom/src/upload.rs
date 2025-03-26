@@ -69,7 +69,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     let dependency_entry = DependencyDbEntry {
         dependencies: dependencies.join(","),
         commitment: commitment.to_string(),
-        dependencies_clear_text: dependencies_clear_text.join(",")
+        dependencies_clear_text: dependencies_clear_text.join(","),
     };
 
     insert_dependency(dependency_entry);
