@@ -22,10 +22,7 @@ fn is_url_available(url: &str) -> bool {
 pub fn check_dependencies(dependencies: &Vec<String>) {
     let config = load_config().unwrap();
     let log_path = config.app.check_dependencies_output;
-    // if let Err(e) = fs::create_dir_all("./tmp/output") {
-    //     error!("Failed to create directory: {}", e);
-    //     return;
-    // }
+
     // Check if the directory exists, and create it if not
     let log_path_obj = Path::new(&log_path);
     if let Some(parent) = log_path_obj.parent() {

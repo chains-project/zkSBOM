@@ -1,6 +1,5 @@
 use serde::Deserialize;
 use std::fs;
-
 use crate::cli::build_cli;
 
 #[derive(Debug, Deserialize)]
