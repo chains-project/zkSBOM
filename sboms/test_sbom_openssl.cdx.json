@@ -29,18 +29,21 @@
     "components": [
         {
             "type": "library",
-            "name": "openssl",
-            "version": "0.10.1"
+            "name": "openssl", 
+            "version": "0.10.1",
+            "purl": "pkg:cargo/openssl@0.10.1"
+        },
+        {
+            "type": "library",
+            "name": "openssl", 
+            "version": "0.11.1",
+            "purl": "pkg:golang/openssl@0.11.1"
         },
         {
             "type": "library",
             "name": "openssl",
-            "version": "0.11.1"
-        },
-        {
-            "type": "library",
-            "name": "openssl",
-            "version": "0.12.1"
+            "version": "0.12.1",
+            "purl": "pkg:maven/openssl@0.12.2.1"
         }
     ],
     "dependencies": []

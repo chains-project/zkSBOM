@@ -6,6 +6,7 @@ use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
 use crate::method::method_handler::create_commitment;
 use log::{debug, error, warn};
 use serde_json::{from_str, Value};
+use crate::github_advisory_database_mapping::MAPPINGS;
 
 #[derive(Debug, Default)]
 struct SbomParsed {
@@ -144,7 +145,8 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
             if let (Some(name), Some(version)) =
                 (component["name"].as_str(), component["version"].as_str())
             {
-                all_dependencies.push(format!("{}@{}", name, version));
+                let ecosystem = map_dependency_ecosystem(component["purl"].as_str().unwrap_or(""));
+                all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
             }
         }
 
@@ -163,4 +165,35 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
     }
 
     sbom_parsed
+}
+
+
+fn map_dependency_ecosystem(purl: &str) -> String {
+    let mut ecosystem = "unknown".to_string();
+    // Try to extract the ecosystem from the purl
+    if let Some(purl_ecosystem) = extract_ecosystem(purl) {
+        debug!("Extracted ecosystem: {}", purl_ecosystem);
+        for (key, value) in MAPPINGS.iter() {
+            if purl_ecosystem.contains(key) {
+                ecosystem = value.to_string(); // Update the ecosystem if a match is found
+                break;
+            }
+        }
+        debug!("Ecosystem: {}", ecosystem);
+        return ecosystem; // Return the found ecosystem
+    }
+
+    // If no ecosystem is found, return "unknown"
+    warn!("Could not extract ecosystem.");
+    "unknown".to_string()
+}
+
+fn extract_ecosystem(purl: &str) -> Option<String> {
+    if let Some(pkg_index) = purl.find("pkg:") {
+        let start_index = pkg_index + "pkg:".len();
+        if let Some(slash_index) = purl[start_index..].find('/') {
+            return Some(purl[start_index..start_index + slash_index].to_string());
+        }
+    }
+    None
 }

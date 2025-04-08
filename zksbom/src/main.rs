@@ -28,6 +28,9 @@ pub mod method {
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
 
 pub mod check_dependencies;
+pub mod github_advisory_database_mapping;
+
+
 
 fn main() {
     init_logger();

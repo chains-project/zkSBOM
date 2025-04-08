@@ -144,9 +144,10 @@ pub fn map_dependencies_vulnerabilities(commitment: String) -> HashMap<String, V
         let parts: Vec<&str> = dependency.split("@").collect();
         let name = parts[0];
         let version = parts[1];
-        debug!("Checking for vulnerabilities in: {}@{}", name, version);
+        let ecosystem = parts[2];
+        debug!("Checking for vulnerabilities in: {}@{}@{}", name, version, ecosystem);
 
-        let vulnerabilities = check_vulnerabilities(name, version);
+        let vulnerabilities = check_vulnerabilities(name, version, ecosystem);
 
         dependency_vulnerabilities_map.insert(dependency, vulnerabilities);
     }
@@ -154,12 +155,12 @@ pub fn map_dependencies_vulnerabilities(commitment: String) -> HashMap<String, V
     return dependency_vulnerabilities_map;
 }
 
-fn check_vulnerabilities(name: &str, version: &str) -> Vec<String> {
+fn check_vulnerabilities(name: &str, version: &str, ecosystem: &str) -> Vec<String> {
     // Construct GraphQL query
     // TODO: Hardcoded ecosystem for now
     let query = format!(
-        r#"{{"query": "{{ securityVulnerabilities(first: 5, ecosystem: RUST, package: \"{}\") {{ nodes {{ package {{ name ecosystem }} vulnerableVersionRange firstPatchedVersion {{ identifier }} advisory {{ ghsaId summary severity permalink }} }} }} }}"}}"#,
-        name
+        r#"{{"query": "{{ securityVulnerabilities(first: 2, ecosystem: {}, package: \"{}\") {{ nodes {{ package {{ name ecosystem }} vulnerableVersionRange firstPatchedVersion {{ identifier }} advisory {{ ghsaId summary severity permalink }} }} }} }}"}}"#,
+        ecosystem, name
     );
 
     // Debugging: Print the actual query to check for correctness
@@ -169,10 +170,25 @@ fn check_vulnerabilities(name: &str, version: &str) -> Vec<String> {
     let config = load_config().unwrap();
     let token = config.app.github_token;
 
+    // let command_p = format!(
+    //     "curl -X POST -H \"Authorization: Bearer {}\" -H \"Content-Type: application/json\" -d '{}' https://api.github.com/graphql",
+    //     token, query
+    // );
+    // error!("Command: {}", command_p);
+
     // Execute the curl request to GitHub's GraphQL API
     let output = Command::new("curl")
         .arg("-X")
         .arg("POST")
+        // .arg("-H")
+        // .arg(format!("Authorization: Bearer {}", token))
+        // .arg("-H")
+        // .arg("Content-Type: application/json")
+        // .arg("-d")
+        // .arg(query)
+        // .arg("https://api.github.com/graphql")
+        // .output()
+        // .expect("Failed to execute curl command");
         .arg("-H")
         .arg(format!("Authorization: Bearer {}", token))
         .arg("-H")
