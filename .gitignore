@@ -19,3 +19,4 @@ target/
 **/*.DS_Store
 
 /zksbom/tmp
+zksbom/config/config.toml
