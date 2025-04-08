@@ -78,3 +78,7 @@ Instead, it should provide an example demonstrating the use of all possible flag
 ```Bash
 cargo run -- upload_sbom --api-key 123 --sbom ../sboms/zksbom-verifier.cdx.json  --log_level "info" --output "./proof.txt" --clean_init_dbs true --check_dependencies true --check_dependencies_output "./unfound_dependencies.log" --db_commitment_path "./commitment.db" --db_sbom_path "./sbom.db" --db_dependency_path "./dependency.db"
 ```
+
+---
+- sudo docker build . -t zksbom:v1
+- sudo docker run --rm -it zksbom:v1

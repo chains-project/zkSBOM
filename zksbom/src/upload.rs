@@ -16,7 +16,7 @@ struct SbomParsed {
     dependencies: Vec<String>,
 }
 
-pub fn upload(_api_key: &str, sbom_path: &str) {
+pub fn upload(_api_key: &str, sbom_path: &str) -> String {
     debug!("Uploading SBOM...");
 
     // Step 1: Get the SBOM file content
@@ -74,6 +74,8 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     };
 
     insert_dependency(dependency_entry);
+
+    return "Upload successful".to_string();
 }
 
 fn get_file_content(file_path: &str) -> String {

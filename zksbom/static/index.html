@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Executor</title>
+</head>
+<body>
+    <h1>Command Executor</h1>
+    <form id="command-form">
+        <label for="command">Command:</label>
+        <select id="command" name="command">
+            <option value="upload_sbom">upload_sbom</option>
+            <option value="get_commitment">get_commitment</option>
+            <option value="get_zkp">get_zkp</option>
+            <option value="get_zkp_full">get_zkp_full</option>
+        </select>
+        <br>
+        <!-- <label for="log_level">log_level:</label>
+        <input type="text" id="log_level" name="log_level">
+        <br>
+        <br>
+        <label for="output">output:</label>
+        <input type="text" id="output" name="output">
+        <br>
+        <br>
+        <label for="clean_init_dbs">clean_init_dbs:</label>
+        <input type="text" id="clean_init_dbs" name="clean_init_dbs">
+        <br>
+        <br>
+        <label for="check_dependencies">check_dependencies:</label>
+        <input type="text" id="check_dependencies" name="namcheck_dependenciese">
+        <br>
+        <br>
+        <label for="db_commitment_path">db_commitment_path:</label>
+        <input type="text" id="db_commitment_path" name="db_commitment_path">
+        <br>
+        <br>
+        <label for="db_sbom_path">db_sbom_path:</label>
+        <input type="text" id="db_sbom_path" name="db_sbom_path">
+        <br>
+        <br>
+        <label for="db_dependency_path">db_dependency_path:</label>
+        <input type="text" id="db_dependency_path" name="db_dependency_path">
+        <br>
+        <br>
+        <label for="check_dependencies_output">check_dependencies_output:</label>
+        <input type="text" id="check_dependencies_output" name="check_dependencies_output"> -->
+        <br>
+        <label for="sbom">sbom:</label>
+        <input type="text" id="sbom" name="sbom">
+        <br>
+        <br>
+        <label for="vendor">vendor:</label>
+        <input type="text" id="vendor" name="vendor">
+        <br>
+        <br>
+        <label for="product">product:</label>
+        <input type="text" id="product" name="product">
+        <br>
+        <br>
+        <label for="version">version:</label>
+        <input type="text" id="version" name="version">
+        <br>
+
+        <br>
+        <label for="api_key">api_key:</label>
+        <input type="text" id="api_key" name="api_key">
+        <br>
+        <br>
+        <label for="method">method:</label>
+        <input type="text" id="method" name="method">
+        <br>
+        <br>
+        <label for="commitment">commitment:</label>
+        <input type="text" id="commitment" name="commitment">
+        <br>
+        <br>
+        <label for="dependency">dependency:</label>
+        <input type="text" id="dependency" name="dependency">
+        <br>
+
+
+        <br>
+        <button type="submit">Execute</button>
+    </form>
+    <a id="response"></a>
+
+    <script>
+        document.getElementById('command-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const command = document.getElementById('command').value;
+            // const log_level = document.getElementById('log_level').value;
+            // const output = document.getElementById('output').value;
+            // const clean_init_dbs = document.getElementById('clean_init_dbs').value;
+            // const check_dependencies = document.getElementById('check_dependencies').value;
+            // const db_commitment_path = document.getElementById('db_commitment_path').value;
+            // const db_sbom_path = document.getElementById('db_sbom_path').value;
+            // const db_dependency_path = document.getElementById('db_dependency_path').value;
+            // const check_dependencies_output = document.getElementById('check_dependencies_output').value;
+
+            const sbom = document.getElementById('sbom').value;
+            const vendor = document.getElementById('vendor').value;
+            const product = document.getElementById('product').value;
+            const version = document.getElementById('version').value;
+            const api_key = document.getElementById('api_key').value;
+            const method = document.getElementById('method').value;
+            const commitment = document.getElementById('commitment').value;
+            const dependency = document.getElementById('dependency').value;
+
+
+            const response = await fetch('http://192.168.0.5:8000/execute', { // Get by using `ifconfig | grep "inet " | grep -v 127.0.0.1`
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    command,
+                    sbom: sbom,
+                    vendor: vendor,
+                    product: product,
+                    version: version,
+                    api_key: api_key,
+                    method: method,
+                    commitment: commitment,
+                    dependency: dependency
+                })
+            });
+
+            const result = await response.text();
+            document.getElementById('response').innerHTML = result;
+        });
+    </script>
+</body>
+</html>

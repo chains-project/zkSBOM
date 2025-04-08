@@ -37,18 +37,20 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str) -> String {
     return commitment;
 }
 
-pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, dependency: &str) {
+pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, dependency: &str) -> String {
     match method {
         "Merkle Tree" => {
             info!("Merkle Tree");
             let proof = generate_proof(commitment.to_string(), dependency.to_string());
 
-            print_proof(proof);
+            return print_proof(proof);
         }
         "zkp" => {
             info!("ZKP");
+            return "ZKP not implemented yet".to_string();
         }
         "test" => {
+            let mut output = "not set yet".to_string();
             let dep_vul_map = map_dependencies_vulnerabilities(commitment.to_string());
             for (key, values) in &dep_vul_map {
                 debug!("Dependency: {}, Vulnerabilities: {:?}", key, values);
@@ -60,17 +62,16 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, dependency: &str)
             for (key, values) in &dep_vul_map {
                 if values.contains(&vulnerability.to_string()) {
                     debug!("Dependency: {} is vulnerable to: {}", key, vulnerability);
-
                     let proof = generate_proof(commitment.to_string(), key.to_string());
-
-                    print_proof(proof);
-
+                    output = print_proof(proof);
                     break; // Break the loop after finding the first match
                 }
             }
+            return output;
         }
         _ => {
             error!("Unknown method: {}", method);
+            return format!("Unknown method: {}", method);
         }
     }
 }
@@ -82,12 +83,12 @@ pub fn get_zkp_full(
     product: &str,
     version: &str,
     dependency: &str,
-) {
+) -> String {
     let commitment = get_commitment(vendor, product, version);
-    get_zkp(_api_key, method, &commitment, dependency);
+    return get_zkp(_api_key, method, &commitment, dependency);
 }
 
-fn print_proof(proof: MerkleProof<H256, H256>) {
+fn print_proof(proof: MerkleProof<H256, H256>) -> String {
     let config = load_config().unwrap();
     let output_path = config.app.output;
 
@@ -95,7 +96,7 @@ fn print_proof(proof: MerkleProof<H256, H256>) {
     if let Some(parent) = path.parent() {
         if let Err(e) = create_dir_all(parent) {
             error!("Error creating directory: {}", e);
-            return;
+            return format!("Error creating directory: {}", e.to_string());
         }
     }
 
@@ -103,28 +104,29 @@ fn print_proof(proof: MerkleProof<H256, H256>) {
         Ok(file) => file,
         Err(e) => {
             error!("Error creating file: {}", e);
-            return;
+            return format!("Error creating file: {}", e.to_string());
         }
     };
 
     if let Err(e) = writeln!(file, "Proof: {:?}", proof.proof) {
         error!("Error writing to file: {}", e);
-        return;
+        return format!("Error writing to file: {}", e.to_string());
     }
     if let Err(e) = writeln!(file, "Number of Leaves: {:?}", proof.number_of_leaves) {
         error!("Error writing to file: {}", e);
-        return;
+        return format!("Error writing to file: {}", e.to_string());
     }
     if let Err(e) = writeln!(file, "Leaf Index: {:?}", proof.leaf_index) {
         error!("Error writing to file: {}", e);
-        return;
+        return format!("Error writing to file: {}", e.to_string());
     }
     if let Err(e) = writeln!(file, "Leaf: {:?}", proof.leaf) {
         error!("Error writing to file: {}", e);
-        return;
+        return format!("Error writing to file: {}", e.to_string());
     }
 
     println!("Proof written to: {}", output_path);
+    return format!("Proof written to: {}", output_path.to_string());
 }
 
 // Function to map dependencies and its vulnerabilities
