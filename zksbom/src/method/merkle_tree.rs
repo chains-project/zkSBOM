@@ -39,7 +39,7 @@ pub fn create_commitment(dependencies: Vec<&str>) -> MerkleRootLeaves {
     };
 }
 
-pub fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
+fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
     // 1. Get the hashed leaves from the database
     let hashed_leaves = get_dependencies(root).dependencies;
     let hashed_leaves_list: Vec<&str> = hashed_leaves.split(",").collect();
@@ -86,16 +86,16 @@ pub fn create_merkle_proof(commitment: &str, vulnerability: &str) {
         if values.contains(&vulnerability.to_string()) {
             debug!("Dependency: {} is vulnerable to: {}", key, vulnerability);
 
-            let proof = generate_proof(commitment.to_string(), key.to_string());
+            let proof: MerkleProof<H256, H256> = generate_proof(commitment.to_string(), key.to_string());
 
-            print_merkle_proof(proof);
+            print_merkle_proof(proof, key.to_string());
 
             break; // Break the loop after finding the first match
         }
     }
 }
 
-fn print_merkle_proof(proof: MerkleProof<H256, H256>) {
+fn print_merkle_proof(proof: MerkleProof<H256, H256>, dependency: String) {
     let config = load_config().unwrap();
     let output_path = config.app.output;
 
@@ -127,10 +127,15 @@ fn print_merkle_proof(proof: MerkleProof<H256, H256>) {
         error!("Error writing to file: {}", e);
         return;
     }
-    if let Err(e) = writeln!(file, "Leaf: {:?}", proof.leaf) {
+    if let Err(e) = writeln!(file, "Leaf: {}", dependency) {
         error!("Error writing to file: {}", e);
         return;
     }
+    if let Err(e) = writeln!(file, "Leaf Hash (Each dependency is hashed using Substrate's BlakeTwo256 hasher (an unkeyed Blake2b hash truncated to 256 bits), then stored as an H256.): {:?} ", proof.leaf) {
+        error!("Error writing to file: {}", e);
+        return;
+    }
+    
 
     println!("Proof written to: {}", output_path);
 }

@@ -9,9 +9,6 @@ use merkle::verify_merkle;
 
 fn main() {
     init_logger();
-    debug!("Logger initialized.");
-
-    debug!("Parse cli...");
     parse_cli();
 }
 
@@ -32,6 +29,7 @@ fn init_logger() {
             );
         }
     };
+    debug!("Logger initialized.");
 }
 
 fn parse_cli() {

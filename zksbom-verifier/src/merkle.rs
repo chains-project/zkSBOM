@@ -1,7 +1,7 @@
 use binary_merkle_tree::verify_proof;
 use hex;
-use log::debug;
-use sp_core::H256;
+use log::{debug, warn};
+use sp_core::{Hasher, H256};
 use sp_runtime::traits::BlakeTwo256;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -11,7 +11,8 @@ pub fn verify_merkle(commitment: &str, proof_path: &str) -> bool {
     debug!("Commitment: {}, Proof Path: {}", commitment, proof_path);
 
     let commitment_h256 = str_to_h256(commitment).unwrap();
-    let (_root, proof, number_of_leaves, leaf_index, leaf) = parse_proof_file(proof_path).unwrap();
+    let (_root, proof, number_of_leaves, leaf_index, leaf, leaf_hash) =
+        parse_proof_file(proof_path).unwrap();
 
     // Proof
     let proof_h256 = string_to_h256_vec(&proof).unwrap();
@@ -26,8 +27,22 @@ pub fn verify_merkle(commitment: &str, proof_path: &str) -> bool {
     debug!("Leaf index: {:?}", leaf_index_u32);
 
     // Leaf
-    let leaf_h256 = str_to_h256(&leaf).unwrap();
-    debug!("Leaf: {:?}", leaf_h256);
+    // Convert string leaves to H256 hashes
+    let leaf_h256: H256 = H256::from_slice(&BlakeTwo256::hash(leaf.as_bytes()).0);
+    debug!("leaf_h256: {:?}", leaf_h256);
+
+    // Leaf Hash
+    if leaf_hash.is_some() {
+        // Compare if leaf hash and computed hash of the leave are the same
+        let leaf_hash_h256 = str_to_h256(leaf_hash.as_ref().unwrap()).unwrap();
+        if leaf_hash_h256 == leaf_h256 {
+            debug!("Leaf Hash is present in Proof File and matches the computed hash.");
+        } else {
+            warn!("Leaf Hash is present in Proof File but does not match the computed hash.");
+        }
+    } else {
+        debug!("Leaf Hash Not Present in Proof File.");
+    }
 
     let is_valid = verify_proof::<BlakeTwo256, Vec<H256>, &_>(
         &commitment_h256,
@@ -52,7 +67,7 @@ fn str_to_h256(input_str: &str) -> Result<H256, hex::FromHexError> {
 
 fn parse_proof_file(
     proof_path: &str,
-) -> Result<(String, String, String, String, String), io::Error> {
+) -> Result<(String, String, String, String, String, Option<String>), io::Error> {
     let path = Path::new(proof_path);
     let file = File::open(path)?;
     let reader = io::BufReader::new(file);
@@ -62,6 +77,7 @@ fn parse_proof_file(
     let mut number_of_leaves = String::new();
     let mut leaf_index = String::new();
     let mut leaf = String::new();
+    let mut leaf_hash = String::new();
 
     for line_result in reader.lines() {
         let line = line_result?;
@@ -81,7 +97,7 @@ fn parse_proof_file(
                 "Number of Leaves" => number_of_leaves = value,
                 "Leaf Index" => leaf_index = value,
                 "Leaf" => leaf = value,
-
+                "Leaf Hash (Each dependency is hashed using Substrate's BlakeTwo256 hasher (an unkeyed Blake2b hash truncated to 256 bits), then stored as an H256.)" => leaf_hash = value,
                 _ => eprintln!("Warning: Unknown key: {}", key), // Handle unknown keys
             }
         } else {
@@ -89,7 +105,13 @@ fn parse_proof_file(
         }
     }
 
-    Ok((root, proof, number_of_leaves, leaf_index, leaf))
+    let leaf_hash = if leaf_hash.is_empty() {
+        None
+    } else {
+        Some(leaf_hash)
+    };
+
+    Ok((root, proof, number_of_leaves, leaf_index, leaf, leaf_hash))
 }
 
 fn string_to_h256_vec(s: &str) -> Result<Vec<H256>, String> {

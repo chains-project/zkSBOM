@@ -2,7 +2,7 @@ use crate::database::db_commitment::get_commitment as get_db_commitment;
 use crate::method::merkle_tree::{
     create_commitment as create_merkle_commitment, create_merkle_proof,
 };
-use log::{debug, error, info};
+use log::{debug, error};
 use std::str;
 
 pub fn create_commitment(dependencies: Vec<&str>) -> (String, Vec<String>) {
