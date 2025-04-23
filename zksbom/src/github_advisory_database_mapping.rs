@@ -1,12 +1,12 @@
-use std::collections::HashMap;
 use once_cell::sync::Lazy;
+use std::collections::HashMap;
 
 // Define a static HashMap that initializes once
 pub static MAPPINGS: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
     let mut map = HashMap::new();
     map.insert("composer", "COMPOSER");
     map.insert("github", "GITHUB ACTIONS");
-    map.insert("golang", "GO");   
+    map.insert("golang", "GO");
     map.insert("maven", "MAVEN");
     map.insert("npm", "NPM");
     map.insert("nuget", "NUGET");

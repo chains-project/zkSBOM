@@ -1,12 +1,12 @@
-use crate::check_dependencies::check_dependencies;
+use crate::check_dependencies_crates_io::check_dependencies;
 use crate::config::load_config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
+use crate::github_advisory_database_mapping::MAPPINGS;
 use crate::method::method_handler::create_commitment;
 use log::{debug, error, warn};
 use serde_json::{from_str, Value};
-use crate::github_advisory_database_mapping::MAPPINGS;
 
 #[derive(Debug, Default)]
 struct SbomParsed {
@@ -166,7 +166,6 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
 
     sbom_parsed
 }
-
 
 fn map_dependency_ecosystem(purl: &str) -> String {
     let mut ecosystem = "unknown".to_string();

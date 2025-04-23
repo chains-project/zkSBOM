@@ -9,7 +9,7 @@ zkSBOM is a proof of concept (PoC) for disclosing limited but verifiable SBOM in
 This command uploads the specified SBOM to the system.
 
 ```Bash
-cargo run -- upload_sbom --api-key 123 --sbom ../sboms/zksbom-verifier.cdx.json
+cargo run -- upload_sbom --api-key 123 --sbom ../sboms/test_sbom_openssl.cdx.json
 ```
 
 ### Retrieving a Commitment
@@ -17,7 +17,7 @@ cargo run -- upload_sbom --api-key 123 --sbom ../sboms/zksbom-verifier.cdx.json
 This command fetches the generated commitment for an uploaded SBOM, if available.
 
 ```Bash
-cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "zksbom-verifier" --version "0.1.0"
+cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0"
 ```
 
 ### Obtaining the Zero-Knowledge Proof (ZKP)
@@ -32,13 +32,13 @@ Additionally, the dependency to be checked must be specified.
 #### Retrieving ZKP Using a Commitment
 
 ```Bash
-cargo run -- get_zkp --api-key 123 --method "Merkle Tree" --commitment "0x0b9a83b952a61d281939e463e0848058e80271e4d2db5d294e4b7e8194276447" --dependency "binary-merkle-tree@16.0.0"
+cargo run -- get_zkp --api-key 123 --method "merkle-tree" --commitment "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d" --vulnerability "CVE-2025-24898"
 ```
 
 #### Retrieving ZKP Using Vendor, Product Name, and Version
 
 ```Bash
-cargo run -- get_zkp_full --api-key 123 --method "Merkle Tree" --vendor "Tom Sorger <sorger@kth.se>" --product "zksbom-verifier" --version "0.1.0" --dependency "binary-merkle-tree@16.0.0"
+cargo run -- get_zkp_full --api-key 123 --method "merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
 
 ### Possible Flags

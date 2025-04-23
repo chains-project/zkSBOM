@@ -1,9 +1,7 @@
 use log::{debug, error, info, LevelFilter};
 use std::str::FromStr;
-
 pub mod config;
 use config::load_config;
-
 mod database {
     pub mod db_commitment;
     pub mod db_dependency;
@@ -14,36 +12,25 @@ use database::{
     db_dependency::{delete_db_dependency, init_db_dependency},
     db_sbom::{delete_db_sbom, init_db_sbom},
 };
-
 pub mod cli;
 use cli::build_cli;
-
 pub mod upload;
 use upload::upload;
-
 pub mod method {
     pub mod merkle_tree;
     pub mod method_handler;
 }
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
-
-pub mod check_dependencies;
+pub mod check_dependencies_crates_io;
 pub mod github_advisory_database_mapping;
-
-
+pub mod map_dependencies_vulnerabilities;
 
 fn main() {
     init_logger();
-    debug!("Logger initialized.");
-
     let config = load_config().unwrap();
     let is_clean_init = config.app.clean_init_dbs;
     delete_dbs(is_clean_init);
-
-    debug!("Initializing the databases...");
     init_dbs();
-
-    debug!("Parse cli...");
     parse_cli();
 }
 
@@ -64,15 +51,16 @@ fn init_logger() {
             );
         }
     };
+    debug!("Logger initialized.");
 }
 
 fn init_dbs() {
+    debug!("Initializing the databases...");
     init_db_commitment();
     init_db_sbom();
     init_db_dependency();
 }
 
-// TODO: Delete function
 fn delete_dbs(is_clean_init: bool) {
     if is_clean_init {
         delete_db_commitment();
@@ -107,12 +95,12 @@ fn parse_cli() {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();
             let method = sub_matches.get_one::<String>("method").unwrap();
             let commitment = sub_matches.get_one::<String>("commitment").unwrap();
-            let dependency = sub_matches.get_one::<String>("dependency").unwrap();
+            let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
             debug!(
-                "API Key: {}, Method: {}, Commitment: {}, Dependency: {}",
-                api_key, method, commitment, dependency
+                "API Key: {}, Method: {}, Commitment: {}, Vulnerability: {}",
+                api_key, method, commitment, vulnerability
             );
-            get_zkp(&api_key, &method, &commitment, &dependency);
+            get_zkp(&api_key, &method, &commitment, &vulnerability);
         }
         Some(("get_zkp_full", sub_matches)) => {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();
@@ -120,12 +108,19 @@ fn parse_cli() {
             let vendor = sub_matches.get_one::<String>("vendor").unwrap();
             let product = sub_matches.get_one::<String>("product").unwrap();
             let version = sub_matches.get_one::<String>("version").unwrap();
-            let dependency = sub_matches.get_one::<String>("dependency").unwrap();
+            let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
             debug!(
-                "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Dependency: {}",
-                api_key, method, vendor, product, version, dependency
+                "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Vulnerability: {}",
+                api_key, method, vendor, product, version, vulnerability
             );
-            get_zkp_full(&api_key, &method, &vendor, &product, &version, &dependency);
+            get_zkp_full(
+                &api_key,
+                &method,
+                &vendor,
+                &product,
+                &version,
+                &vulnerability,
+            );
         }
         _ => error!("No subcommand matched"),
     }
