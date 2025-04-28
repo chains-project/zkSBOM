@@ -1,29 +1,56 @@
 use crate::database::db_commitment::get_commitment as get_db_commitment;
 use crate::method::merkle_tree::{
-    create_commitment as create_merkle_commitment, create_merkle_proof,
+    create_commitment as create_merkle_commitment, create_proof as create_merkle_proof,
+};
+use crate::method::sparse_merkle_tree::{
+    create_commitment as create_sparse_merkle_commitment,
+    create_proof as create_sparse_merkle_proof,
 };
 use log::{debug, error};
 use std::str;
 
-pub fn create_commitment(dependencies: Vec<&str>) -> (String, Vec<String>) {
-    // TODO: Implement handling for different methods
+pub fn create_commitments(dependencies: Vec<&str>) -> (String, String) {
     // Merkle Tree
     debug!("Create Merkle Tree commitment");
-    let merkle_root_leaves = create_merkle_commitment(dependencies);
-    let merkle_tree_commitment = merkle_root_leaves.root;
-    let merkle_tree_dependencies = merkle_root_leaves.leaves;
+    let merkle_tree_commitment = create_merkle_commitment(dependencies.clone());
+    debug!("Merkle Tree Commitment: {}", merkle_tree_commitment);
 
-    return (merkle_tree_commitment, merkle_tree_dependencies);
+    // Sparse Merkle Tree
+    debug!("Create Sparse Merkle Tree commitment");
+    let sparse_merkle_tree_commitment = create_sparse_merkle_commitment(dependencies.clone());
+    debug!(
+        "Sparse Merkle Tree Commitment: {:?}",
+        sparse_merkle_tree_commitment
+    );
+
+    return (merkle_tree_commitment, sparse_merkle_tree_commitment);
 }
 
-pub fn get_commitment(vendor: &str, product: &str, version: &str) -> String {
+pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) -> String {
     debug!(
-        "Getting commitment for vendor: {}, product: {}, version: {}",
-        vendor, product, version
+        "Getting commitment for vendor: {}, product: {}, version: {}, method: {}",
+        vendor, product, version, method
     );
-    let commitment =
-        get_db_commitment(vendor.to_string(), product.to_string(), version.to_string()).commitment;
-    debug!("Commitment: {}", commitment);
+
+    let mut commitment = String::new();
+    match method {
+        "merkle-tree" => {
+            commitment =
+                get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
+                    .commitment_merkle_tree;
+            debug!("Merkle Tree Commitment: {}", commitment);
+        }
+        "sparse-merkle-tree" => {
+            commitment =
+                get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
+                    .commitment_sparse_merkle_tree;
+            debug!("Merkle Tree Commitment: {}", commitment);
+        }
+        "zkp" => {}
+        _ => {
+            panic!("Unknown method: {}", method);
+        }
+    }
 
     return commitment;
 }
@@ -34,7 +61,7 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
             create_merkle_proof(commitment, vulnerability);
         }
         "sparse-merkle-tree" => {
-            error!("sparse-merkle-tree not implemented yet");
+            create_sparse_merkle_proof(commitment, vulnerability);
         }
         "zkp" => {
             error!("zkp not implemented yet");
@@ -53,6 +80,6 @@ pub fn get_zkp_full(
     version: &str,
     vulnerability: &str,
 ) {
-    let commitment = get_commitment(vendor, product, version);
+    let commitment = get_commitment(vendor, product, version, method);
     get_zkp(_api_key, method, &commitment, vulnerability);
 }

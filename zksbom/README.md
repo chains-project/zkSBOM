@@ -17,7 +17,7 @@ cargo run -- upload_sbom --api-key 123 --sbom ../sboms/test_sbom_openssl.cdx.jso
 This command fetches the generated commitment for an uploaded SBOM, if available.
 
 ```Bash
-cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0"
+cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-tree"
 ```
 
 ### Obtaining the Zero-Knowledge Proof (ZKP)

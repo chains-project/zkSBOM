@@ -9,5 +9,5 @@ zkSBOM Verifier is a proof of concept (PoC) designed to verify a given proof gen
 Use the following command to verify a proof:
 
 ```Bash
-cargo run -- verify_merkle --commitment "0x0b9a83b952a61d281939e463e0848058e80271e4d2db5d294e4b7e8194276447" --proof_path "../zksbom/tmp/output/proof.txt"
+cargo run -- verify_merkle --commitment "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d" --proof_path "../zksbom/tmp/output/proof.txt"
 ```

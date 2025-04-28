@@ -13,12 +13,15 @@ use database::{
     db_sbom::{delete_db_sbom, init_db_sbom},
 };
 pub mod cli;
+pub mod hasher;
+
 use cli::build_cli;
 pub mod upload;
 use upload::upload;
 pub mod method {
     pub mod merkle_tree;
     pub mod method_handler;
+    pub mod sparse_merkle_tree;
 }
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
 pub mod check_dependencies_crates_io;
@@ -84,11 +87,12 @@ fn parse_cli() {
             let vendor = sub_matches.get_one::<String>("vendor").unwrap();
             let product = sub_matches.get_one::<String>("product").unwrap();
             let version = sub_matches.get_one::<String>("version").unwrap();
+            let method = sub_matches.get_one::<String>("method").unwrap(); // TODO
             debug!(
-                "Vendor: {}, Product: {}, Version: {}",
-                vendor, product, version
+                "Vendor: {}, Product: {}, Version: {}, Method: {}",
+                vendor, product, version, method
             );
-            let commitment = mh_get_commitment(&vendor, &product, &version);
+            let commitment = mh_get_commitment(&vendor, &product, &version, &method);
             println!("Commitment: {}", commitment);
         }
         Some(("get_zkp", sub_matches)) => {

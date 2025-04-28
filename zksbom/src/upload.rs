@@ -4,7 +4,7 @@ use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
 use crate::github_advisory_database_mapping::MAPPINGS;
-use crate::method::method_handler::create_commitment;
+use crate::method::method_handler::create_commitments;
 use log::{debug, error, warn};
 use serde_json::{from_str, Value};
 
@@ -47,32 +47,30 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
         version: version.to_string(),
         sbom: sbom_content.to_string(),
     };
-
     insert_sbom(sbom_entry);
 
-    // Step 4: Generate Commitment
-    let dependencies_clear_text = dependencies.clone();
-    let commitment_dependencies = create_commitment(dependencies);
-    let commitment = commitment_dependencies.0;
-    let dependencies = commitment_dependencies.1;
+    // Step 4: Generate Commitments
+    let commitments = create_commitments(dependencies.clone());
+    let commitment_merkle_tree = commitments.0;
+    let commitment_sparse_merkle_tree = commitments.1;
 
-    // Step 5: Save Commitment to database
+    // Step 5: Save Commitments to database
     let commitment_entry = CommitmentDbEntry {
         vendor: vendor.to_string(),
         product: product.to_string(),
         version: version.to_string(),
-        commitment: commitment.to_string(),
+        commitment_merkle_tree: commitment_merkle_tree.to_string(),
+        commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.to_string(),
     };
-
     insert_commitment(commitment_entry);
 
-    // Step 6: Save dependencies to database
+    // Step 6: Save cleartext dependencies to database
+    // Needed for dependency<>vulnerability mapping
     let dependency_entry = DependencyDbEntry {
         dependencies: dependencies.join(","),
-        commitment: commitment.to_string(),
-        dependencies_clear_text: dependencies_clear_text.join(","),
+        commitment: commitment_merkle_tree.to_string(), // TODO
+        dependencies_clear_text: dependencies.join(","),
     };
-
     insert_dependency(dependency_entry);
 }
 

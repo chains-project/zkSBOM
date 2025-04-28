@@ -35,6 +35,7 @@ pub fn verify_merkle(commitment: &str, proof_path: &str) -> bool {
     if leaf_hash.is_some() {
         // Compare if leaf hash and computed hash of the leave are the same
         let leaf_hash_h256 = str_to_h256(leaf_hash.as_ref().unwrap()).unwrap();
+        debug!("leaf_hash_h256: {:?}", leaf_hash_h256);
         if leaf_hash_h256 == leaf_h256 {
             debug!("Leaf Hash is present in Proof File and matches the computed hash.");
         } else {
@@ -57,7 +58,8 @@ pub fn verify_merkle(commitment: &str, proof_path: &str) -> bool {
 }
 
 fn str_to_h256(input_str: &str) -> Result<H256, hex::FromHexError> {
-    let bytes = hex::decode(input_str.trim_start_matches("0x"))?; // Remove "0x" and decode
+    let bytes = hex::decode(input_str.trim_start_matches("0x"))?;
+    debug!("Decoded bytes: {:?}", bytes);
     if bytes.len() != 32 {
         return Err(hex::FromHexError::InvalidStringLength); // H256 must be 32 bytes
     }

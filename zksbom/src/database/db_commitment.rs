@@ -10,7 +10,8 @@ pub struct CommitmentDbEntry {
     pub vendor: String,
     pub product: String,
     pub version: String,
-    pub commitment: String,
+    pub commitment_merkle_tree: String,
+    pub commitment_sparse_merkle_tree: String,
 }
 
 pub fn init_db_commitment() {
@@ -38,7 +39,8 @@ pub fn init_db_commitment() {
                     vendor TEXT NOT NULL,
                     product TEXT NOT NULL,
                     version TEXT NOT NULL,
-                    commitment TEXT NOT NULL,
+                    commitment_merkle_tree TEXT NOT NULL,
+                    commitment_sparse_merkle_tree TEXT NOT NULL,
                     PRIMARY KEY (vendor, product, version)
                 )",
                 [],
@@ -72,12 +74,13 @@ pub fn insert_commitment(commitment: CommitmentDbEntry) {
     let conn = get_db_commitment_conneciton();
 
     match conn.execute(
-        "INSERT INTO commitment (vendor, product, version, commitment) VALUES (?1, ?2, ?3, ?4)",
+        "INSERT INTO commitment (vendor, product, version, commitment_merkle_tree, commitment_sparse_merkle_tree) VALUES (?1, ?2, ?3, ?4, ?5)",
         params![
             commitment.vendor,
             commitment.product,
             commitment.version,
-            commitment.commitment
+            commitment.commitment_merkle_tree,
+            commitment.commitment_sparse_merkle_tree,
         ],
     ) {
         Ok(_) => info!("Commitment inserted into the database."),
@@ -90,14 +93,15 @@ pub fn get_commitment(vendor: String, product: String, version: String) -> Commi
     let conn = get_db_commitment_conneciton();
 
     let commitment = match conn.query_row(
-        "SELECT vendor, product, version, commitment FROM commitment WHERE vendor = ?1 AND product = ?2 AND version = ?3",
+        "SELECT vendor, product, version, commitment_merkle_tree, commitment_sparse_merkle_tree FROM commitment WHERE vendor = ?1 AND product = ?2 AND version = ?3",
         rusqlite::params![vendor, product, version],
         |row| {
             Ok(CommitmentDbEntry {
                 vendor: row.get(0)?,
                 product: row.get(1)?,
                 version: row.get(2)?,
-                commitment: row.get(3)?,
+                commitment_merkle_tree: row.get(3)?,
+                commitment_sparse_merkle_tree: row.get(4)?,
             })
         },
     ) {
@@ -108,7 +112,8 @@ pub fn get_commitment(vendor: String, product: String, version: String) -> Commi
                 vendor: "".to_string(),
                 product: "".to_string(),
                 version: "".to_string(),
-                commitment: "".to_string(),
+                commitment_merkle_tree: "".to_string(),
+                commitment_sparse_merkle_tree: "".to_string(),
             }
         }
     };

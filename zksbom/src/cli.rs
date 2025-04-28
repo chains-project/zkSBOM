@@ -103,6 +103,13 @@ pub fn build_cli() -> Command {
                         .value_name("VERSION")
                         .help("Version of the product")
                         .required(true),
+                )
+                .arg(
+                    Arg::new("method")
+                        .long("method")
+                        .value_name("METHOD")
+                        .help("Method for generating the ZKP (e.g., 'Merkle Tree', 'tbd.')")
+                        .required(true),
                 ),
         )
         .subcommand(

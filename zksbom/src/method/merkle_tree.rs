@@ -1,10 +1,10 @@
 use crate::config::load_config;
 use crate::database::db_dependency::get_dependencies;
+use crate::hasher::hash_h256;
 use crate::map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
 use binary_merkle_tree::{merkle_proof, merkle_root, MerkleProof};
-use hex;
 use log::{debug, error};
-use sp_core::{Hasher, H256};
+use sp_core::H256;
 use sp_runtime::traits::BlakeTwo256;
 use std::fs::{create_dir_all, File};
 use std::io::Write;
@@ -16,43 +16,23 @@ pub struct MerkleRootLeaves {
     pub leaves: Vec<String>,
 }
 
-pub fn create_commitment(dependencies: Vec<&str>) -> MerkleRootLeaves {
-    debug!("Dependencies: {:?}", dependencies);
-
-    // Convert string leaves to H256 hashes
-    let hashed_leaves: Vec<H256> = dependencies
-        .iter()
-        .map(|leaf| H256::from_slice(&BlakeTwo256::hash(leaf.as_bytes()).0))
-        .collect();
+pub fn create_commitment(dependencies: Vec<&str>) -> String {
+    let hashed_dependencies = hash_h256(dependencies);
+    debug!("Hashed dependencies: {:?}", hashed_dependencies);
 
     // Compute the Merkle root
-    let root = merkle_root::<BlakeTwo256, _>(&hashed_leaves);
+    let commitment = format!("0x{:x}", merkle_root::<BlakeTwo256, _>(hashed_dependencies));
+    debug!("Merkle Tree Commitment: {:?}", commitment);
 
-    debug!("Merkle root: {:?}", root);
-    let root_string = format!("0x{:x}", root); // Lowercase hex string
-
-    debug!("Leaves: {:?}", hashed_leaves);
-
-    return MerkleRootLeaves {
-        root: root_string,
-        leaves: hashed_leaves.iter().map(|v| format!("0x{:x}", v)).collect(), // Lowercase
-    };
+    return commitment;
 }
 
 fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
-    // 1. Get the hashed leaves from the database
-    let hashed_leaves = get_dependencies(root).dependencies;
-    let hashed_leaves_list: Vec<&str> = hashed_leaves.split(",").collect();
-    debug!("Hashed leaves: {:?}", hashed_leaves_list);
+    let dependency_entry = get_dependencies(root);
+    let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
+    debug!("dependencies: {:?}", dependencies);
 
-    // 2. Hash the dependency
-    let hashed_dependency = H256::from_slice(&BlakeTwo256::hash(dependency.as_bytes()).0);
-    debug!("Hashed dependency: {:?}", hashed_dependency);
-    let dependency_string = format!("0x{:x}", hashed_dependency); // Lowercase hex string
-
-    let index = if let Some(found_index) = hashed_leaves_list
-        .iter()
-        .position(|&leaf| leaf == dependency_string)
+    let index = if let Some(found_index) = dependencies.iter().position(|&leaf| leaf == dependency)
     {
         debug!("Dependency found at index {}", found_index);
         found_index as u32
@@ -60,23 +40,19 @@ fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
         panic!("Dependency not found");
     };
 
-    // 3. Generate the proof
-    let hashed_leaves: Vec<H256> = hashed_leaves_list
-        .iter()
-        .map(|leaf| {
-            H256::from_slice(&hex::decode(leaf.trim_start_matches("0x")).expect("Decoding failed"))
-        })
-        .collect();
+    // Hash dependencies
+    let hashed_leaves_list = hash_h256(dependencies);
 
-    debug!("Hashed leaves: {:?}", hashed_leaves);
+    debug!("Hashed leaves: {:?}", hashed_leaves_list);
 
-    let proof: MerkleProof<H256, H256> = merkle_proof::<BlakeTwo256, _, _>(hashed_leaves, index);
+    let proof: MerkleProof<H256, H256> =
+        merkle_proof::<BlakeTwo256, _, _>(hashed_leaves_list, index);
     debug!("Proof: {:?}", proof);
 
     return proof;
 }
 
-pub fn create_merkle_proof(commitment: &str, vulnerability: &str) {
+pub fn create_proof(commitment: &str, vulnerability: &str) {
     let dep_vul_map = map_dependencies_vulnerabilities(commitment.to_string());
     for (key, values) in &dep_vul_map {
         debug!("Dependency: {}, Vulnerabilities: {:?}", key, values);
@@ -86,7 +62,8 @@ pub fn create_merkle_proof(commitment: &str, vulnerability: &str) {
         if values.contains(&vulnerability.to_string()) {
             debug!("Dependency: {} is vulnerable to: {}", key, vulnerability);
 
-            let proof: MerkleProof<H256, H256> = generate_proof(commitment.to_string(), key.to_string());
+            let proof: MerkleProof<H256, H256> =
+                generate_proof(commitment.to_string(), key.to_string());
 
             print_merkle_proof(proof, key.to_string());
 
@@ -135,7 +112,6 @@ fn print_merkle_proof(proof: MerkleProof<H256, H256>, dependency: String) {
         error!("Error writing to file: {}", e);
         return;
     }
-    
 
     println!("Proof written to: {}", output_path);
 }

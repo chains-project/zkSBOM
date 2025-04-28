@@ -1,2 +1,2 @@
 [app]
-log_level = "warn"
+log_level = "debug"
