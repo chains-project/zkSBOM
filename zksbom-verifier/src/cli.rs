@@ -7,8 +7,8 @@ pub fn build_cli() -> Command {
         .author("Tom Sorger <sorger@kth.se>")
         .about("A tool.")
         .subcommand(
-            Command::new("verify_merkle")
-                .about("Verify Merkle Inclusion Proof")
+            Command::new("verify")
+                .about("Verify a Proof")
                 .arg(
                     Arg::new("commitment")
                         .long("commitment")
@@ -21,6 +21,13 @@ pub fn build_cli() -> Command {
                         .long("proof_path")
                         .value_name("PROOF_PATH")
                         .help("Path to the proof file")
+                        .required(true),
+                )
+                .arg(
+                    Arg::new("method")
+                        .long("method")
+                        .value_name("METHOD")
+                        .help("Method for generating the ZKP (e.g., 'Merkle Tree', 'tbd.')")
                         .required(true),
                 ),
         )

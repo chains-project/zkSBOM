@@ -1,5 +1,4 @@
 use crate::config::load_config;
-use crate::database::db_dependency::get_dependencies;
 use log::{debug, error, warn};
 use reqwest;
 use semver::Version;
@@ -10,15 +9,7 @@ use std::process::Command;
 use std::str;
 
 // Function to map dependencies and its vulnerabilities
-pub fn map_dependencies_vulnerabilities(commitment: String) -> HashMap<String, Vec<String>> {
-    // Get dependencies from the database
-    let dependencies: Vec<String> = get_dependencies(commitment)
-        .dependencies_clear_text
-        .split(",")
-        .map(|s| s.to_string())
-        .collect();
-    debug!("Dependencies: {:?}", dependencies);
-
+pub fn map_dependencies_vulnerabilities(dependencies: Vec<&str>) -> HashMap<String, Vec<String>> {
     // Create List of dependencies with vulnerabilities
     let mut dependency_vulnerabilities_map: HashMap<String, Vec<String>> = HashMap::new();
 
@@ -34,7 +25,7 @@ pub fn map_dependencies_vulnerabilities(commitment: String) -> HashMap<String, V
 
         let vulnerabilities = check_vulnerabilities(name, version, ecosystem);
 
-        dependency_vulnerabilities_map.insert(dependency, vulnerabilities);
+        dependency_vulnerabilities_map.insert(dependency.to_string(), vulnerabilities);
     }
 
     return dependency_vulnerabilities_map;

@@ -7,11 +7,11 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
-pub fn verify_merkle(commitment: &str, proof_path: &str) -> bool {
+pub fn verify(commitment: &str, proof_path: &str) -> bool {
     debug!("Commitment: {}, Proof Path: {}", commitment, proof_path);
 
     let commitment_h256 = str_to_h256(commitment).unwrap();
-    let (_root, proof, number_of_leaves, leaf_index, leaf, leaf_hash) =
+    let (proof, number_of_leaves, leaf_index, leaf, leaf_hash) =
         parse_proof_file(proof_path).unwrap();
 
     // Proof
@@ -69,12 +69,11 @@ fn str_to_h256(input_str: &str) -> Result<H256, hex::FromHexError> {
 
 fn parse_proof_file(
     proof_path: &str,
-) -> Result<(String, String, String, String, String, Option<String>), io::Error> {
+) -> Result<(String, String, String, String, Option<String>), io::Error> {
     let path = Path::new(proof_path);
     let file = File::open(path)?;
     let reader = io::BufReader::new(file);
 
-    let mut root = String::new();
     let mut proof = String::new();
     let mut number_of_leaves = String::new();
     let mut leaf_index = String::new();
@@ -94,7 +93,6 @@ fn parse_proof_file(
             let value = trimmed_line[separator_index + 1..].trim().to_string();
 
             match key.as_str() {
-                "Root" => root = value,
                 "Proof" => proof = value,
                 "Number of Leaves" => number_of_leaves = value,
                 "Leaf Index" => leaf_index = value,
@@ -113,7 +111,7 @@ fn parse_proof_file(
         Some(leaf_hash)
     };
 
-    Ok((root, proof, number_of_leaves, leaf_index, leaf, leaf_hash))
+    Ok((proof, number_of_leaves, leaf_index, leaf, leaf_hash))
 }
 
 fn string_to_h256_vec(s: &str) -> Result<Vec<H256>, String> {

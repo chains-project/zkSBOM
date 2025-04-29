@@ -20,6 +20,10 @@ This command fetches the generated commitment for an uploaded SBOM, if available
 cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-tree"
 ```
 
+```Bash
+cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "sparse-merkle-tree"
+```
+
 ### Obtaining the Zero-Knowledge Proof (ZKP)
 
 There are two ways to retrieve the ZKP:
@@ -35,10 +39,18 @@ Additionally, the dependency to be checked must be specified.
 cargo run -- get_zkp --api-key 123 --method "merkle-tree" --commitment "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d" --vulnerability "CVE-2025-24898"
 ```
 
+```Bash
+cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0xdb6bbe76d4b256a389baac6675c9650bfd9d097f9b4789437346b3aeb8864b51" --vulnerability "CVE-2025-24898"
+```
+
 #### Retrieving ZKP Using Vendor, Product Name, and Version
 
 ```Bash
 cargo run -- get_zkp_full --api-key 123 --method "merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
+```
+
+```Bash
+cargo run -- get_zkp_full --api-key 123 --method "sparse-merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
 
 ### Possible Flags

@@ -7,9 +7,9 @@ use std::path::Path;
 /// Represents a Dependency entry
 #[derive(Debug)]
 pub struct DependencyDbEntry {
+    pub commitment_merkle_tree: String,
+    pub commitment_sparse_merkle_tree: String,
     pub dependencies: String,
-    pub commitment: String,
-    pub dependencies_clear_text: String,
 }
 
 pub fn init_db_dependency() {
@@ -34,10 +34,10 @@ pub fn init_db_dependency() {
         Ok(conn) => {
             match conn.execute(
                 "CREATE TABLE IF NOT EXISTS dependency (
+                    commitment_merkle_tree TEXT NOT NULL UNIQUE,
+                    commitment_sparse_merkle_tree TEXT NOT NULL UNIQUE,
                     dependencies TEXT NOT NULL,
-                    commitment TEXT NOT NULL,
-                    dependencies_clear_text TEXT NOT NULL,
-                    PRIMARY KEY (commitment)
+                    PRIMARY KEY (commitment_merkle_tree, commitment_sparse_merkle_tree)
                 )",
                 [],
             ) {
@@ -70,36 +70,46 @@ pub fn insert_dependency(dependency: DependencyDbEntry) {
     let conn = get_db_dependency_conneciton();
 
     match conn.execute(
-        "INSERT INTO dependency (dependencies, commitment, dependencies_clear_text) VALUES (?1, ?2, ?3)",
-        params![dependency.dependencies, dependency.commitment, dependency.dependencies_clear_text],
+        "INSERT INTO dependency (commitment_merkle_tree, commitment_sparse_merkle_tree, dependencies) VALUES (?1, ?2, ?3)",
+        params![dependency.commitment_merkle_tree, dependency.commitment_sparse_merkle_tree, dependency.dependencies],
     ) {
         Ok(_) => info!("Dependency inserted into the database."),
         Err(e) => error!("Error inserting dependency into the database: {}", e),
     };
 }
 
-pub fn get_dependencies(commitment: String) -> DependencyDbEntry {
+pub fn get_dependencies(commitment: String, method: &str) -> DependencyDbEntry {
     debug!("Getting dependency from the database...");
     let conn = get_db_dependency_conneciton();
 
-    let dependency = match conn.query_row(
-        "SELECT dependencies, commitment, dependencies_clear_text FROM dependency WHERE commitment = ?1",
-        rusqlite::params![commitment],
-        |row| {
-            Ok(DependencyDbEntry {
-                dependencies: row.get(0)?,
-                commitment: row.get(1)?,
-                dependencies_clear_text: row.get(2)?,
-            })
-        },
-    ) {
+    let mut sql_string: &str = "";
+    match method {
+        "merkle-tree" => {
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, dependencies FROM dependency WHERE commitment_merkle_tree = ?1";
+        }
+        "sparse-merkle-tree" => {
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, dependencies FROM dependency WHERE commitment_sparse_merkle_tree =?1";
+        }
+        "zkp" => {}
+        _ => {
+            panic!("Unknown method: {}", method);
+        }
+    }
+
+    let dependency = match conn.query_row(sql_string, rusqlite::params![commitment], |row| {
+        Ok(DependencyDbEntry {
+            commitment_merkle_tree: row.get(0)?,
+            commitment_sparse_merkle_tree: row.get(1)?,
+            dependencies: row.get(2)?,
+        })
+    }) {
         Ok(dependency) => dependency,
         Err(e) => {
             error!("Error getting dependency from the database: {}", e);
             DependencyDbEntry {
+                commitment_merkle_tree: "".to_string(),
+                commitment_sparse_merkle_tree: "".to_string(),
                 dependencies: "".to_string(),
-                commitment: "".to_string(),
-                dependencies_clear_text: "".to_string(),
             }
         }
     };

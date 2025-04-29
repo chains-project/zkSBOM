@@ -14,7 +14,6 @@ use database::{
 };
 pub mod cli;
 pub mod hasher;
-
 use cli::build_cli;
 pub mod upload;
 use upload::upload;

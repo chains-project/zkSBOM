@@ -28,9 +28,11 @@ pub fn create_commitment(dependencies: Vec<&str>) -> String {
 }
 
 fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
-    let dependency_entry = get_dependencies(root);
+    let dependency_entry = get_dependencies(root.clone(), "merkle-tree");
+
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
     debug!("dependencies: {:?}", dependencies);
+    debug!("root merkle: {:?}", &root);
 
     let index = if let Some(found_index) = dependencies.iter().position(|&leaf| leaf == dependency)
     {
@@ -53,7 +55,12 @@ fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
 }
 
 pub fn create_proof(commitment: &str, vulnerability: &str) {
-    let dep_vul_map = map_dependencies_vulnerabilities(commitment.to_string());
+    let dependency_entry = get_dependencies(commitment.to_string(), "merkle-tree");
+
+    let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
+    debug!("dependencies: {:?}", dependencies);
+
+    let dep_vul_map = map_dependencies_vulnerabilities(dependencies);
     for (key, values) in &dep_vul_map {
         debug!("Dependency: {}, Vulnerabilities: {:?}", key, values);
     }
@@ -65,14 +72,14 @@ pub fn create_proof(commitment: &str, vulnerability: &str) {
             let proof: MerkleProof<H256, H256> =
                 generate_proof(commitment.to_string(), key.to_string());
 
-            print_merkle_proof(proof, key.to_string());
+            print_proof(proof, key.to_string());
 
             break; // Break the loop after finding the first match
         }
     }
 }
 
-fn print_merkle_proof(proof: MerkleProof<H256, H256>, dependency: String) {
+fn print_proof(proof: MerkleProof<H256, H256>, dependency: String) {
     let config = load_config().unwrap();
     let output_path = config.app.output;
 

@@ -4,8 +4,12 @@ pub mod config;
 use config::load_config;
 pub mod cli;
 use cli::build_cli;
-pub mod merkle;
-use merkle::verify_merkle;
+pub mod method {
+    pub mod merkle_tree;
+    pub mod method_handler;
+    pub mod sparse_merkle_tree;
+}
+use method::method_handler::verify;
 
 fn main() {
     init_logger();
@@ -37,10 +41,16 @@ fn parse_cli() {
     let matches = build_cli().get_matches();
 
     match matches.subcommand() {
-        Some(("verify_merkle", sub_matches)) => {
+        Some(("verify", sub_matches)) => {
             let commitment = sub_matches.get_one::<String>("commitment").unwrap();
             let proof_path = sub_matches.get_one::<String>("proof_path").unwrap();
-            let is_valid = verify_merkle(commitment, proof_path);
+            let method = sub_matches.get_one::<String>("method").unwrap();
+            debug!(
+                "Commitment: {}, Proof Path: {}, Method: {}",
+                commitment, proof_path, method
+            );
+
+            let is_valid = verify(commitment, proof_path, &method);
             println!("Proof is valid: {}", is_valid);
         }
         _ => error!("No subcommand matched"),

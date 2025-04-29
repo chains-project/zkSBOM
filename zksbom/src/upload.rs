@@ -21,7 +21,6 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
 
     // Step 1: Get the SBOM file content
     let sbom_content = get_file_content(&sbom_path);
-    // debug!("SBOM Content: {}", &sbom_content);
 
     // Step 2: Parse SBOM file for dependencies, vendor, product, and version
     let parsed_sbom = parse_sbom(&sbom_content);
@@ -67,9 +66,9 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     // Step 6: Save cleartext dependencies to database
     // Needed for dependency<>vulnerability mapping
     let dependency_entry = DependencyDbEntry {
+        commitment_merkle_tree: commitment_merkle_tree.to_string(),
+        commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.to_string(),
         dependencies: dependencies.join(","),
-        commitment: commitment_merkle_tree.to_string(), // TODO
-        dependencies_clear_text: dependencies.join(","),
     };
     insert_dependency(dependency_entry);
 }
