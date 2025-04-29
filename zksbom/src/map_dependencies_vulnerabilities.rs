@@ -17,10 +17,14 @@ pub fn map_dependencies_vulnerabilities(dependencies: Vec<&str>) -> HashMap<Stri
         let parts: Vec<&str> = dependency.split("@").collect();
         let name = parts[0];
         let version = parts[1];
-        let ecosystem = parts[2];
+
+        let parts: Vec<&str> = parts[2].split(";").collect();
+        let ecosystem = parts[0];
+        let salt = parts[1];
+
         debug!(
-            "Checking for vulnerabilities in: {}@{}@{}",
-            name, version, ecosystem
+            "Checking for vulnerabilities in: {}@{}@{};{}",
+            name, version, ecosystem, salt
         );
 
         let vulnerabilities = check_vulnerabilities(name, version, ecosystem);

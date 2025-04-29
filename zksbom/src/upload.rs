@@ -6,6 +6,8 @@ use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
 use crate::github_advisory_database_mapping::MAPPINGS;
 use crate::method::method_handler::create_commitments;
 use log::{debug, error, warn};
+use rand::distr::Alphanumeric;
+use rand::Rng;
 use serde_json::{from_str, Value};
 
 #[derive(Debug, Default)]
@@ -82,7 +84,7 @@ fn get_file_content(file_path: &str) -> String {
         }
     };
 
-    sbom_string
+    return sbom_string;
 }
 
 fn parse_sbom(sbom_content: &str) -> SbomParsed {
@@ -143,7 +145,8 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
                 (component["name"].as_str(), component["version"].as_str())
             {
                 let ecosystem = map_dependency_ecosystem(component["purl"].as_str().unwrap_or(""));
-                all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
+                let salt = create_salt();
+                all_dependencies.push(format!("{}@{}@{};{}", name, version, ecosystem, salt));
             }
         }
 
@@ -162,6 +165,15 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
     }
 
     sbom_parsed
+}
+
+fn create_salt() -> String {
+    let salt: String = rand::rng()
+        .sample_iter(&Alphanumeric)
+        .take(64) // length of salt
+        .map(char::from)
+        .collect();
+    return salt;
 }
 
 fn map_dependency_ecosystem(purl: &str) -> String {
