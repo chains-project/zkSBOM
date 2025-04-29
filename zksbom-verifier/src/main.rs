@@ -1,15 +1,16 @@
-use log::{debug, error, info, LevelFilter};
-use std::str::FromStr;
-pub mod config;
-use config::load_config;
 pub mod cli;
-use cli::build_cli;
+pub mod config;
 pub mod method {
     pub mod merkle_tree;
     pub mod method_handler;
     pub mod sparse_merkle_tree;
 }
+
+use cli::build_cli;
+use config::load_config;
+use log::{debug, error, LevelFilter};
 use method::method_handler::verify;
+use std::str::FromStr;
 
 fn main() {
     init_logger();
@@ -23,7 +24,7 @@ fn init_logger() {
     match LevelFilter::from_str(&log_level) {
         Ok(_) => {
             env_logger::init_from_env(env_logger::Env::new().default_filter_or(&log_level));
-            info!("Setting log level to '{}'", &log_level);
+            debug!("Setting log level to '{}'", &log_level);
         }
         Err(_) => {
             env_logger::init_from_env(env_logger::Env::new().default_filter_or("warn"));

@@ -2,7 +2,6 @@ use crate::check_dependencies_crates_io::check_dependencies;
 use crate::config::load_config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
-use crate::database::db_sbom::{insert_sbom, SbomDbEntry};
 use crate::github_advisory_database_mapping::MAPPINGS;
 use crate::method::method_handler::create_commitments;
 use log::{debug, error, warn};
@@ -21,10 +20,10 @@ struct SbomParsed {
 pub fn upload(_api_key: &str, sbom_path: &str) {
     debug!("Uploading SBOM...");
 
-    // Step 1: Get the SBOM file content
+    // Get the SBOM file content
     let sbom_content = get_file_content(&sbom_path);
 
-    // Step 2: Parse SBOM file for dependencies, vendor, product, and version
+    // Parse SBOM file for dependencies, vendor, product, and version
     let parsed_sbom = parse_sbom(&sbom_content);
     debug!("Parsed SBOM: {:?}", parsed_sbom);
 
@@ -41,21 +40,12 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
         vendor, product, version, dependencies
     );
 
-    // Step 3: Save SBOM to database
-    let sbom_entry = SbomDbEntry {
-        vendor: vendor.to_string(),
-        product: product.to_string(),
-        version: version.to_string(),
-        sbom: sbom_content.to_string(),
-    };
-    insert_sbom(sbom_entry);
-
-    // Step 4: Generate Commitments
+    // Generate Commitments
     let commitments = create_commitments(dependencies.clone());
     let commitment_merkle_tree = commitments.0;
     let commitment_sparse_merkle_tree = commitments.1;
 
-    // Step 5: Save Commitments to database
+    // Save Commitments to database
     let commitment_entry = CommitmentDbEntry {
         vendor: vendor.to_string(),
         product: product.to_string(),
@@ -65,8 +55,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     };
     insert_commitment(commitment_entry);
 
-    // Step 6: Save cleartext dependencies to database
-    // Needed for dependency<>vulnerability mapping
+    // Save dependencies to database
     let dependency_entry = DependencyDbEntry {
         commitment_merkle_tree: commitment_merkle_tree.to_string(),
         commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.to_string(),
@@ -91,10 +80,10 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
     let json_str = sbom_content;
     let mut sbom_parsed = SbomParsed::default();
 
-    // 2. Deserialize the JSON
+    // Deserialize the JSON
     let json: Value = from_str(&json_str).expect("Failed to parse JSON");
 
-    // 3. Extract component information
+    // Extract component information
     if let Some(metadata) = json["metadata"].as_object() {
         if let Some(component) = metadata["component"].as_object() {
             let vendor = component
@@ -135,7 +124,7 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
         error!("No metadata found in the SBOM.");
     }
 
-    // 4. Extract dependency information (if present)
+    // Extract dependency information (if present)
     if let Some(components) = json["components"].as_array() {
         let mut all_dependencies = Vec::new();
 
@@ -155,7 +144,7 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
         }
         sbom_parsed.dependencies = all_dependencies.clone();
 
-        // 5. Check dependencies
+        // Check dependencies
         let config = load_config().unwrap();
         if config.app.check_dependencies {
             check_dependencies(&all_dependencies);

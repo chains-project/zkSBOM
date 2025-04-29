@@ -1,31 +1,30 @@
-use log::{debug, error, info, LevelFilter};
-use std::str::FromStr;
+pub mod check_dependencies_crates_io;
+pub mod cli;
 pub mod config;
-use config::load_config;
 mod database {
     pub mod db_commitment;
     pub mod db_dependency;
-    pub mod db_sbom;
 }
-use database::{
-    db_commitment::{delete_db_commitment, init_db_commitment},
-    db_dependency::{delete_db_dependency, init_db_dependency},
-    db_sbom::{delete_db_sbom, init_db_sbom},
-};
-pub mod cli;
+pub mod github_advisory_database_mapping;
 pub mod hasher;
-use cli::build_cli;
-pub mod upload;
-use upload::upload;
+pub mod map_dependencies_vulnerabilities;
 pub mod method {
     pub mod merkle_tree;
     pub mod method_handler;
     pub mod sparse_merkle_tree;
 }
+pub mod upload;
+
+use cli::build_cli;
+use config::load_config;
+use database::{
+    db_commitment::{delete_db_commitment, init_db_commitment},
+    db_dependency::{delete_db_dependency, init_db_dependency},
+};
+use log::{debug, error, LevelFilter};
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
-pub mod check_dependencies_crates_io;
-pub mod github_advisory_database_mapping;
-pub mod map_dependencies_vulnerabilities;
+use std::str::FromStr;
+use upload::upload;
 
 fn main() {
     init_logger();
@@ -43,7 +42,7 @@ fn init_logger() {
     match LevelFilter::from_str(&log_level) {
         Ok(_) => {
             env_logger::init_from_env(env_logger::Env::new().default_filter_or(&log_level));
-            info!("Setting log level to '{}'", &log_level);
+            debug!("Setting log level to '{}'", &log_level);
         }
         Err(_) => {
             env_logger::init_from_env(env_logger::Env::new().default_filter_or("warn"));
@@ -59,14 +58,12 @@ fn init_logger() {
 fn init_dbs() {
     debug!("Initializing the databases...");
     init_db_commitment();
-    init_db_sbom();
     init_db_dependency();
 }
 
 fn delete_dbs(is_clean_init: bool) {
     if is_clean_init {
         delete_db_commitment();
-        delete_db_sbom();
         delete_db_dependency();
     }
 }

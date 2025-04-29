@@ -4198,6 +4198,7 @@ dependencies = [
  "hex",
  "log",
  "once_cell",
+ "openssl",
  "rand 0.9.1",
  "reqwest",
  "rusqlite",

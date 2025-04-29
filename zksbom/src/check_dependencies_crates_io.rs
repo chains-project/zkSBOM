@@ -1,5 +1,5 @@
 use crate::config::load_config;
-use log::{debug, error, info};
+use log::{debug, error};
 use reqwest::blocking::Client;
 use reqwest::header::USER_AGENT;
 use std::fs::{self, OpenOptions};
@@ -32,7 +32,7 @@ pub fn check_dependencies(dependencies: &Vec<String>) {
                 parent.display()
             );
             match fs::create_dir_all(parent) {
-                Ok(_) => info!("Dependency check directory created."),
+                Ok(_) => debug!("Dependency check directory created."),
                 Err(e) => error!("Error creating dependency check directory: {}", e),
             }
         }
@@ -63,7 +63,7 @@ pub fn check_dependencies(dependencies: &Vec<String>) {
         }
     }
 
-    info!(
+    debug!(
         "Dependency check complete. Check the log file for details '{}'.",
         &log_path
     );

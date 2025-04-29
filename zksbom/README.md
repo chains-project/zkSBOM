@@ -36,11 +36,11 @@ Additionally, the dependency to be checked must be specified.
 #### Retrieving ZKP Using a Commitment
 
 ```Bash
-cargo run -- get_zkp --api-key 123 --method "merkle-tree" --commitment "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d" --vulnerability "CVE-2025-24898"
+cargo run -- get_zkp --api-key 123 --method "merkle-tree" --commitment "0x9750abfcff4bffd38ce42a1ace96c6db83e6b8e5158e2f0e4afe5e014d72034e" --vulnerability "CVE-2025-24898"
 ```
 
 ```Bash
-cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0xdb6bbe76d4b256a389baac6675c9650bfd9d097f9b4789437346b3aeb8864b51" --vulnerability "CVE-2025-24898"
+cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0x1b0d40c9c8202bc04e094f95f001bf9374315fb7b1f052394c2f6d7653ed9bd3" --vulnerability "CVE-2025-24898"
 ```
 
 #### Retrieving ZKP Using Vendor, Product Name, and Version

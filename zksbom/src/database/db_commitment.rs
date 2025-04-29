@@ -1,5 +1,5 @@
 use crate::config::load_config;
-use log::{debug, error, info};
+use log::{debug, error};
 use rusqlite::{params, Connection};
 use std::fs;
 use std::path::Path;
@@ -25,7 +25,7 @@ pub fn init_db_commitment() {
         if !parent.exists() {
             debug!("Creating directory for database: {}", parent.display());
             match fs::create_dir_all(parent) {
-                Ok(_) => info!("Database directory created."),
+                Ok(_) => debug!("Database directory created."),
                 Err(e) => error!("Error creating database directory: {}", e),
             }
         }
@@ -45,7 +45,7 @@ pub fn init_db_commitment() {
                 )",
                 [],
             ) {
-                Ok(_) => info!("Commitment database initialized."),
+                Ok(_) => debug!("Commitment database initialized."),
                 Err(e) => error!("Error initializing Commitment database: {}", e),
             };
         }
@@ -60,7 +60,7 @@ fn get_db_commitment_conneciton() -> Connection {
 
     match Connection::open(&db_path) {
         Ok(conn) => {
-            info!("Commitment database connection established.");
+            debug!("Commitment database connection established.");
             conn
         }
         Err(e) => {
@@ -83,7 +83,7 @@ pub fn insert_commitment(commitment: CommitmentDbEntry) {
             commitment.commitment_sparse_merkle_tree,
         ],
     ) {
-        Ok(_) => info!("Commitment inserted into the database."),
+        Ok(_) => debug!("Commitment inserted into the database."),
         Err(e) => error!("Error inserting commitment into the database: {}", e),
     };
 }

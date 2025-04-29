@@ -1,5 +1,5 @@
 use crate::config::load_config;
-use log::{debug, error, info};
+use log::{debug, error};
 use rusqlite::{params, Connection};
 use std::fs;
 use std::path::Path;
@@ -23,7 +23,7 @@ pub fn init_db_dependency() {
         if !parent.exists() {
             debug!("Creating directory for database: {}", parent.display());
             match fs::create_dir_all(parent) {
-                Ok(_) => info!("Database directory created."),
+                Ok(_) => debug!("Database directory created."),
                 Err(e) => error!("Error creating database directory: {}", e),
             }
         }
@@ -41,7 +41,7 @@ pub fn init_db_dependency() {
                 )",
                 [],
             ) {
-                Ok(_) => info!("Dependency database initialized."),
+                Ok(_) => debug!("Dependency database initialized."),
                 Err(e) => error!("Error initializing Dependency database: {}", e),
             };
         }
@@ -56,7 +56,7 @@ fn get_db_dependency_conneciton() -> Connection {
 
     match Connection::open(&db_path) {
         Ok(conn) => {
-            info!("Dependency database connection established.");
+            debug!("Dependency database connection established.");
             conn
         }
         Err(e) => {
@@ -73,7 +73,7 @@ pub fn insert_dependency(dependency: DependencyDbEntry) {
         "INSERT INTO dependency (commitment_merkle_tree, commitment_sparse_merkle_tree, dependencies) VALUES (?1, ?2, ?3)",
         params![dependency.commitment_merkle_tree, dependency.commitment_sparse_merkle_tree, dependency.dependencies],
     ) {
-        Ok(_) => info!("Dependency inserted into the database."),
+        Ok(_) => debug!("Dependency inserted into the database."),
         Err(e) => error!("Error inserting dependency into the database: {}", e),
     };
 }
