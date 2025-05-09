@@ -24,6 +24,10 @@ cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "tes
 cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "sparse-merkle-tree"
 ```
 
+```Bash
+cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-patricia-trie"
+```
+
 ### Obtaining the Zero-Knowledge Proof (ZKP)
 
 There are two ways to retrieve the ZKP:
@@ -36,11 +40,15 @@ Additionally, the dependency to be checked must be specified.
 #### Retrieving ZKP Using a Commitment
 
 ```Bash
-cargo run -- get_zkp --api-key 123 --method "merkle-tree" --commitment "0x9750abfcff4bffd38ce42a1ace96c6db83e6b8e5158e2f0e4afe5e014d72034e" --vulnerability "CVE-2025-24898"
+cargo run -- get_zkp --api-key 123 --method "merkle-tree" --commitment "0x0b296e393b96ee4e8f41711eede9b1368bb78a82b85597f682196a4e11061bce" --vulnerability "CVE-2025-24898"
 ```
 
 ```Bash
-cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0x1b0d40c9c8202bc04e094f95f001bf9374315fb7b1f052394c2f6d7653ed9bd3" --vulnerability "CVE-2025-24898"
+cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0x4f18783d97f63d23feff46ee70256ae81244e13bc67302e24c5fbfc97c14d4e1" --vulnerability "CVE-2025-24898"
+```
+
+```Bash
+cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0x4f18783d97f63d23feff46ee70256ae81244e13bc67302e24c5fbfc97c14d4e1" --vulnerability "CVE-2025-24898"
 ```
 
 #### Retrieving ZKP Using Vendor, Product Name, and Version
@@ -50,7 +58,7 @@ cargo run -- get_zkp_full --api-key 123 --method "merkle-tree" --vendor "Tom Sor
 ```
 
 ```Bash
-cargo run -- get_zkp_full --api-key 123 --method "sparse-merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
+cargo run -- get_zkp_full --api-key 123 --method "merkle-patricia-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
 
 ### Possible Flags

@@ -42,23 +42,26 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
 
     // Generate Commitments
     let commitments = create_commitments(dependencies.clone());
-    let commitment_merkle_tree = commitments.0;
-    let commitment_sparse_merkle_tree = commitments.1;
+    let commitment_merkle_tree = commitments[0].clone();
+    let commitment_sparse_merkle_tree = commitments[1].clone();
+    let commitment_merkle_patricia_trie = commitments[2].clone();
 
     // Save Commitments to database
     let commitment_entry = CommitmentDbEntry {
-        vendor: vendor.to_string(),
-        product: product.to_string(),
-        version: version.to_string(),
-        commitment_merkle_tree: commitment_merkle_tree.to_string(),
-        commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.to_string(),
+        vendor: vendor,
+        product: product,
+        version: version,
+        commitment_merkle_tree: commitment_merkle_tree.clone(),
+        commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.clone(),
+        commitment_merkle_patricia_trie: commitment_merkle_patricia_trie.clone(),
     };
     insert_commitment(commitment_entry);
 
     // Save dependencies to database
     let dependency_entry = DependencyDbEntry {
-        commitment_merkle_tree: commitment_merkle_tree.to_string(),
-        commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.to_string(),
+        commitment_merkle_tree,
+        commitment_sparse_merkle_tree,
+        commitment_merkle_patricia_trie,
         dependencies: dependencies.join(","),
     };
     insert_dependency(dependency_entry);

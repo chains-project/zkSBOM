@@ -9,6 +9,7 @@ pub mod github_advisory_database_mapping;
 pub mod hasher;
 pub mod map_dependencies_vulnerabilities;
 pub mod method {
+    pub mod merkle_patricia_trie;
     pub mod merkle_tree;
     pub mod method_handler;
     pub mod sparse_merkle_tree;
