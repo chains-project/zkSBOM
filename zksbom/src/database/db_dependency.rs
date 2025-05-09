@@ -84,7 +84,7 @@ pub fn get_dependencies(commitment: String, method: &str) -> DependencyDbEntry {
     debug!("Getting dependency from the database...");
     let conn = get_db_dependency_conneciton();
 
-    let mut sql_string: &str = "";
+    let sql_string: &str;
     match method {
         "merkle-tree" => {
             sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, dependencies FROM dependency WHERE commitment_merkle_tree = ?1";

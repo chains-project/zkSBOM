@@ -49,7 +49,7 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) 
         vendor, product, version, method
     );
 
-    let mut commitment = String::new();
+    let commitment;
     match method {
         "merkle-tree" => {
             commitment =

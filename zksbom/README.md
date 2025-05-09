@@ -48,7 +48,7 @@ cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0
 ```
 
 ```Bash
-cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0x4f18783d97f63d23feff46ee70256ae81244e13bc67302e24c5fbfc97c14d4e1" --vulnerability "CVE-2025-24898"
+cargo run -- get_zkp --api-key 123 --method "merkle-patricia-trie" --commitment "0x53f7593526ca2b158c05e85180fcc498031dbbca31fc2f9c4ef93e170d13ef63" --vulnerability "CVE-2025-24898"
 ```
 
 #### Retrieving ZKP Using Vendor, Product Name, and Version
@@ -58,7 +58,11 @@ cargo run -- get_zkp_full --api-key 123 --method "merkle-tree" --vendor "Tom Sor
 ```
 
 ```Bash
-cargo run -- get_zkp_full --api-key 123 --method "merkle-patricia-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
+cargo run -- get_zkp_full --api-key 123 --method "sparse-merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
+```
+
+```Bash
+cargo run -- get_zkp_full --api-key 123 --method "merkle-patricia-trie" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
 
 ### Possible Flags

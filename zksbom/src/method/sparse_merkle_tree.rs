@@ -87,7 +87,7 @@ pub fn create_commitment(dependencies: Vec<&str>) -> String {
     return commitment;
 }
 
-fn generate_proof(dependencies: Vec<&str>, dependency: String) -> String {
+fn generate_proof(commitment: &str, dependencies: Vec<&str>, dependency: String) -> String {
     // check if dependency exists
     if let Some(_) = dependencies.iter().position(|&leaf| leaf == dependency) {
         debug!("Dependency found");
@@ -107,6 +107,12 @@ fn generate_proof(dependencies: Vec<&str>, dependency: String) -> String {
     // create proof for the dependency
     if tree.is_empty() {
         panic!("Sparse Merkle Tree is empty.");
+    }
+
+    let root = tree.root().clone();
+    let commitment_tree = format!("0x{}", hex::encode(root.as_slice()));
+    if commitment_tree != commitment {
+        panic!("Commitment mismatch SMT");
     }
 
     let (key, _) = get_kv(&dependency);
@@ -140,7 +146,7 @@ pub fn create_proof(commitment: &str, vulnerability: &str) {
     for (key, values) in &dep_vul_map {
         if values.contains(&vulnerability.to_string()) {
             debug!("Dependency: {} is vulnerable to: {}", key, vulnerability);
-            let proof = generate_proof(dependencies, key.to_string());
+            let proof = generate_proof(commitment, dependencies, key.to_string());
             print_proof(proof, key.to_string());
             break; // Break the loop after finding the first match
         }
