@@ -1,7 +1,7 @@
 use crate::config::load_config;
 use crate::database::db_dependency::get_dependencies;
 use crate::hasher::hash_h256;
-use crate::map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
+use crate::map_dependencies_vulnerabilities::get_mapping_for_dependencies;
 use binary_merkle_tree::{merkle_proof, merkle_root, MerkleProof};
 use log::{debug, error};
 use sp_core::H256;
@@ -31,14 +31,17 @@ fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
     let dependency_entry = get_dependencies(root.clone(), "merkle-tree");
 
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
-    debug!("dependencies: {:?}", dependencies);
+    error!("dependencies: {:?}", dependencies);
     debug!("root merkle: {:?}", &root);
+
+    error!("!!!!dependency: {:?}", dependency);
 
     let index = if let Some(found_index) = dependencies.iter().position(|&leaf| leaf == dependency)
     {
         debug!("Dependency found at index {}", found_index);
         found_index as u32
     } else {
+        error!("{} not found", dependency);
         panic!("Dependency not found");
     };
 
@@ -56,25 +59,20 @@ fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
 
 pub fn create_proof(commitment: &str, vulnerability: &str) {
     let dependency_entry = get_dependencies(commitment.to_string(), "merkle-tree");
-
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
-    debug!("dependencies: {:?}", dependencies);
+    let dep_vul_map = get_mapping_for_dependencies(dependencies.clone());
 
-    let dep_vul_map = map_dependencies_vulnerabilities(dependencies);
-    for (key, values) in &dep_vul_map {
-        debug!("Dependency: {}, Vulnerabilities: {:?}", key, values);
-    }
+    for dep in dependencies {
+        let stripped_dep = dep.split(';').next().unwrap_or(dep);
+        if dep_vul_map.contains_key(stripped_dep) {
+            if dep_vul_map[stripped_dep].contains(&vulnerability.to_string()) {
+                debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
+                let proof: MerkleProof<H256, H256> =
+                    generate_proof(commitment.to_string(), dep.to_string());
+                print_proof(proof, dep.to_string());
 
-    for (key, values) in &dep_vul_map {
-        if values.contains(&vulnerability.to_string()) {
-            debug!("Dependency: {} is vulnerable to: {}", key, vulnerability);
-
-            let proof: MerkleProof<H256, H256> =
-                generate_proof(commitment.to_string(), key.to_string());
-
-            print_proof(proof, key.to_string());
-
-            break; // Break the loop after finding the first match
+                break; // Break the loop after finding the first match
+            }
         }
     }
 }

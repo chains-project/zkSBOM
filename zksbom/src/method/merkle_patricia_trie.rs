@@ -1,7 +1,7 @@
 use crate::config::load_config;
 use crate::database::db_dependency::get_dependencies;
 use crate::hasher::hash_h256_kv;
-use crate::map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
+use crate::map_dependencies_vulnerabilities::get_mapping_for_dependencies;
 use log::{debug, error};
 use reference_trie::NoExtensionLayout;
 use std::fs::{create_dir_all, File};
@@ -82,26 +82,20 @@ fn generate_proof(commitment: String, dependencies: Vec<&str>, dependency: Strin
 }
 
 pub fn create_proof(commitment: &str, vulnerability: &str) {
-    // TODO: Function could be made more generic throughout the methods
     let dependency_entry = get_dependencies(commitment.to_string(), "merkle-patricia-trie");
-
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
-    debug!("dependencies: {:?}", dependencies);
+    let dep_vul_map = get_mapping_for_dependencies(dependencies.clone());
 
-    let dep_vul_map = map_dependencies_vulnerabilities(dependencies.clone());
-    for (key, values) in &dep_vul_map {
-        debug!("Dependency: {}, Vulnerabilities: {:?}", key, values);
-    }
+    for dep in dependencies.clone() {
+        let stripped_dep = dep.split(';').next().unwrap_or(dep);
+        if dep_vul_map.contains_key(stripped_dep) {
+            if dep_vul_map[stripped_dep].contains(&vulnerability.to_string()) {
+                debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
+                let proof = generate_proof(commitment.to_string(), dependencies, dep.to_string());
+                print_proof(proof, dep.to_string());
 
-    for (key, values) in &dep_vul_map {
-        if values.contains(&vulnerability.to_string()) {
-            debug!("Dependency: {} is vulnerable to: {}", key, vulnerability);
-
-            let proof = generate_proof(commitment.to_string(), dependencies, key.to_string());
-
-            print_proof(proof, key.to_string());
-
-            break; // Break the loop after finding the first match
+                break; // Break the loop after finding the first match
+            }
         }
     }
 }

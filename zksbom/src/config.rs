@@ -9,7 +9,6 @@ pub struct Config {
     pub db_sbom: DatabaseConfig,
     pub db_dependency: DatabaseConfig,
     pub db_vulnerabilities: DatabaseConfig,
-
 }
 
 #[derive(Debug, Deserialize)]

@@ -39,7 +39,10 @@ pub fn init_db_vulnerabilities() {
                 [],
             ) {
                 Ok(_) => debug!("Vulnerabilities database initialized."),
-                Err(e) => error!("Error initializing db_vulnerabilitiesulnerabilities database: {}", e),
+                Err(e) => error!(
+                    "Error initializing db_vulnerabilitiesulnerabilities database: {}",
+                    e
+                ),
             };
         }
         Err(e) => error!("Error opening database connection: {}", e),
@@ -65,25 +68,27 @@ fn get_db_vulnerabilities_connection() -> Connection {
 /// Inserts a new dependency and its vulnerabilities into the database.
 /// If the dependency already exists, it will be overwritten.
 pub fn insert_vulnerabilities(entry: VulnerabilityDbEntry) -> Result<()> {
-    error!("Inserting vulnerability into the database...");
+    debug!("Inserting vulnerability into the database...");
     let conn = get_db_vulnerabilities_connection();
 
     conn.execute(
         "INSERT OR REPLACE INTO vulnerabilities (dependency, vulnerabilities_list) VALUES (?1, ?2)",
         params![entry.dependency, entry.vulnerabilities],
     )?;
-    error!("Vulnerability inserted into the database.");
+    debug!("Vulnerability inserted into the database.");
     Ok(())
 }
 
 /// Retrieves the vulnerabilities for a given dependency.
 pub fn get_vulnerabilities(dependency: &str) -> Result<Option<Vec<String>>> {
-    debug!("Getting vulnerabilities from the database for dependency: {}", dependency);
+    debug!(
+        "Getting vulnerabilities from the database for dependency: {}",
+        dependency
+    );
     let conn = get_db_vulnerabilities_connection();
 
-    let mut stmt = conn.prepare(
-        "SELECT vulnerabilities_list FROM vulnerabilities WHERE dependency = ?1",
-    )?;
+    let mut stmt =
+        conn.prepare("SELECT vulnerabilities_list FROM vulnerabilities WHERE dependency = ?1")?;
     let mut rows = stmt.query(params![dependency])?;
 
     if let Some(row) = rows.next()? {
@@ -92,7 +97,10 @@ pub fn get_vulnerabilities(dependency: &str) -> Result<Option<Vec<String>>> {
             .split(',')
             .map(|s| s.to_string())
             .collect();
-        debug!("Found vulnerabilities: {:?} for dependency: {}", vulnerabilities, dependency);
+        debug!(
+            "Found vulnerabilities: {:?} for dependency: {}",
+            vulnerabilities, dependency
+        );
         Ok(Some(vulnerabilities))
     } else {
         debug!("No vulnerabilities found for dependency: {}", dependency);

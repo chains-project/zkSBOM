@@ -24,8 +24,8 @@ use database::{
     db_dependency::{delete_db_dependency, init_db_dependency},
     db_vulnerabilities::{delete_db_vulnerabilities, init_db_vulnerabilities},
 };
-use log::{debug, info, error, LevelFilter};
-use map_dependencies_vulnerabilities::map_dependencies_vulnerabilities_new;
+use log::{debug, error, info, LevelFilter};
+use map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
 use std::str::FromStr;
 use upload::upload;
@@ -128,11 +128,9 @@ fn parse_cli() {
                 &vulnerability,
             );
         }
-        Some(("map_vulnerabilities", sub_matches)) => {
-            error!("Mapping vulnerabilities is not implemented yet.");
-
-            let isSuccessfull = map_dependencies_vulnerabilities_new();
-            if isSuccessfull {
+        Some(("map_vulnerabilities", _)) => {
+            let is_successfull = map_dependencies_vulnerabilities();
+            if is_successfull {
                 info!("Vulnerabilities mapping completed successfully.");
             } else {
                 error!("IGNORE FOR NOW: Vulnerabilities mapping failed.");

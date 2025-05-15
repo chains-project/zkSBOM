@@ -9,22 +9,25 @@ use std::process::Command;
 use std::str;
 
 use crate::database::db_dependency::get_all_dependencies;
-use crate::database::db_vulnerabilities::insert_vulnerabilities;
-use crate::database::db_vulnerabilities::VulnerabilityDbEntry;
+use crate::database::db_vulnerabilities::{
+    get_vulnerabilities, insert_vulnerabilities, VulnerabilityDbEntry,
+};
 
-
-pub fn map_dependencies_vulnerabilities_new() -> bool {
+pub fn map_dependencies_vulnerabilities() -> bool {
     // Collect all dependencies in a list
     let dependencies = get_all_dependencies().unwrap();
-    warn!("Dependencies: {:?}", dependencies);
+    debug!("Dependencies: {:?}", dependencies);
 
     // Call
     let dependencies_refs: Vec<&str> = dependencies.iter().map(|s| s.as_str()).collect();
-    let mapping = map_dependencies_vulnerabilities(dependencies_refs);
+    let mapping = mapping(dependencies_refs);
 
     // Insert the mapping into the database
     for (dependency, vulnerabilities) in mapping {
-        warn!("Dependency: {}, Vulnerabilities: {:?}", dependency, vulnerabilities);
+        debug!(
+            "Dependency: {}, Vulnerabilities: {:?}",
+            dependency, vulnerabilities
+        );
 
         // insert in db
         let db_entry = VulnerabilityDbEntry {
@@ -37,11 +40,27 @@ pub fn map_dependencies_vulnerabilities_new() -> bool {
     return true;
 }
 
+pub fn get_mapping_for_dependencies(dependencies: Vec<&str>) -> HashMap<String, Vec<String>> {
+    let mut result: HashMap<String, Vec<String>> = HashMap::new();
 
+    for dependency in dependencies {
+        let dependency = dependency
+            .rfind(';')
+            .map_or(dependency, |idx| &dependency[..idx]);
+        let vulnerabilities = get_vulnerabilities(dependency).unwrap();
+        if let Some(vulnerabilities) = vulnerabilities {
+            result.insert(dependency.to_string(), vulnerabilities);
+        } else {
+            debug!("No vulnerabilities found for dependency: {}", dependency);
+        }
+    }
 
+    debug!("Result: {:?}", result);
+    return result;
+}
 
 // Function to map dependencies and its vulnerabilities
-pub fn map_dependencies_vulnerabilities(dependencies: Vec<&str>) -> HashMap<String, Vec<String>> {
+fn mapping(dependencies: Vec<&str>) -> HashMap<String, Vec<String>> {
     // Create List of dependencies with vulnerabilities
     let mut dependency_vulnerabilities_map: HashMap<String, Vec<String>> = HashMap::new();
 
@@ -50,10 +69,6 @@ pub fn map_dependencies_vulnerabilities(dependencies: Vec<&str>) -> HashMap<Stri
         let name = parts[0];
         let version = parts[1];
         let ecosystem = parts[2];
-
-        // let parts: Vec<&str> = parts[2].split(";").collect();
-        // let ecosystem = parts[0];
-        // let salt = parts[1];
 
         debug!(
             "Checking for vulnerabilities in: {}@{}@{}",

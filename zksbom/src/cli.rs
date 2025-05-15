@@ -190,7 +190,6 @@ pub fn build_cli() -> Command {
                 ),
         )
         .subcommand(
-            Command::new("map_vulnerabilities")
-                .about("Map vulnerabilities to dependencies")
+            Command::new("map_vulnerabilities").about("Map vulnerabilities to dependencies"),
         )
 }

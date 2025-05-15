@@ -9,13 +9,13 @@ zkSBOM Verifier is a proof of concept (PoC) designed to verify a given proof gen
 Use the following command to verify a proof:
 
 ```Bash
-cargo run -- verify --method "merkle-tree" --commitment "0x0b296e393b96ee4e8f41711eede9b1368bb78a82b85597f682196a4e11061bce" --proof_path "../zksbom/tmp/output/proof.txt"
+cargo run -- verify --method "merkle-tree" --commitment "0x3c0d917514e8f20f5f8063cd874305e07f79c4988293d8ac17512901da567d35" --proof_path "../zksbom/tmp/output/proof.txt"
 ```
 
 ```Bash
-cargo run -- verify --method "sparse-merkle-tree" --commitment "0x4f18783d97f63d23feff46ee70256ae81244e13bc67302e24c5fbfc97c14d4e1" --proof_path "../zksbom/tmp/output/proof.txt"
+cargo run -- verify --method "sparse-merkle-tree" --commitment "0x97a3794926b6fd5b8d7c9d5df5b500fe6902eb23224b7e6b4714f107944c9efd" --proof_path "../zksbom/tmp/output/proof.txt"
 ```
 
 ```Bash
-cargo run -- verify --method "merkle-patricia-trie" --commitment "0x53f7593526ca2b158c05e85180fcc498031dbbca31fc2f9c4ef93e170d13ef63" --proof_path "../zksbom/tmp/output/proof.txt"
+cargo run -- verify --method "merkle-patricia-trie" --commitment "0xf672df5906e69514c0416b58461073fe4b177f285e1fe880697a95d065b10f93" --proof_path "../zksbom/tmp/output/proof.txt"
 ```
