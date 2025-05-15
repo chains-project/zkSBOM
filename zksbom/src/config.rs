@@ -8,6 +8,8 @@ pub struct Config {
     pub db_commitment: DatabaseConfig,
     pub db_sbom: DatabaseConfig,
     pub db_dependency: DatabaseConfig,
+    pub db_vulnerabilities: DatabaseConfig,
+
 }
 
 #[derive(Debug, Deserialize)]
@@ -48,11 +50,11 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
     if let Some(db_commitment_path) = matches.get_one::<String>("db_commitment_path") {
         config.db_commitment.path = db_commitment_path.clone();
     }
-    if let Some(db_sbom_path) = matches.get_one::<String>("db_sbom_path") {
-        config.db_sbom.path = db_sbom_path.clone();
-    }
     if let Some(db_dependency_path) = matches.get_one::<String>("db_dependency_path") {
         config.db_dependency.path = db_dependency_path.clone();
+    }
+    if let Some(db_vulnerabilities_path) = matches.get_one::<String>("db_vulnerabilities_path") {
+        config.db_vulnerabilities.path = db_vulnerabilities_path.clone();
     }
 
     Ok(config)

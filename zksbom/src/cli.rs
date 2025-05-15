@@ -49,16 +49,16 @@ pub fn build_cli() -> Command {
                 .global(true),
         )
         .arg(
-            Arg::new("db_sbom_path")
-                .long("db_sbom_path")
-                .value_name("DB_SBOM_PATH")
+            Arg::new("db_dependency_path")
+                .long("db_dependency_path")
+                .value_name("DB_DEPENDENCY_PATH")
                 .help("")
                 .global(true),
         )
         .arg(
-            Arg::new("db_dependency_path")
-                .long("db_dependency_path")
-                .value_name("DB_DEPENDENCY_PATH")
+            Arg::new("db_vulnerabilities_path")
+                .long("db_vulnerabilities_path")
+                .value_name("DB_VULNERABILITIES_PATH")
                 .help("")
                 .global(true),
         )
@@ -188,5 +188,9 @@ pub fn build_cli() -> Command {
                         .help("Vulnerability to check")
                         .required(true),
                 ),
+        )
+        .subcommand(
+            Command::new("map_vulnerabilities")
+                .about("Map vulnerabilities to dependencies")
         )
 }

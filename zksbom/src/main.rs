@@ -4,6 +4,7 @@ pub mod config;
 mod database {
     pub mod db_commitment;
     pub mod db_dependency;
+    pub mod db_vulnerabilities;
 }
 pub mod github_advisory_database_mapping;
 pub mod hasher;
@@ -21,6 +22,7 @@ use config::load_config;
 use database::{
     db_commitment::{delete_db_commitment, init_db_commitment},
     db_dependency::{delete_db_dependency, init_db_dependency},
+    db_vulnerabilities::{delete_db_vulnerabilities, init_db_vulnerabilities},
 };
 use log::{debug, error, LevelFilter};
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
@@ -60,12 +62,14 @@ fn init_dbs() {
     debug!("Initializing the databases...");
     init_db_commitment();
     init_db_dependency();
+    init_db_vulnerabilities();
 }
 
 fn delete_dbs(is_clean_init: bool) {
     if is_clean_init {
         delete_db_commitment();
         delete_db_dependency();
+        delete_db_vulnerabilities();
     }
 }
 
@@ -84,7 +88,7 @@ fn parse_cli() {
             let vendor = sub_matches.get_one::<String>("vendor").unwrap();
             let product = sub_matches.get_one::<String>("product").unwrap();
             let version = sub_matches.get_one::<String>("version").unwrap();
-            let method = sub_matches.get_one::<String>("method").unwrap(); // TODO
+            let method = sub_matches.get_one::<String>("method").unwrap();
             debug!(
                 "Vendor: {}, Product: {}, Version: {}, Method: {}",
                 vendor, product, version, method
@@ -123,6 +127,11 @@ fn parse_cli() {
                 &vulnerability,
             );
         }
-        _ => error!("No subcommand matched"),
+        Some(("map_vulnerabilities", sub_matches)) => {
+            error!("Mapping vulnerabilities is not implemented yet.");
+        }
+        _ => {
+            error!("No valid subcommand provided.");
+        }
     }
 }
