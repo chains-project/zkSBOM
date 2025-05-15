@@ -1,0 +1,786 @@
+{
+    "metadata": {
+        "authors": [
+            {
+                "name": "Tom Sorger",
+                "email": "sorger@kth.se"
+            }
+        ],
+        "component": {
+            "author": "Tom Sorger <sorger@kth.se>",
+            "name": "128_components",
+            "version": "0.1.0"
+        }
+    },
+    "components": [
+        {
+            "type": "library",
+            "name": "A-Mazed",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/A-Mazed@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "A2VConverter",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/A2VConverter@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "ABC-ECS",
+            "version": "0.2.1",
+            "purl": "pkg:cargo/ABC-ECS@0.2.1"
+        },
+        {
+            "type": "library",
+            "name": "ABC_Game_Engine",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/ABC_Game_Engine@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "ABC_lumenpyx",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ABC_lumenpyx@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ABtree",
+            "version": "0.8.0",
+            "purl": "pkg:cargo/ABtree@0.8.0"
+        },
+        {
+            "type": "library",
+            "name": "ADA_Standards",
+            "version": "0.3.0",
+            "purl": "pkg:cargo/ADA_Standards@0.3.0"
+        },
+        {
+            "type": "library",
+            "name": "ADuCM302x",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ADuCM302x@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AJ_find",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AJ_find@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AJ_jmp",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AJ_jmp@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AT42QT2120",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/AT42QT2120@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "Acatsama0871",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Acatsama0871@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AccountingCenter",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AccountingCenter@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AddNumber",
+            "version": "1.0.0",
+            "purl": "pkg:cargo/AddNumber@1.0.0"
+        },
+        {
+            "type": "library",
+            "name": "AeP",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AeP@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Aetherus",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Aetherus@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AgRV2K_PAC",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AgRV2K_PAC@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Agentic-rs",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Agentic-rs@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AitSar",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AitSar@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AjusteOnuDeReferencia",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AjusteOnuDeReferencia@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AlankuoRust",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AlankuoRust@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Algod",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Algod@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Alice-DBMS",
+            "version": "1.2.5",
+            "purl": "pkg:cargo/Alice-DBMS@1.2.5"
+        },
+        {
+            "type": "library",
+            "name": "Alice-Database_DBMS",
+            "version": "1.2.3",
+            "purl": "pkg:cargo/Alice-Database_DBMS@1.2.3"
+        },
+        {
+            "type": "library",
+            "name": "AliceDBMS",
+            "version": "1.2.8",
+            "purl": "pkg:cargo/AliceDBMS@1.2.8"
+        },
+        {
+            "type": "library",
+            "name": "AmanitaMuscaria",
+            "version": "0.0.5",
+            "purl": "pkg:cargo/AmanitaMuscaria@0.0.5"
+        },
+        {
+            "type": "library",
+            "name": "Amputate",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Amputate@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Analyzer",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Analyzer@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AngryWolf",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AngryWolf@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AntonsRus",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AntonsRus@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "AntonsRust",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AntonsRust@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Anxiety",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Anxiety@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "ApacheLogAnonymizer",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/ApacheLogAnonymizer@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "App1",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/App1@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AqueiraInput",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AqueiraInput@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Arcade",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Arcade@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Arknights",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/Arknights@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "ArmanDris-grrs",
+            "version": "1.0.0",
+            "purl": "pkg:cargo/ArmanDris-grrs@1.0.0"
+        },
+        {
+            "type": "library",
+            "name": "ArmlabRadio",
+            "version": "0.6.5",
+            "purl": "pkg:cargo/ArmlabRadio@0.6.5"
+        },
+        {
+            "type": "library",
+            "name": "AronIS_GPS_Crate",
+            "version": "0.1.5",
+            "purl": "pkg:cargo/AronIS_GPS_Crate@0.1.5"
+        },
+        {
+            "type": "library",
+            "name": "Arsalan_Crate",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Arsalan_Crate@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Art_lib_test",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Art_lib_test@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "AsciiArts",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AsciiArts@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AsgoreCore",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/AsgoreCore@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "AskAI",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AskAI@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Assignment",
+            "version": "0.0.2",
+            "purl": "pkg:cargo/Assignment@0.0.2"
+        },
+        {
+            "type": "library",
+            "name": "AthenaEngine",
+            "version": "0.1.7",
+            "purl": "pkg:cargo/AthenaEngine@0.1.7"
+        },
+        {
+            "type": "library",
+            "name": "Azi_Libs",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Azi_Libs@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BBP",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/BBP@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "BO_rs_minigrep",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/BO_rs_minigrep@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "BeerHolderBot",
+            "version": "0.3.8",
+            "purl": "pkg:cargo/BeerHolderBot@0.3.8"
+        },
+        {
+            "type": "library",
+            "name": "BiliupApi",
+            "version": "0.1.7",
+            "purl": "pkg:cargo/BiliupApi@0.1.7"
+        },
+        {
+            "type": "library",
+            "name": "BinaryHelper",
+            "version": "0.2.3",
+            "purl": "pkg:cargo/BinaryHelper@0.2.3"
+        },
+        {
+            "type": "library",
+            "name": "Binary_package",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Binary_package@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BlueHash",
+            "version": "0.1.8",
+            "purl": "pkg:cargo/BlueHash@0.1.8"
+        },
+        {
+            "type": "library",
+            "name": "Boa",
+            "version": "0.13.1",
+            "purl": "pkg:cargo/Boa@0.13.1"
+        },
+        {
+            "type": "library",
+            "name": "BobB",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/BobB@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BobThe",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/BobThe@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BobbyB",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/BobbyB@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BookmarkDirectories",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/BookmarkDirectories@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Boot-Banner",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Boot-Banner@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Brains",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/Brains@0.2.0"
+        },
+        {
+            "type": "library",
+            "name": "BrandoCulqi",
+            "version": "1.0.5",
+            "purl": "pkg:cargo/BrandoCulqi@1.0.5"
+        },
+        {
+            "type": "library",
+            "name": "BrewStillery",
+            "version": "6.2.0",
+            "purl": "pkg:cargo/BrewStillery@6.2.0"
+        },
+        {
+            "type": "library",
+            "name": "io.github.cdklabs:cdk-ecs-codedeploy",
+            "version": "0.0.406",
+            "purl": "pkg:maven/io.github.cdklabs/cdk-ecs-codedeploy@0.0.406"
+        },
+        {
+            "type": "library",
+            "name": "dev.ikm.tinkar:tinkar-schema",
+            "version": "1.39.0",
+            "purl": "pkg:maven/dev.ikm.tinkar/tinkar-schema@1.39.0"
+        },
+        {
+            "type": "library",
+            "name": "com.google.pdsl:pdsl",
+            "version": "1.8.0",
+            "purl": "pkg:maven/com.google.pdsl/pdsl@1.8.0"
+        },
+        {
+            "type": "library",
+            "name": "com.datalogics.pdfl:forms-extension",
+            "version": "18.49.0",
+            "purl": "pkg:maven/com.datalogics.pdfl/forms-extension@18.49.0"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:excel",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/excel@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:scala",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/scala@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:test-helper",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/test-helper@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:c-sharp",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/c-sharp@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:csv",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/csv@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:daml",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/daml@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:default-cdm-generators",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/default-cdm-generators@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:golang",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/golang@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:kotlin",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/kotlin@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:parent",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/parent@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:python",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/python@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:typescript",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/typescript@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:json-schema",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/json-schema@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:sample",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/sample@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.datalogics.pdfl:pdfl",
+            "version": "18.49.0",
+            "purl": "pkg:maven/com.datalogics.pdfl/pdfl@18.49.0"
+        },
+        {
+            "type": "library",
+            "name": "com.descope:descope-kotlin",
+            "version": "0.16.0",
+            "purl": "pkg:maven/com.descope/descope-kotlin@0.16.0"
+        },
+        {
+            "type": "library",
+            "name": "com.finbourne:access-sdk",
+            "version": "2.0.397",
+            "purl": "pkg:maven/com.finbourne/access-sdk@2.0.397"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-okhttp_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-okhttp_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-delta_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-delta_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-server-undertow_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-server-undertow_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-server_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-server_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-server_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-server_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-core_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-core_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-delta_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-delta_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-okhttp_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-okhttp_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-netty_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-netty_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-core_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-core_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-server-undertow_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-server-undertow_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-netty_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-netty_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client_sjs1_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client_sjs1_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-openapi_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-openapi_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-jvm_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-jvm_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client_sjs1_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client_sjs1_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-core_sjs1_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-core_sjs1_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-openapi_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-openapi_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-jvm_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-jvm_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-core_sjs1_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-core_sjs1_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys:rosetta-testing",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys/rosetta-testing@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "org.coldis.library:service",
+            "version": "2.0.179",
+            "purl": "pkg:maven/org.coldis.library/service@2.0.179"
+        },
+        {
+            "type": "library",
+            "name": "org.icij.extract:extract-lib",
+            "version": "9.1.2",
+            "purl": "pkg:maven/org.icij.extract/extract-lib@9.1.2"
+        },
+        {
+            "type": "library",
+            "name": "org.icij.extract:extract",
+            "version": "9.1.2",
+            "purl": "pkg:maven/org.icij.extract/extract@9.1.2"
+        },
+        {
+            "type": "library",
+            "name": "org.icij.extract:extract-cli",
+            "version": "9.1.2",
+            "purl": "pkg:maven/org.icij.extract/extract-cli@9.1.2"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:bucket4j",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/bucket4j@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-token-testing",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-token-testing@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-tracing",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-tracing@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-token",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-token@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-time-testing",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-time-testing@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-task",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-task@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-ssl",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-ssl@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-sampling",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-sampling@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "com.aliyun:ice20201109",
+            "version": "6.0.1",
+            "purl": "pkg:maven/com.aliyun/ice20201109@6.0.1"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-resource-loader",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-resource-loader@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-resource-loader-testing",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-resource-loader-testing@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-rate-limiting",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-rate-limiting@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-moshi",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-moshi@2025.05.14.171253-56b3b95"
+        },
+        {
+            "type": "library",
+            "name": "app.cash.wisp:wisp-logging-testing",
+            "version": "2025.05.14.171253-56b3b95",
+            "purl": "pkg:maven/app.cash.wisp/wisp-logging-testing@2025.05.14.171253-56b3b95"
+        }
+    ],
+    "dependencies": []
+}

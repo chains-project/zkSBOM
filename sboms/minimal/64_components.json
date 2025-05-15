@@ -1,0 +1,402 @@
+{
+    "metadata": {
+        "authors": [
+            {
+                "name": "Tom Sorger",
+                "email": "sorger@kth.se"
+            }
+        ],
+        "component": {
+            "author": "Tom Sorger <sorger@kth.se>",
+            "name": "64_components",
+            "version": "0.1.0"
+        }
+    },
+    "components": [
+        {
+            "type": "library",
+            "name": "A-Mazed",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/A-Mazed@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "A2VConverter",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/A2VConverter@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "ABC-ECS",
+            "version": "0.2.1",
+            "purl": "pkg:cargo/ABC-ECS@0.2.1"
+        },
+        {
+            "type": "library",
+            "name": "ABC_Game_Engine",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/ABC_Game_Engine@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "ABC_lumenpyx",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ABC_lumenpyx@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ABtree",
+            "version": "0.8.0",
+            "purl": "pkg:cargo/ABtree@0.8.0"
+        },
+        {
+            "type": "library",
+            "name": "ADA_Standards",
+            "version": "0.3.0",
+            "purl": "pkg:cargo/ADA_Standards@0.3.0"
+        },
+        {
+            "type": "library",
+            "name": "ADuCM302x",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ADuCM302x@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AJ_find",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AJ_find@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AJ_jmp",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AJ_jmp@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AT42QT2120",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/AT42QT2120@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "Acatsama0871",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Acatsama0871@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AccountingCenter",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AccountingCenter@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AddNumber",
+            "version": "1.0.0",
+            "purl": "pkg:cargo/AddNumber@1.0.0"
+        },
+        {
+            "type": "library",
+            "name": "AeP",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AeP@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Aetherus",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Aetherus@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AgRV2K_PAC",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AgRV2K_PAC@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Agentic-rs",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Agentic-rs@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AitSar",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AitSar@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AjusteOnuDeReferencia",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AjusteOnuDeReferencia@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AlankuoRust",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AlankuoRust@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Algod",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Algod@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Alice-DBMS",
+            "version": "1.2.5",
+            "purl": "pkg:cargo/Alice-DBMS@1.2.5"
+        },
+        {
+            "type": "library",
+            "name": "Alice-Database_DBMS",
+            "version": "1.2.3",
+            "purl": "pkg:cargo/Alice-Database_DBMS@1.2.3"
+        },
+        {
+            "type": "library",
+            "name": "AliceDBMS",
+            "version": "1.2.8",
+            "purl": "pkg:cargo/AliceDBMS@1.2.8"
+        },
+        {
+            "type": "library",
+            "name": "AmanitaMuscaria",
+            "version": "0.0.5",
+            "purl": "pkg:cargo/AmanitaMuscaria@0.0.5"
+        },
+        {
+            "type": "library",
+            "name": "Amputate",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Amputate@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Analyzer",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Analyzer@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AngryWolf",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AngryWolf@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AntonsRus",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AntonsRus@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "AntonsRust",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AntonsRust@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Anxiety",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Anxiety@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "io.github.cdklabs:cdk-ecs-codedeploy",
+            "version": "0.0.406",
+            "purl": "pkg:maven/io.github.cdklabs/cdk-ecs-codedeploy@0.0.406"
+        },
+        {
+            "type": "library",
+            "name": "dev.ikm.tinkar:tinkar-schema",
+            "version": "1.39.0",
+            "purl": "pkg:maven/dev.ikm.tinkar/tinkar-schema@1.39.0"
+        },
+        {
+            "type": "library",
+            "name": "com.google.pdsl:pdsl",
+            "version": "1.8.0",
+            "purl": "pkg:maven/com.google.pdsl/pdsl@1.8.0"
+        },
+        {
+            "type": "library",
+            "name": "com.datalogics.pdfl:forms-extension",
+            "version": "18.49.0",
+            "purl": "pkg:maven/com.datalogics.pdfl/forms-extension@18.49.0"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:excel",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/excel@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:scala",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/scala@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:test-helper",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/test-helper@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:c-sharp",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/c-sharp@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:csv",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/csv@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:daml",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/daml@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:default-cdm-generators",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/default-cdm-generators@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:golang",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/golang@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:kotlin",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/kotlin@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:parent",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/parent@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:python",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/python@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:typescript",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/typescript@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:json-schema",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/json-schema@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:sample",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/sample@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.datalogics.pdfl:pdfl",
+            "version": "18.49.0",
+            "purl": "pkg:maven/com.datalogics.pdfl/pdfl@18.49.0"
+        },
+        {
+            "type": "library",
+            "name": "com.descope:descope-kotlin",
+            "version": "0.16.0",
+            "purl": "pkg:maven/com.descope/descope-kotlin@0.16.0"
+        },
+        {
+            "type": "library",
+            "name": "com.finbourne:access-sdk",
+            "version": "2.0.397",
+            "purl": "pkg:maven/com.finbourne/access-sdk@2.0.397"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-okhttp_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-okhttp_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-delta_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-delta_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-server-undertow_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-server-undertow_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-server_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-server_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-server_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-server_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-core_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-core_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-delta_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-delta_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-okhttp_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-okhttp_3@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client_2.13",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client_2.13@0.10.0"
+        },
+        {
+            "type": "library",
+            "name": "com.outr:spice-client-netty_3",
+            "version": "0.10.0",
+            "purl": "pkg:maven/com.outr/spice-client-netty_3@0.10.0"
+        }
+    ],
+    "dependencies": []
+}

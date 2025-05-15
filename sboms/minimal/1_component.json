@@ -1,0 +1,24 @@
+{
+    "metadata": {
+        "authors": [
+            {
+                "name": "Tom Sorger",
+                "email": "sorger@kth.se"
+            }
+        ],
+        "component": {
+            "author": "Tom Sorger <sorger@kth.se>",
+            "name": "1_component",
+            "version": "0.1.0"
+        }
+    },
+    "components": [
+        {
+            "type": "library",
+            "name": "A-Mazed",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/A-Mazed@0.1.0"
+        }
+    ],
+    "dependencies": []
+}

@@ -1,0 +1,114 @@
+{
+    "metadata": {
+        "authors": [
+            {
+                "name": "Tom Sorger",
+                "email": "sorger@kth.se"
+            }
+        ],
+        "component": {
+            "author": "Tom Sorger <sorger@kth.se>",
+            "name": "16_components",
+            "version": "0.1.0"
+        }
+    },
+    "components": [
+        {
+            "type": "library",
+            "name": "A-Mazed",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/A-Mazed@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "A2VConverter",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/A2VConverter@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "ABC-ECS",
+            "version": "0.2.1",
+            "purl": "pkg:cargo/ABC-ECS@0.2.1"
+        },
+        {
+            "type": "library",
+            "name": "ABC_Game_Engine",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/ABC_Game_Engine@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "ABC_lumenpyx",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ABC_lumenpyx@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ABtree",
+            "version": "0.8.0",
+            "purl": "pkg:cargo/ABtree@0.8.0"
+        },
+        {
+            "type": "library",
+            "name": "ADA_Standards",
+            "version": "0.3.0",
+            "purl": "pkg:cargo/ADA_Standards@0.3.0"
+        },
+        {
+            "type": "library",
+            "name": "ADuCM302x",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ADuCM302x@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "io.github.cdklabs:cdk-ecs-codedeploy",
+            "version": "0.0.406",
+            "purl": "pkg:maven/io.github.cdklabs/cdk-ecs-codedeploy@0.0.406"
+        },
+        {
+            "type": "library",
+            "name": "dev.ikm.tinkar:tinkar-schema",
+            "version": "1.39.0",
+            "purl": "pkg:maven/dev.ikm.tinkar/tinkar-schema@1.39.0"
+        },
+        {
+            "type": "library",
+            "name": "com.google.pdsl:pdsl",
+            "version": "1.8.0",
+            "purl": "pkg:maven/com.google.pdsl/pdsl@1.8.0"
+        },
+        {
+            "type": "library",
+            "name": "com.datalogics.pdfl:forms-extension",
+            "version": "18.49.0",
+            "purl": "pkg:maven/com.datalogics.pdfl/forms-extension@18.49.0"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:excel",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/excel@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:scala",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/scala@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:test-helper",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/test-helper@11.61.2"
+        },
+        {
+            "type": "library",
+            "name": "com.regnosys.rosetta.code-generators:c-sharp",
+            "version": "11.61.2",
+            "purl": "pkg:maven/com.regnosys.rosetta.code-generators/c-sharp@11.61.2"
+        }
+    ],
+    "dependencies": []
+}
