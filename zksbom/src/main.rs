@@ -134,7 +134,7 @@ fn parse_cli() {
             if is_successfull {
                 info!("Vulnerabilities mapping completed successfully.");
             } else {
-                error!("IGNORE FOR NOW: Vulnerabilities mapping failed.");
+                error!("Vulnerabilities mapping failed.");
             }
         }
         _ => {

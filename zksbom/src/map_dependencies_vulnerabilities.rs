@@ -53,10 +53,10 @@ pub fn get_mapping_for_dependencies(dependencies: Vec<&str>) -> HashMap<String, 
                 result.insert(dependency.to_string(), vulnerabilities);
             }
             Ok(None) => {
-                error!("No vulnerabilities found for dependency: {}", dependency);
+                debug!("No vulnerabilities found for dependency: {}", dependency);
             }
             Err(e) => {
-                error!("Failed to get vulnerabilities for {}: {:?}", dependency, e);
+                debug!("Failed to get vulnerabilities for {}: {:?}", dependency, e);
             }
         }
     }
