@@ -19,6 +19,8 @@ pub struct AppConfig {
     pub check_dependencies: bool,
     pub check_dependencies_output: String,
     pub github_token: String,
+    pub timing_analysis: bool,
+    pub timing_analysis_output: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,6 +56,12 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
     }
     if let Some(db_vulnerabilities_path) = matches.get_one::<String>("db_vulnerabilities_path") {
         config.db_vulnerabilities.path = db_vulnerabilities_path.clone();
+    }
+    if let Some(timing_analysis) = matches.get_one::<String>("timing_analysis") {
+        config.app.timing_analysis = timing_analysis.parse::<bool>()?;
+    }
+    if let Some(timing_analysis_output) = matches.get_one::<String>("timing_analysis_output") {
+        config.app.timing_analysis_output = timing_analysis_output.clone();
     }
 
     Ok(config)

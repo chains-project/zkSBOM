@@ -84,6 +84,7 @@ fn parse_cli() {
             let sbom_path = sub_matches.get_one::<String>("sbom").unwrap();
             debug!("API Key: {}, SBOM Path: {}", api_key, sbom_path);
             upload(&api_key, &sbom_path);
+            info!("Upload SBOM completed successfully.");
         }
         Some(("get_commitment", sub_matches)) => {
             let vendor = sub_matches.get_one::<String>("vendor").unwrap();

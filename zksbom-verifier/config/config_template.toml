@@ -1,4 +1,5 @@
 [app]
 log_level = "warn"
-timing_analysis = true
+
+timing_analysis = false
 timing_analysis_output = "./tmp/output/timing_analysis.log"

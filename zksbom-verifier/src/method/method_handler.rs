@@ -1,22 +1,57 @@
+use crate::config::load_config;
 use crate::method::merkle_patricia_trie::verify as verify_merkle_patricia_trie;
 use crate::method::merkle_tree::verify as verify_merkle_tree;
 use crate::method::sparse_merkle_tree::verify as verify_sparse_merkle_tree;
 use log::debug;
+use std::str;
+use std::time::{Duration, Instant};
+use std::{
+    fs::{self, OpenOptions},
+    io::Write,
+    path::Path,
+};
 
 pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
+    let config = load_config().unwrap();
+    let is_timing_analysis = config.app.timing_analysis;
+
     match method {
         "merkle-tree" => {
-            let is_valid = verify_merkle_tree(commitment, proof_path);
+            let is_valid;
+            if is_timing_analysis {
+                let now = Instant::now();
+                is_valid = verify_merkle_tree(commitment, proof_path);
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "merkle-tree", "verify");
+            } else {
+                is_valid = verify_merkle_tree(commitment, proof_path);
+            }
             debug!("Merkle Tree proof is valid: {}", is_valid);
             return is_valid;
         }
         "sparse-merkle-tree" => {
-            let is_valid = verify_sparse_merkle_tree(commitment, proof_path);
-            debug!("Merkle Tree proof is valid: {}", is_valid);
+            let is_valid;
+            if is_timing_analysis {
+                let now = Instant::now();
+                is_valid = verify_sparse_merkle_tree(commitment, proof_path);
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "sparse-merkle-tree", "verify");
+            } else {
+                is_valid = verify_sparse_merkle_tree(commitment, proof_path);
+            }
+            debug!("Sparse Merkle Tree proof is valid: {}", is_valid);
             return is_valid;
         }
         "merkle-patricia-trie" => {
-            let is_valid = verify_merkle_patricia_trie(commitment, proof_path);
+            let is_valid;
+            if is_timing_analysis {
+                let now = Instant::now();
+                is_valid = verify_merkle_patricia_trie(commitment, proof_path);
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "merkle-patricia-trie", "verify");
+            } else {
+                is_valid = verify_merkle_patricia_trie(commitment, proof_path);
+            }
             debug!("Merkle Patricia Trie proof is valid: {}", is_valid);
             return is_valid;
         }
@@ -24,4 +59,29 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
             panic!("Unknown method: {}", method);
         }
     }
+}
+
+fn print_timing(elapsed: Duration, method: &str, function: &str) {
+    let config = load_config().unwrap();
+    let filename = config.app.timing_analysis_output;
+    let path = Path::new(&filename);
+
+    // Check if the directory exists, and create it if not
+    if let Some(parent) = path.parent() {
+        if !parent.exists() {
+            _ = fs::create_dir_all(parent);
+        }
+    }
+
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+        .unwrap();
+
+    _ = writeln!(
+        file,
+        "Method: {}, Function: {}, Elapsed: {:.2?}",
+        method, function, elapsed
+    );
 }

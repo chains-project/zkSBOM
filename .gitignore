@@ -20,3 +20,6 @@ target/
 
 /zksbom/tmp
 zksbom/config/config.toml
+/sboms/minimal/generate
+/sboms/real-world/sbom-files
+/zksbom-verifier/tmp

@@ -9,6 +9,8 @@ pub struct Config {
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
     pub log_level: String,
+    pub timing_analysis: bool,
+    pub timing_analysis_output: String,
 }
 
 pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {

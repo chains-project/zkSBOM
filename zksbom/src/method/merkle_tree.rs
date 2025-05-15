@@ -31,10 +31,8 @@ fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
     let dependency_entry = get_dependencies(root.clone(), "merkle-tree");
 
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
-    error!("dependencies: {:?}", dependencies);
+    debug!("dependencies: {:?}", dependencies);
     debug!("root merkle: {:?}", &root);
-
-    error!("!!!!dependency: {:?}", dependency);
 
     let index = if let Some(found_index) = dependencies.iter().position(|&leaf| leaf == dependency)
     {

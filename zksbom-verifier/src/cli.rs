@@ -6,6 +6,20 @@ pub fn build_cli() -> Command {
         .version("1.0")
         .author("Tom Sorger <sorger@kth.se>")
         .about("A tool.")
+        .arg(
+            Arg::new("timing_analysis")
+                .long("timing_analysis")
+                .value_name("TIMING_ANALYSIS")
+                .help("Enable timing analysis")
+                .default_value("false"),
+        )
+        .arg(
+            Arg::new("timing_analysis_output")
+                .long("timing_analysis_output")
+                .value_name("TIMING_ANALYSIS_OUTPUT")
+                .help("Output file for timing analysis")
+                .default_value("./tmp/output/timing_analysis.log"),
+        )
         .subcommand(
             Command::new("verify")
                 .about("Verify a Proof")

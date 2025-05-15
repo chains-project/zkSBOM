@@ -1,3 +1,4 @@
+use crate::config::load_config;
 use crate::database::db_commitment::get_commitment as get_db_commitment;
 use crate::method::merkle_patricia_trie::{
     create_commitment as create_merkle_patricia_trie_commitment,
@@ -12,27 +13,64 @@ use crate::method::sparse_merkle_tree::{
 };
 use log::{debug, error};
 use std::str;
+use std::time::{Duration, Instant};
+use std::{
+    fs::{self, OpenOptions},
+    io::Write,
+    path::Path,
+};
 
 pub fn create_commitments(dependencies: Vec<&str>) -> Vec<String> {
+    let config = load_config().unwrap();
+    let is_timing_analysis = config.app.timing_analysis;
+
     // Merkle Tree
     debug!("Create Merkle Tree commitment");
-    let merkle_tree_commitment = create_merkle_commitment(dependencies.clone());
+    let merkle_tree_commitment: String;
+
+    if is_timing_analysis {
+        let now = Instant::now();
+        merkle_tree_commitment = create_merkle_commitment(dependencies.clone());
+        let elapsed = now.elapsed();
+        print_timing(elapsed, "merkle-tree", "create_commitment");
+    } else {
+        merkle_tree_commitment = create_merkle_commitment(dependencies.clone());
+    }
     debug!("Merkle Tree Commitment: {}", merkle_tree_commitment);
 
     // Sparse Merkle Tree
     debug!("Create Sparse Merkle Tree commitment");
-    let sparse_merkle_tree_commitment = create_sparse_merkle_commitment(dependencies.clone());
+    let sparse_merkle_tree_commitment: String;
+
+    if is_timing_analysis {
+        let now = Instant::now();
+        sparse_merkle_tree_commitment = create_sparse_merkle_commitment(dependencies.clone());
+        let elapsed = now.elapsed();
+        print_timing(elapsed, "sparse-merkle-tree", "create_commitment");
+    } else {
+        sparse_merkle_tree_commitment = create_sparse_merkle_commitment(dependencies.clone());
+    }
     debug!(
-        "Sparse Merkle Tree Commitment: {:?}",
+        "Sparse Merkle Tree Commitment: {}",
         sparse_merkle_tree_commitment
     );
 
     // Merkle Patricia Trie
     debug!("Create Merkle Patricia Trie commitment");
-    let merkle_patricia_trie_commitment =
-        create_merkle_patricia_trie_commitment(dependencies.clone());
+    let merkle_patricia_trie_commitment: String;
+
+    if is_timing_analysis {
+        let now = Instant::now();
+        merkle_patricia_trie_commitment =
+            create_merkle_patricia_trie_commitment(dependencies.clone());
+        let elapsed = now.elapsed();
+        print_timing(elapsed, "merkle-patricia-trie", "create_commitment");
+    } else {
+        merkle_patricia_trie_commitment =
+            create_merkle_patricia_trie_commitment(dependencies.clone());
+    }
     debug!(
-        "Merkle Patricia Trie Commitment: {:?}",
+        "Merkle Patricia Trie Commitment: {}",
         merkle_patricia_trie_commitment
     );
 
@@ -49,24 +87,54 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) 
         vendor, product, version, method
     );
 
+    let config = load_config().unwrap();
+    let is_timing_analysis = config.app.timing_analysis;
+
     let commitment;
     match method {
         "merkle-tree" => {
-            commitment =
-                get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
-                    .commitment_merkle_tree;
+            if is_timing_analysis {
+                let now = Instant::now();
+                commitment =
+                    get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
+                        .commitment_merkle_tree;
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "merkle-tree", "get_commitment");
+            } else {
+                commitment =
+                    get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
+                        .commitment_merkle_tree;
+            }
             debug!("Merkle Tree Commitment: {}", commitment);
         }
         "sparse-merkle-tree" => {
-            commitment =
-                get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
-                    .commitment_sparse_merkle_tree;
-            debug!("Merkle Tree Commitment: {}", commitment);
+            if is_timing_analysis {
+                let now = Instant::now();
+                commitment =
+                    get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
+                        .commitment_sparse_merkle_tree;
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "sparse-merkle-tree", "get_commitment");
+            } else {
+                commitment =
+                    get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
+                        .commitment_sparse_merkle_tree;
+            }
+            debug!("Sparse Merkle Tree Commitment: {}", commitment);
         }
         "merkle-patricia-trie" => {
-            commitment =
-                get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
-                    .commitment_merkle_patricia_trie;
+            if is_timing_analysis {
+                let now = Instant::now();
+                commitment =
+                    get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
+                        .commitment_merkle_patricia_trie;
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "merkle-patricia-trie", "get_commitment");
+            } else {
+                commitment =
+                    get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
+                        .commitment_merkle_patricia_trie;
+            }
             debug!("Merkle Patricia Trie Commitment: {}", commitment);
         }
         _ => {
@@ -78,15 +146,39 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) 
 }
 
 pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &str) {
+    let config = load_config().unwrap();
+    let is_timing_analysis = config.app.timing_analysis;
+
     match method {
         "merkle-tree" => {
-            create_merkle_proof(commitment, vulnerability);
+            if is_timing_analysis {
+                let now = Instant::now();
+                create_merkle_proof(commitment, vulnerability);
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "merkle-tree", "create_proof");
+            } else {
+                create_merkle_proof(commitment, vulnerability);
+            }
         }
         "sparse-merkle-tree" => {
-            create_sparse_merkle_proof(commitment, vulnerability);
+            if is_timing_analysis {
+                let now = Instant::now();
+                create_sparse_merkle_proof(commitment, vulnerability);
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "sparse-merkle-tree", "create_proof");
+            } else {
+                create_sparse_merkle_proof(commitment, vulnerability);
+            }
         }
         "merkle-patricia-trie" => {
-            create_merkle_patricia_trie_proof(commitment, vulnerability);
+            if is_timing_analysis {
+                let now = Instant::now();
+                create_merkle_patricia_trie_proof(commitment, vulnerability);
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "merkle-patricia-trie", "create_proof");
+            } else {
+                create_merkle_patricia_trie_proof(commitment, vulnerability);
+            }
         }
         _ => {
             error!("Unknown method: {}", method);
@@ -104,4 +196,29 @@ pub fn get_zkp_full(
 ) {
     let commitment = get_commitment(vendor, product, version, method);
     get_zkp(_api_key, method, &commitment, vulnerability);
+}
+
+fn print_timing(elapsed: Duration, method: &str, function: &str) {
+    let config = load_config().unwrap();
+    let filename = config.app.timing_analysis_output;
+    let path = Path::new(&filename);
+
+    // Check if the directory exists, and create it if not
+    if let Some(parent) = path.parent() {
+        if !parent.exists() {
+            _ = fs::create_dir_all(parent);
+        }
+    }
+
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+        .unwrap();
+
+    _ = writeln!(
+        file,
+        "Method: {}, Function: {}, Elapsed: {:.2?}",
+        method, function, elapsed
+    );
 }

@@ -62,6 +62,20 @@ pub fn build_cli() -> Command {
                 .help("")
                 .global(true),
         )
+        .arg(
+            Arg::new("timing_analysis")
+                .long("timing_analysis")
+                .value_name("TIMING_ANALYSIS")
+                .help("")
+                .global(true),
+        )
+        .arg(
+            Arg::new("timing_analysis_output")
+                .long("timing_analysis_output")
+                .value_name("TIMING_ANALYSIS_OUTPUT")
+                .help("")
+                .global(true),
+        )
         .subcommand(
             Command::new("upload_sbom")
                 .about("Upload or update an SBOM")
