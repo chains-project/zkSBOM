@@ -128,3 +128,28 @@ pub fn delete_db_dependency() {
     let conn = get_db_dependency_conneciton();
     _ = conn.execute("DELETE FROM dependency", []);
 }
+
+pub fn get_all_dependencies() -> Result<Vec<String>, rusqlite::Error> {
+    debug!("Getting all dependency strings from the database...");
+    let conn = get_db_dependency_conneciton();
+    let mut stmt = conn.prepare("SELECT dependencies FROM dependency")?;
+    let rows = stmt.query_map([], |row| row.get::<_, String>(0))?;
+
+    let mut result = Vec::new();
+
+    for row in rows {
+        match row {
+            Ok(dep_string) => {
+                for dep in dep_string.split(',') {
+                    let dep = dep.rfind(';').map_or(dep, |idx| &dep[..idx]);
+                    result.push(dep.trim().to_string());
+                }
+            }
+            Err(e) => {
+                error!("Error reading row: {}", e);
+            }
+        }
+    }
+
+    Ok(result)
+}

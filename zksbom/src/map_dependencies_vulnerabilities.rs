@@ -8,6 +8,38 @@ use std::collections::HashMap;
 use std::process::Command;
 use std::str;
 
+use crate::database::db_dependency::get_all_dependencies;
+use crate::database::db_vulnerabilities::insert_vulnerabilities;
+use crate::database::db_vulnerabilities::VulnerabilityDbEntry;
+
+
+pub fn map_dependencies_vulnerabilities_new() -> bool {
+    // Collect all dependencies in a list
+    let dependencies = get_all_dependencies().unwrap();
+    warn!("Dependencies: {:?}", dependencies);
+
+    // Call
+    let dependencies_refs: Vec<&str> = dependencies.iter().map(|s| s.as_str()).collect();
+    let mapping = map_dependencies_vulnerabilities(dependencies_refs);
+
+    // Insert the mapping into the database
+    for (dependency, vulnerabilities) in mapping {
+        warn!("Dependency: {}, Vulnerabilities: {:?}", dependency, vulnerabilities);
+
+        // insert in db
+        let db_entry = VulnerabilityDbEntry {
+            dependency: dependency.to_string(),
+            vulnerabilities: vulnerabilities.join(","),
+        };
+        _ = insert_vulnerabilities(db_entry);
+    }
+
+    return true;
+}
+
+
+
+
 // Function to map dependencies and its vulnerabilities
 pub fn map_dependencies_vulnerabilities(dependencies: Vec<&str>) -> HashMap<String, Vec<String>> {
     // Create List of dependencies with vulnerabilities
@@ -17,14 +49,15 @@ pub fn map_dependencies_vulnerabilities(dependencies: Vec<&str>) -> HashMap<Stri
         let parts: Vec<&str> = dependency.split("@").collect();
         let name = parts[0];
         let version = parts[1];
+        let ecosystem = parts[2];
 
-        let parts: Vec<&str> = parts[2].split(";").collect();
-        let ecosystem = parts[0];
-        let salt = parts[1];
+        // let parts: Vec<&str> = parts[2].split(";").collect();
+        // let ecosystem = parts[0];
+        // let salt = parts[1];
 
         debug!(
-            "Checking for vulnerabilities in: {}@{}@{};{}",
-            name, version, ecosystem, salt
+            "Checking for vulnerabilities in: {}@{}@{}",
+            name, version, ecosystem
         );
 
         let vulnerabilities = check_vulnerabilities(name, version, ecosystem);

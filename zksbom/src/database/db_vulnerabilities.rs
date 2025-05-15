@@ -65,14 +65,14 @@ fn get_db_vulnerabilities_connection() -> Connection {
 /// Inserts a new dependency and its vulnerabilities into the database.
 /// If the dependency already exists, it will be overwritten.
 pub fn insert_vulnerabilities(entry: VulnerabilityDbEntry) -> Result<()> {
-    debug!("Inserting vulnerability into the database...");
+    error!("Inserting vulnerability into the database...");
     let conn = get_db_vulnerabilities_connection();
 
     conn.execute(
-        "INSERT OR REPLACE INTO vulnerability (dependency, vulnerabilities) VALUES (?1, ?2)",
+        "INSERT OR REPLACE INTO vulnerabilities (dependency, vulnerabilities_list) VALUES (?1, ?2)",
         params![entry.dependency, entry.vulnerabilities],
     )?;
-    debug!("Vulnerability inserted into the database.");
+    error!("Vulnerability inserted into the database.");
     Ok(())
 }
 
