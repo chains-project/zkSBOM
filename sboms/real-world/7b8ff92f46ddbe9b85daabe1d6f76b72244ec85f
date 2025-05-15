@@ -1,0 +1,179 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:eed8d9a4-a5f1-4ca6-b948-327e0f649199",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2024-07-02T19:06:19Z",
+    "tools": [
+      {
+        "vendor": "GitLab",
+        "name": "Gemnasium",
+        "version": "5.3.0"
+      }
+    ],
+    "authors": [
+      {
+        "name": "GitLab",
+        "email": "support@gitlab.com"
+      }
+    ],
+    "properties": [
+      {
+        "name": "gitlab:dependency_scanning:input_file:path",
+        "value": "Cargo.lock"
+      },
+      {
+        "name": "gitlab:dependency_scanning:package_manager:name",
+        "value": "cargo"
+      },
+      {
+        "name": "gitlab:meta:schema_version",
+        "value": "1"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "aws-ip-ranges",
+      "version": "0.391.0",
+      "purl": "pkg:cargo/aws-ip-ranges@0.391.0",
+      "type": "library",
+      "bom-ref": "pkg:cargo/aws-ip-ranges@0.391.0"
+    },
+    {
+      "name": "ipnet",
+      "version": "2.9.0",
+      "purl": "pkg:cargo/ipnet@2.9.0",
+      "type": "library",
+      "bom-ref": "pkg:cargo/ipnet@2.9.0"
+    },
+    {
+      "name": "iprange",
+      "version": "0.6.7",
+      "purl": "pkg:cargo/iprange@0.6.7",
+      "type": "library",
+      "bom-ref": "pkg:cargo/iprange@0.6.7"
+    },
+    {
+      "name": "itoa",
+      "version": "1.0.11",
+      "purl": "pkg:cargo/itoa@1.0.11",
+      "type": "library",
+      "bom-ref": "pkg:cargo/itoa@1.0.11"
+    },
+    {
+      "name": "proc-macro2",
+      "version": "1.0.86",
+      "purl": "pkg:cargo/proc-macro2@1.0.86",
+      "type": "library",
+      "bom-ref": "pkg:cargo/proc-macro2@1.0.86"
+    },
+    {
+      "name": "quote",
+      "version": "1.0.36",
+      "purl": "pkg:cargo/quote@1.0.36",
+      "type": "library",
+      "bom-ref": "pkg:cargo/quote@1.0.36"
+    },
+    {
+      "name": "ryu",
+      "version": "1.0.18",
+      "purl": "pkg:cargo/ryu@1.0.18",
+      "type": "library",
+      "bom-ref": "pkg:cargo/ryu@1.0.18"
+    },
+    {
+      "name": "serde",
+      "version": "1.0.203",
+      "purl": "pkg:cargo/serde@1.0.203",
+      "type": "library",
+      "bom-ref": "pkg:cargo/serde@1.0.203"
+    },
+    {
+      "name": "serde_derive",
+      "version": "1.0.203",
+      "purl": "pkg:cargo/serde_derive@1.0.203",
+      "type": "library",
+      "bom-ref": "pkg:cargo/serde_derive@1.0.203"
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.120",
+      "purl": "pkg:cargo/serde_json@1.0.120",
+      "type": "library",
+      "bom-ref": "pkg:cargo/serde_json@1.0.120"
+    },
+    {
+      "name": "syn",
+      "version": "2.0.68",
+      "purl": "pkg:cargo/syn@2.0.68",
+      "type": "library",
+      "bom-ref": "pkg:cargo/syn@2.0.68"
+    },
+    {
+      "name": "unicode-ident",
+      "version": "1.0.12",
+      "purl": "pkg:cargo/unicode-ident@1.0.12",
+      "type": "library",
+      "bom-ref": "pkg:cargo/unicode-ident@1.0.12"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:cargo/aws-ip-ranges@0.391.0",
+      "dependsOn": [
+        "pkg:cargo/serde@1.0.203",
+        "pkg:cargo/serde_json@1.0.120"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/iprange@0.6.7",
+      "dependsOn": [
+        "pkg:cargo/ipnet@2.9.0"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/proc-macro2@1.0.86",
+      "dependsOn": [
+        "pkg:cargo/unicode-ident@1.0.12"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/quote@1.0.36",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.86"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/serde@1.0.203",
+      "dependsOn": [
+        "pkg:cargo/serde_derive@1.0.203"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/serde_derive@1.0.203",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.86",
+        "pkg:cargo/quote@1.0.36",
+        "pkg:cargo/syn@2.0.68"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/serde_json@1.0.120",
+      "dependsOn": [
+        "pkg:cargo/itoa@1.0.11",
+        "pkg:cargo/ryu@1.0.18",
+        "pkg:cargo/serde@1.0.203"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/syn@2.0.68",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.86",
+        "pkg:cargo/quote@1.0.36",
+        "pkg:cargo/unicode-ident@1.0.12"
+      ]
+    }
+  ]
+}
