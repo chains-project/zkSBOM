@@ -28,6 +28,14 @@ cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "tes
 cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-patricia-trie"
 ```
 
+### Trigger Dependency-Vulnerability Mapping
+
+Ideally in a live system this should run regulary, e.g. every six hours.
+
+```Bash
+cargo run -- map_vulnerabilities
+```
+
 ### Obtaining the Zero-Knowledge Proof (ZKP)
 
 There are two ways to retrieve the ZKP:
@@ -101,4 +109,16 @@ Instead, it should provide an example demonstrating the use of all possible flag
 
 ```Bash
 cargo run -- upload_sbom --api-key 123 --sbom ../sboms/zksbom-verifier.cdx.json  --log_level "info" --output "./proof.txt" --clean_init_dbs true --check_dependencies true --check_dependencies_output "./unfound_dependencies.log" --db_commitment_path "./commitment.db" --db_sbom_path "./sbom.db" --db_dependency_path "./dependency.db"
+```
+
+### Change README to this
+
+```Bash
+cargo build --release
+
+target/release/zksbom upload_sbom --api-key 123 --sbom ../sboms/test_sbom_openssl.cdx.json
+
+target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-tree"
+
+target/release/zksbom map_vulnerabilities
 ```
