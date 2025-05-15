@@ -4249,7 +4249,6 @@ dependencies = [
  "log",
  "memory-db",
  "once_cell",
- "openssl",
  "rand 0.9.1",
  "reference-trie",
  "reqwest",

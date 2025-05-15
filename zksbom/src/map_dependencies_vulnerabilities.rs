@@ -47,11 +47,15 @@ pub fn get_mapping_for_dependencies(dependencies: Vec<&str>) -> HashMap<String, 
         let dependency = dependency
             .rfind(';')
             .map_or(dependency, |idx| &dependency[..idx]);
-        let vulnerabilities = get_vulnerabilities(dependency).unwrap();
-        if let Some(vulnerabilities) = vulnerabilities {
-            result.insert(dependency.to_string(), vulnerabilities);
-        } else {
-            debug!("No vulnerabilities found for dependency: {}", dependency);
+        let res_vulnerabilities = get_vulnerabilities(dependency);
+
+        if res_vulnerabilities.is_ok() {
+            let vulnerabilities = res_vulnerabilities.unwrap();
+            if let Some(vulnerabilities) = vulnerabilities {
+                result.insert(dependency.to_string(), vulnerabilities);
+            } else {
+                debug!("No vulnerabilities found for dependency: {}", dependency);
+            }
         }
     }
 
