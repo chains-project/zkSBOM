@@ -23,7 +23,7 @@ sparse-merkle-tree = "=0.6.1"
 blake2b-rs = "0.2.0"
 blake2 = "0.10"
 rand = "0.9.1"
-openssl = "=0.10.72"
+
 
 hash-db = "0.16.0"
 keccak-hasher = "0.16.0"

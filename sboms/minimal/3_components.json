@@ -27,9 +27,9 @@
         },
         {
             "type": "library",
-            "name": "io.github.cdklabs:cdk-ecs-codedeploy",
-            "version": "0.0.406",
-            "purl": "pkg:maven/io.github.cdklabs/cdk-ecs-codedeploy@0.0.406"
+            "name": "openssl", 
+            "version": "0.10.1",
+            "purl": "pkg:cargo/openssl@0.10.1"
         }
     ],
     "dependencies": []

@@ -33,9 +33,9 @@
         },
         {
             "type": "library",
-            "name": "ABC_Game_Engine",
-            "version": "0.1.2",
-            "purl": "pkg:cargo/ABC_Game_Engine@0.1.2"
+            "name": "openssl", 
+            "version": "0.10.1",
+            "purl": "pkg:cargo/openssl@0.10.1"
         },
         {
             "type": "library",

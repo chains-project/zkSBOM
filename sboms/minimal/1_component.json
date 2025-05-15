@@ -15,9 +15,9 @@
     "components": [
         {
             "type": "library",
-            "name": "A-Mazed",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/A-Mazed@0.1.0"
+            "name": "openssl", 
+            "version": "0.10.1",
+            "purl": "pkg:cargo/openssl@0.10.1"
         }
     ],
     "dependencies": []

@@ -33,9 +33,9 @@
         },
         {
             "type": "library",
-            "name": "dev.ikm.tinkar:tinkar-schema",
-            "version": "1.39.0",
-            "purl": "pkg:maven/dev.ikm.tinkar/tinkar-schema@1.39.0"
+            "name": "openssl", 
+            "version": "0.10.1",
+            "purl": "pkg:cargo/openssl@0.10.1"
         }
     ],
     "dependencies": []
