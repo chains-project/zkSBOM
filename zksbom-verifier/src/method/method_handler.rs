@@ -22,7 +22,7 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
                 let now = Instant::now();
                 is_valid = verify_merkle_tree(commitment, proof_path);
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "merkle-tree", "verify");
+                print_timing(elapsed, "merkle-tree");
             } else {
                 is_valid = verify_merkle_tree(commitment, proof_path);
             }
@@ -35,7 +35,7 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
                 let now = Instant::now();
                 is_valid = verify_sparse_merkle_tree(commitment, proof_path);
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "sparse-merkle-tree", "verify");
+                print_timing(elapsed, "sparse-merkle-tree");
             } else {
                 is_valid = verify_sparse_merkle_tree(commitment, proof_path);
             }
@@ -48,7 +48,7 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
                 let now = Instant::now();
                 is_valid = verify_merkle_patricia_trie(commitment, proof_path);
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "merkle-patricia-trie", "verify");
+                print_timing(elapsed, "merkle-patricia-trie");
             } else {
                 is_valid = verify_merkle_patricia_trie(commitment, proof_path);
             }
@@ -61,7 +61,7 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
     }
 }
 
-fn print_timing(elapsed: Duration, method: &str, function: &str) {
+fn print_timing(elapsed: Duration, method: &str) {
     let config = load_config().unwrap();
     let filename = config.app.timing_analysis_output;
     let path = Path::new(&filename);
@@ -79,9 +79,10 @@ fn print_timing(elapsed: Duration, method: &str, function: &str) {
         .open(path)
         .unwrap();
 
+    let seconds = elapsed.as_secs_f64();
     _ = writeln!(
         file,
-        "Method: {}, Function: {}, Elapsed: {:.2?}",
-        method, function, elapsed
+        "Method: {}, Elapsed: {:.5} seconds",
+        method, seconds
     );
 }

@@ -32,7 +32,7 @@ pub fn create_commitments(dependencies: Vec<&str>) -> Vec<String> {
         let now = Instant::now();
         merkle_tree_commitment = create_merkle_commitment(dependencies.clone());
         let elapsed = now.elapsed();
-        print_timing(elapsed, "merkle-tree", "create_commitment");
+        print_timing(elapsed, "merkle-tree");
     } else {
         merkle_tree_commitment = create_merkle_commitment(dependencies.clone());
     }
@@ -46,7 +46,7 @@ pub fn create_commitments(dependencies: Vec<&str>) -> Vec<String> {
         let now = Instant::now();
         sparse_merkle_tree_commitment = create_sparse_merkle_commitment(dependencies.clone());
         let elapsed = now.elapsed();
-        print_timing(elapsed, "sparse-merkle-tree", "create_commitment");
+        print_timing(elapsed, "sparse-merkle-tree");
     } else {
         sparse_merkle_tree_commitment = create_sparse_merkle_commitment(dependencies.clone());
     }
@@ -64,7 +64,7 @@ pub fn create_commitments(dependencies: Vec<&str>) -> Vec<String> {
         merkle_patricia_trie_commitment =
             create_merkle_patricia_trie_commitment(dependencies.clone());
         let elapsed = now.elapsed();
-        print_timing(elapsed, "merkle-patricia-trie", "create_commitment");
+        print_timing(elapsed, "merkle-patricia-trie");
     } else {
         merkle_patricia_trie_commitment =
             create_merkle_patricia_trie_commitment(dependencies.clone());
@@ -99,7 +99,7 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) 
                     get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
                         .commitment_merkle_tree;
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "merkle-tree", "get_commitment");
+                print_timing(elapsed, "merkle-tree");
             } else {
                 commitment =
                     get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
@@ -114,7 +114,7 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) 
                     get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
                         .commitment_sparse_merkle_tree;
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "sparse-merkle-tree", "get_commitment");
+                print_timing(elapsed, "sparse-merkle-tree");
             } else {
                 commitment =
                     get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
@@ -129,7 +129,7 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) 
                     get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
                         .commitment_merkle_patricia_trie;
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "merkle-patricia-trie", "get_commitment");
+                print_timing(elapsed, "merkle-patricia-trie");
             } else {
                 commitment =
                     get_db_commitment(vendor.to_string(), product.to_string(), version.to_string())
@@ -155,7 +155,7 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
                 let now = Instant::now();
                 create_merkle_proof(commitment, vulnerability);
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "merkle-tree", "create_proof");
+                print_timing(elapsed, "merkle-tree");
             } else {
                 create_merkle_proof(commitment, vulnerability);
             }
@@ -165,7 +165,7 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
                 let now = Instant::now();
                 create_sparse_merkle_proof(commitment, vulnerability);
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "sparse-merkle-tree", "create_proof");
+                print_timing(elapsed, "sparse-merkle-tree");
             } else {
                 create_sparse_merkle_proof(commitment, vulnerability);
             }
@@ -175,7 +175,7 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
                 let now = Instant::now();
                 create_merkle_patricia_trie_proof(commitment, vulnerability);
                 let elapsed = now.elapsed();
-                print_timing(elapsed, "merkle-patricia-trie", "create_proof");
+                print_timing(elapsed, "merkle-patricia-trie");
             } else {
                 create_merkle_patricia_trie_proof(commitment, vulnerability);
             }
@@ -198,7 +198,7 @@ pub fn get_zkp_full(
     get_zkp(_api_key, method, &commitment, vulnerability);
 }
 
-fn print_timing(elapsed: Duration, method: &str, function: &str) {
+fn print_timing(elapsed: Duration, method: &str) {
     let config = load_config().unwrap();
     let filename = config.app.timing_analysis_output;
     let path = Path::new(&filename);
@@ -216,9 +216,10 @@ fn print_timing(elapsed: Duration, method: &str, function: &str) {
         .open(path)
         .unwrap();
 
+    let seconds = elapsed.as_secs_f64();
     _ = writeln!(
         file,
-        "Method: {}, Function: {}, Elapsed: {:.2?}",
-        method, function, elapsed
+        "Method: {}, Elapsed: {:.5} seconds",
+        method, seconds
     );
 }
