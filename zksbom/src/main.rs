@@ -14,6 +14,7 @@ pub mod method {
     pub mod merkle_tree;
     pub mod method_handler;
     pub mod sparse_merkle_tree;
+    pub mod ozks;
 }
 pub mod upload;
 

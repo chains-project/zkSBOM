@@ -28,6 +28,10 @@ cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "tes
 cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-patricia-trie"
 ```
 
+```Bash
+cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "ozks"
+```
+
 ### Trigger Dependency-Vulnerability Mapping
 
 Ideally in a live system this should run regulary, e.g. every six hours.
