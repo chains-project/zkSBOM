@@ -1,0 +1,27 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:6b3ce605-c432-41b4-9295-ad57abef1d74",
+  "version": 1,
+  "metadata": {
+    "component": {
+            "author": "c9b5d17ae83bc30cd9f193f2f4b4bb4b543ec7d5",
+            "name": "c9b5d17ae83bc30cd9f193f2f4b4bb4b543ec7d5",
+            "version": "c9b5d17ae83bc30cd9f193f2f4b4bb4b543ec7d5"
+        }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "libc",
+      "version": "0.2.141",
+      "purl": "pkg:cargo/libc@0.2.141"
+    },
+    {
+      "type": "library",
+      "name": "autocfg",
+      "version": "1.1.0",
+      "purl": "pkg:cargo/autocfg@1.1.0"
+    }
+  ]
+}

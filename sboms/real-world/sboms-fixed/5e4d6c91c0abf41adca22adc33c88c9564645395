@@ -1,0 +1,61 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "version": 1,
+  "metadata": {
+    "component": {
+            "author": "5e4d6c91c0abf41adca22adc33c88c9564645395",
+            "name": "5e4d6c91c0abf41adca22adc33c88c9564645395",
+            "version": "5e4d6c91c0abf41adca22adc33c88c9564645395"
+        }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "libc",
+      "version": "0.2.141",
+      "scope": "required",
+      "purl": "pkg:cargo/libc@0.2.141",
+      "externalReferences": [
+        {
+          "url": "file://./test/regression/cargo/cargo-bom.json",
+          "comment": "urn:uuid:6b3ce605-c432-41b4-9295-ad57abef1d74",
+          "type": "bom"
+        }
+      ],
+      "properties": [
+        {
+          "name": "hoppr:repository:component_search_sequence",
+          "value": "{\"version\": \"v1\", \"repositories\": [\"https://crates.io/api/v1/crates\"]}"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "autocfg",
+      "version": "1.1.0",
+      "scope": "required",
+      "purl": "pkg:cargo/autocfg@1.1.0",
+      "externalReferences": [
+        {
+          "url": "file://./test/regression/cargo/cargo-bom.json",
+          "comment": "urn:uuid:6b3ce605-c432-41b4-9295-ad57abef1d74",
+          "type": "bom"
+        }
+      ],
+      "properties": [
+        {
+          "name": "hoppr:repository:component_search_sequence",
+          "value": "{\"version\": \"v1\", \"repositories\": [\"https://crates.io/api/v1/crates\"]}"
+        }
+      ]
+    }
+  ],
+  "externalReferences": [
+    {
+      "url": "file://./test/regression/cargo/cargo-bom.json",
+      "comment": "urn:uuid:6b3ce605-c432-41b4-9295-ad57abef1d74",
+      "type": "bom"
+    }
+  ]
+}

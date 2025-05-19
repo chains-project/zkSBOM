@@ -2,6 +2,19 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
+  "metadata": {
+    "authors": [
+            {
+                "name": "5e4d6c91c0abf41adca22adc33c88c9564645395",
+                "email": "5e4d6c91c0abf41adca22adc33c88c9564645395"
+            }
+        ],
+     "component": {
+            "author": "5e4d6c91c0abf41adca22adc33c88c9564645395",
+            "name": "5e4d6c91c0abf41adca22adc33c88c9564645395",
+            "version": "5e4d6c91c0abf41adca22adc33c88c9564645395"
+        }
+  },
   "components": [
     {
       "type": "library",

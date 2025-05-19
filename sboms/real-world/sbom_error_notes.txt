@@ -1,0 +1,43 @@
+29df56a1a61b546eb8ef1c55717afef85f1f4892: cli: Uploads with no issues, Unknown Vendor
+3b024ea4f92ae7f07483f42c511f8291dac47212: vonuvoli-scheme: Uploads with no issues, Unknown Vendor
+390f533f962ff01ee9e3437fa4f221dca2e9aeb3: same as 3b024ea4f92ae7f07483f42c511f8291dac47212
+3432b9ca911b7d23a0de042d4e246dbfdecae98d: molkars/pbd: Uploads with one warning (could not extract ecosystem ''), Unknown Vendor
+4de3903394820adb643c464c74eb0e86f092c0ec: same as 3432b9ca911b7d23a0de042d4e246dbfdecae98d
+5e4d6c91c0abf41adca22adc33c88c9564645395: No metadata found in the SBOM, worked after adding needed metadata
+7b8ff92f46ddbe9b85daabe1d6f76b72244ec85f: Panic, missed "component" in metadata
+70d67c32c468f2f2e19a508e0d5834fb45a6818b: Panic, Go code containing inline SBOM -> Ignored
+8fea97c27407bf40ff88ed9aeeab9d84518cd023: Same as 3b024ea4f92ae7f07483f42c511f8291dac47212
+89402303bd0cfd7db3e3b3469c5ff35d6ee8ff7e: Panic, missed "component" in metadata, contains out of components out of components -> Ignored
+9dfc4469ccaa219f0f41c6217425c0f6f4190949: zincobserve: Uploads with no issues, Unknown Vendor
+9eeeccca152042d69cf69cfce3524a1fb06d1c16: metadaten: Uploads with no issues, Unknown Vendor
+95f7fe7ccf07fe5182d9bc317eded5957d9329cd: openobserve: Uploads with no issues, Unknown Vendor
+98497aa5217684bae734ede286888052ce030043: Panic, misses author and version in "component" in metadata -> failed to extract dependencies
+acd7f377d3324a3b91852d0b7542c72f76c11af1: same as 3432b9ca911b7d23a0de042d4e246dbfdecae98d
+b0f4cf0a913b9e88d87ac6355af5be15a36ae983: same as 3b024ea4f92ae7f07483f42c511f8291dac47212
+b8940f57fe07139266c6ab1ec5dddff0307c2bca: same as 3b024ea4f92ae7f07483f42c511f8291dac47212
+c9b5d17ae83bc30cd9f193f2f4b4bb4b543ec7d5: No metadata found in the SBOM, worked after adding needed metadata
+c499b866ad40292ed6e79b8af07f15560d2305e1: Panic, misses author and version in "component" in metadata, worked after inserting
+ca87b4f224c9d0d259fd87aa8e369544cfce2790: Product: https, version: //github.com/knqyf263/trivy-ci-test -> Weird parsing
+d7b04e89f8f553f16c8979dcca42f60d74622217: same as ca87b4f224c9d0d259fd87aa8e369544cfce2790
+f22e3bae7c1ba84bc285a3663b4ffd34a684f767: No metadata found in the SBOM, worked after adding needed metadata
+f692d1827c0c2acecf7ac06ce9616bb32eb170cd: Panic, misses author and version in "component" in metadata, worked after inserting
+fba0d48ff7b7734c443abafa690dbe544ed16339: Panic, misses author and version in "component" in metadata, worked after inserting
+fe6d74aa5741b53595fcf513ab7151501eaaefa1: Panic, misses author and version in "component" in metadata, worked after inserting
+fe295c4e1d0f672953bb7beae5046c7c3548fdd2: same as 95f7fe7ccf07fe5182d9bc317eded5957d9329cd
+
+
+Total: 26
+Duplicates: 8
+Total No Dups: 18
+Known Vendor: 0
+Uplaoded with no issue: 7
+No metadata found: 3
+    - worked after inserting all needed meta data: 3
+Paniced: 8
+    - misses parts of metadata:
+        - author, version: 5
+        - component field: 1 
+    - was no SBOM: 1
+    - stacked components: 1
+
+Working after adjusting: 16

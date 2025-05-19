@@ -87,7 +87,7 @@ pub fn insert_commitment(commitment: CommitmentDbEntry) {
         ],
     ) {
         Ok(_) => debug!("Commitment inserted into the database."),
-        Err(e) => error!("Error inserting commitment into the database: {}", e),
+        Err(e) => error!("Error inserting commitment into the database: {} (vendor: {}, product: {}, version: {})", e, commitment.vendor, commitment.product, commitment.version),
     };
 }
 

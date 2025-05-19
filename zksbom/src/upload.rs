@@ -184,8 +184,8 @@ fn map_dependency_ecosystem(purl: &str) -> String {
     }
 
     // If no ecosystem is found, return "unknown"
-    warn!("Could not extract ecosystem.");
-    "unknown".to_string()
+    warn!("Could not extract ecosystem '{}'.", purl);
+    return "unknown".to_string();
 }
 
 fn extract_ecosystem(purl: &str) -> Option<String> {

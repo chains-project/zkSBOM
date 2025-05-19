@@ -1,0 +1,93 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "version": 1,
+  "metadata": {
+    "component": {
+            "author": "f22e3bae7c1ba84bc285a3663b4ffd34a684f767",
+            "name": "f22e3bae7c1ba84bc285a3663b4ffd34a684f767",
+            "version": "f22e3bae7c1ba84bc285a3663b4ffd34a684f767"
+        }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "libc",
+      "version": "0.2.141",
+      "scope": "required",
+      "purl": "pkg:cargo/libc@0.2.141",
+      "externalReferences": [
+        {
+          "url": "file://./test/regression/cargo/cargo-bom.json",
+          "comment": "urn:uuid:6b3ce605-c432-41b4-9295-ad57abef1d74",
+          "type": "bom"
+        }
+      ],
+      "properties": [
+        {
+          "name": "hoppr:repository:component_search_sequence",
+          "value": "{\"version\": \"v1\", \"repositories\": [\"https://crates.io/api/v1/crates\"]}"
+        },
+        {
+          "name": "hoppr:collection:repository",
+          "value": "https://crates.io/api/v1/crates"
+        },
+        {
+          "name": "hoppr:collection:directory",
+          "value": "cargo/https%3A%2F%2Fcrates.io%2Fapi%2Fv1%2Fcrates"
+        },
+        {
+          "name": "hoppr:collection:plugin",
+          "value": "CollectCargoPlugin:1.8.0"
+        },
+        {
+          "name": "hoppr:collection:timetag",
+          "value": "2023-04-11 23:25:21.509110+00:00"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "autocfg",
+      "version": "1.1.0",
+      "scope": "required",
+      "purl": "pkg:cargo/autocfg@1.1.0",
+      "externalReferences": [
+        {
+          "url": "file://./test/regression/cargo/cargo-bom.json",
+          "comment": "urn:uuid:6b3ce605-c432-41b4-9295-ad57abef1d74",
+          "type": "bom"
+        }
+      ],
+      "properties": [
+        {
+          "name": "hoppr:repository:component_search_sequence",
+          "value": "{\"version\": \"v1\", \"repositories\": [\"https://crates.io/api/v1/crates\"]}"
+        },
+        {
+          "name": "hoppr:collection:repository",
+          "value": "https://crates.io/api/v1/crates"
+        },
+        {
+          "name": "hoppr:collection:directory",
+          "value": "cargo/https%3A%2F%2Fcrates.io%2Fapi%2Fv1%2Fcrates"
+        },
+        {
+          "name": "hoppr:collection:plugin",
+          "value": "CollectCargoPlugin:1.8.0"
+        },
+        {
+          "name": "hoppr:collection:timetag",
+          "value": "2023-04-11 23:25:17.775403+00:00"
+        }
+      ]
+    }
+  ],
+  "externalReferences": [
+    {
+      "url": "file://./test/regression/cargo/cargo-bom.json",
+      "comment": "urn:uuid:6b3ce605-c432-41b4-9295-ad57abef1d74",
+      "type": "bom"
+    }
+  ]
+}
