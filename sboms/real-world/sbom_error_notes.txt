@@ -1,7 +1,7 @@
 29df56a1a61b546eb8ef1c55717afef85f1f4892: cli: Uploads with no issues, Unknown Vendor
 3b024ea4f92ae7f07483f42c511f8291dac47212: vonuvoli-scheme: Uploads with no issues, Unknown Vendor
 390f533f962ff01ee9e3437fa4f221dca2e9aeb3: same as 3b024ea4f92ae7f07483f42c511f8291dac47212
-3432b9ca911b7d23a0de042d4e246dbfdecae98d: molkars/pbd: Uploads with one warning (could not extract ecosystem ''), Unknown Vendor
+3432b9ca911b7d23a0de042d4e246dbfdecae98d: molkars/pbd: Uploads with one warning (could not extract ecosystem ''), Unknown Vendor, very large, ignored for dependency-vulnerability mapping
 4de3903394820adb643c464c74eb0e86f092c0ec: same as 3432b9ca911b7d23a0de042d4e246dbfdecae98d
 5e4d6c91c0abf41adca22adc33c88c9564645395: No metadata found in the SBOM, worked after adding needed metadata
 7b8ff92f46ddbe9b85daabe1d6f76b72244ec85f: Panic, missed "component" in metadata
@@ -20,7 +20,7 @@ c499b866ad40292ed6e79b8af07f15560d2305e1: Panic, misses author and version in "c
 ca87b4f224c9d0d259fd87aa8e369544cfce2790: Product: https, version: //github.com/knqyf263/trivy-ci-test -> Weird parsing
 d7b04e89f8f553f16c8979dcca42f60d74622217: same as ca87b4f224c9d0d259fd87aa8e369544cfce2790
 f22e3bae7c1ba84bc285a3663b4ffd34a684f767: No metadata found in the SBOM, worked after adding needed metadata
-f692d1827c0c2acecf7ac06ce9616bb32eb170cd: Panic, misses author and version in "component" in metadata, worked after inserting
+f692d1827c0c2acecf7ac06ce9616bb32eb170cd: Panic, misses author and version in "component" in metadata, worked after inserting, very large, ignored for dependency-vulnerability mapping
 fba0d48ff7b7734c443abafa690dbe544ed16339: Panic, misses author and version in "component" in metadata, worked after inserting
 fe6d74aa5741b53595fcf513ab7151501eaaefa1: Panic, misses author and version in "component" in metadata, worked after inserting
 fe295c4e1d0f672953bb7beae5046c7c3548fdd2: same as 95f7fe7ccf07fe5182d9bc317eded5957d9329cd
