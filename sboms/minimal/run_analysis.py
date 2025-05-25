@@ -30,12 +30,21 @@ def get_all_commitments(commitment_file: str, method: str) -> list[tuple[int, st
     try:
         with open(commitment_file, 'r') as f:
             content = f.read()
-            # Find all sections with commitments
-            sections = re.finditer(r"### (\d+) components.*?Commitment: (0x[a-fA-F0-9]+)", content, re.DOTALL)
+            # Find all sections with "### X components" and "Commitment: Y"
+            # We capture the number of components in group 1
+            sections = re.finditer(r"### (\d+) components.*?(Commitment: (0x)?[a-fA-F0-9]+)", content, re.DOTALL)
+            
             for section in sections:
                 count = int(section.group(1))
-                commitment = section.group(2)
-                commitments.append((count, commitment))
+                # The full match for the commitment line will be in section.group(2)
+                # Now, let's extract the actual commitment string from section.group(2)
+                commitment_match = re.search(r"Commitment: (0x)?([a-fA-F0-9]+)", section.group(2))
+                if commitment_match:
+                    # commitment_match.group(1) will be '0x' or None
+                    # commitment_match.group(2) will be the hexadecimal string
+                    commitment_value = (commitment_match.group(1) or '') + commitment_match.group(2)
+                    commitments.append((count, commitment_value))
+
     except FileNotFoundError:
         print(f"Warning: Could not find commitment file {commitment_file}")
     return sorted(commitments, key=lambda x: x[0])  # Sort by count
@@ -45,7 +54,8 @@ def main(command: str) -> None:
     methods = [
         'merkle-tree',
         'sparse-merkle-tree',
-        'merkle-patricia-trie'
+        'merkle-patricia-trie',
+        'ozks'
     ]
 
     component_counts = [
@@ -55,59 +65,62 @@ def main(command: str) -> None:
     
     if command == "upload_sbom":
         for count in component_counts:
-            output_file = f"./tmp/timing_analysis/upload_sbom.txt"
+            output_file = f".\\tmp\\timing_analysis\\upload_sbom.txt"
             os.makedirs(os.path.dirname(output_file), exist_ok=True)
             write_count_header(output_file, count, command)
             print(f"\nRunning upload_sbom for {count} components...")
-            cmd = f"./target/release/zksbom upload_sbom --api-key 123 --sbom ../sboms/minimal/{count}_components.json --timing_analysis_output '{output_file}' --timing_analysis true"
+            cmd = f"target\\release\\zksbom upload_sbom --api-key 123 --sbom ..\\sboms\\minimal\\sboms\\{count}_components.json --timing_analysis_output \"{output_file}\" --timing_analysis true"
             subprocess.run(cmd, shell=True, check=True)
         
     elif command == "get_commitment":
         for method in methods:
             for count in component_counts:
-                output_file = f"./tmp/timing_analysis/get_commitment/get_commitment_{method}.txt"
+                output_file = f".\\tmp\\timing_analysis\\get_commitment\\get_commitment_{method}.txt"
                 os.makedirs(os.path.dirname(output_file), exist_ok=True)
                 write_count_header(output_file, count, command)
                 print(f"\nRunning get_commitment for {count} components with {method}...")
-                cmd = f"./target/release/zksbom get_commitment --vendor 'Tom Sorger <sorger@kth.se>' --product '{count}_components' --version '0.1.0' --method '{method}' --timing_analysis_output '{output_file}' --timing_analysis true"
+                cmd = f".\\target\\release\\zksbom get_commitment --vendor \"Tom Sorger <sorger@kth.se>\" --product \"{count}_components\" --version \"0.1.0\" --method \"{method}\" --timing_analysis_output \"{output_file}\" --timing_analysis true"
                 run_and_log(cmd, output_file)
         
     elif command == "generate_proof":
         for method in methods:
             # Get all commitments for this method
-            commitment_file = f"./tmp/timing_analysis/get_commitment/get_commitment_{method}.txt"
+            commitment_file = f".\\tmp\\timing_analysis\\get_commitment\\get_commitment_{method}.txt"
             commitments = get_all_commitments(commitment_file, method)
             if not commitments:
                 print(f"Error: No commitments found for method {method}")
                 continue
 
             for count, commitment in commitments:
-                output_file = f"./tmp/timing_analysis/generate_proof/generate_proof_{method}.txt"
+                output_file = f".\\tmp\\timing_analysis\\generate_proof\\generate_proof_{method}.txt"
                 os.makedirs(os.path.dirname(output_file), exist_ok=True)
                 write_count_header(output_file, count, command)
                 print(f"\nRunning generate_proof for {count} components with {method}...")
                 print(f"Using commitment: {commitment}")
-                test_output = f"./tmp/timing_analysis/generate_proof/proofs_{method}/proof_{count}_{method}.txt"
+                test_output = f".\\tmp\\timing_analysis\\generate_proof\\proofs_{method}\\proof_{count}_{method}.txt"
+                os.makedirs(os.path.dirname(test_output), exist_ok=True)
 
-                cmd = f"./target/release/zksbom get_zkp --api-key 123 --method '{method}' --commitment '{commitment}' --vulnerability 'CVE-2025-24898' --timing_analysis_output '{output_file}' --output {test_output} --timing_analysis true"
+                cmd = f".\\target\\release\\zksbom get_zkp --api-key 123 --method \"{method}\" --commitment \"{commitment}\" --vulnerability \"CVE-2025-24898\" --timing_analysis_output \"{output_file}\" --output \"{test_output}\" --timing_analysis true"
+
+                # print(f"Running command: {cmd}")
                 subprocess.run(cmd, shell=True, check=True)
             
     elif command == "verify_proof":
         for method in methods:
             # Get all commitments for this method
-            commitment_file = f"../zksbom/tmp/timing_analysis/get_commitment/get_commitment_{method}.txt"
+            commitment_file = f"..\\zksbom\\tmp\\timing_analysis\\get_commitment\\get_commitment_{method}.txt"
             commitments = get_all_commitments(commitment_file, method)
             if not commitments:
                 print(f"Error: No commitments found for method {method}")
                 continue
 
             for count, commitment in commitments:
-                output_file = f"../zksbom/tmp/timing_analysis/verify_proof/verify_proof_{method}.txt"
+                output_file = f"..\\zksbom\\tmp\\timing_analysis\\verify_proof\\verify_proof_{method}.txt"
                 os.makedirs(os.path.dirname(output_file), exist_ok=True)
                 write_count_header(output_file, count, command)
                 print(f"\nRunning verify_proof for {count} components with {method}...")
                 print(f"Using commitment: {commitment}")
-                cmd = f"./target/release/zksbom-verifier verify --method '{method}' --commitment '{commitment}' --proof_path '../zksbom/tmp/timing_analysis/generate_proof/proofs_{method}/proof_{count}_{method}.txt' --timing_analysis_output '{output_file}' --timing_analysis true"
+                cmd = f".\\target\\release\\zksbom-verifier verify --method \"{method}\" --commitment \"{commitment}\" --proof_path \"..\\zksbom\\tmp\\timing_analysis\\generate_proof\\proofs_{method}\\proof_{count}_{method}.txt\" --timing_analysis_output \"{output_file}\" --timing_analysis true"
                 subprocess.run(cmd, shell=True, check=True)
         
     else:

@@ -4,7 +4,8 @@ import os
 methods = [
     "merkle-patricia-trie",
     "merkle-tree",
-    "sparse-merkle-tree"
+    "sparse-merkle-tree",
+    "ozks"
 ]
 
 counts = [2, 3, 4, 8, 16, 32, 64, 128, 256, 512, 1024]

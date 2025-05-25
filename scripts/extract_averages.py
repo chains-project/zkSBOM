@@ -2,9 +2,9 @@ import re
 from collections import defaultdict
 
 # filename = "../sboms/minimal/size_proof_file.txt"
-# filename = "../sboms/minimal/timing_generate_commitment.txt"
-# filename = "../sboms/minimal/timing_generate_proof.txt"
-filename = "../sboms/minimal/timing_verify_proof.txt"
+# filename = "../sboms/minimal/analysis_results/timing_generate_commitment.txt"
+# filename = "../sboms/minimal/analysis_results/timing_generate_proof.txt"
+filename = "../sboms/minimal/analysis_results/timing_verify_proof.txt"
 
 # Structure to hold parsed data
 aggregate = defaultdict(lambda: defaultdict(list))

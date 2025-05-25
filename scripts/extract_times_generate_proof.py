@@ -5,7 +5,8 @@ from collections import defaultdict
 methods = [
     "merkle-patricia-trie",
     "merkle-tree",
-    "sparse-merkle-tree"
+    "sparse-merkle-tree",
+    "oZKS"
 ]
 
 results = defaultdict(list)

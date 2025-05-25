@@ -67,7 +67,7 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
                     let now = Instant::now();
                     is_valid = verify_ozks(commitment, proof_path);
                     let elapsed = now.elapsed();
-                    print_timing(elapsed, "merkle-patricia-trie");
+                    print_timing(elapsed, "ozks");
                 } else {
                     is_valid = verify_ozks(commitment, proof_path);
                 }
