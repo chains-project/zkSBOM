@@ -2,6 +2,7 @@ use crate::config::load_config;
 use crate::method::merkle_patricia_trie::verify as verify_merkle_patricia_trie;
 use crate::method::merkle_tree::verify as verify_merkle_tree;
 use crate::method::sparse_merkle_tree::verify as verify_sparse_merkle_tree;
+use crate::method::ozks::verify as verify_ozks;
 use log::debug;
 use std::str;
 use std::time::{Duration, Instant};
@@ -53,6 +54,19 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
                 is_valid = verify_merkle_patricia_trie(commitment, proof_path);
             }
             debug!("Merkle Patricia Trie proof is valid: {}", is_valid);
+            return is_valid;
+        }
+        "ozks" => {
+            let is_valid;
+            if is_timing_analysis {
+                let now = Instant::now();
+                is_valid = verify_ozks(commitment, proof_path);
+                let elapsed = now.elapsed();
+                print_timing(elapsed, "merkle-patricia-trie");
+            } else {
+                is_valid = verify_ozks(commitment, proof_path);
+            }
+            debug!("OZKS proof is valid: {}", is_valid);
             return is_valid;
         }
         _ => {

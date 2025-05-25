@@ -19,3 +19,7 @@ cargo run -- verify --method "sparse-merkle-tree" --commitment "0x97a3794926b6fd
 ```Bash
 cargo run -- verify --method "merkle-patricia-trie" --commitment "0xf672df5906e69514c0416b58461073fe4b177f285e1fe880697a95d065b10f93" --proof_path "../zksbom/tmp/output/proof.txt"
 ```
+
+```Bash
+cargo run -- verify --method "ozks" --commitment "700000001000000000000A002E002800240004000A000000A4E51D09D2AF41D8EC7CF816B920B56C00BCC0F3EEDE121391FF0CBE7DD9A844100000000100000000000600080004000600000004000000200000000F9547C4E9690EBAEE24009E3EB0181ECAB390D748D54B6E3BAB412F8F30CDA0" --proof_path "../zksbom/tmp/output/proof.txt"
+```

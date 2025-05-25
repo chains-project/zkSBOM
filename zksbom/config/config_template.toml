@@ -20,3 +20,6 @@ path = "./tmp/database/dependency.db"
 
 [db_vulnerabilities]
 path = "./tmp/database/vulnerabilities.db"
+
+[db_ozks]
+path = "./tmp/database/ozks.db"

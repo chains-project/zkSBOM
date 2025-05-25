@@ -5,6 +5,7 @@ mod database {
     pub mod db_commitment;
     pub mod db_dependency;
     pub mod db_vulnerabilities;
+    pub mod db_ozks;
 }
 pub mod github_advisory_database_mapping;
 pub mod hasher;
@@ -24,6 +25,7 @@ use database::{
     db_commitment::{delete_db_commitment, init_db_commitment},
     db_dependency::{delete_db_dependency, init_db_dependency},
     db_vulnerabilities::{delete_db_vulnerabilities, init_db_vulnerabilities},
+    db_ozks::{delete_db_ozks, init_db_ozks},
 };
 use log::{debug, error, info, LevelFilter};
 use map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
@@ -65,6 +67,7 @@ fn init_dbs() {
     init_db_commitment();
     init_db_dependency();
     init_db_vulnerabilities();
+    init_db_ozks();
 }
 
 fn delete_dbs(is_clean_init: bool) {
@@ -72,6 +75,7 @@ fn delete_dbs(is_clean_init: bool) {
         delete_db_commitment();
         delete_db_dependency();
         delete_db_vulnerabilities();
+        delete_db_ozks();
     }
 }
 
