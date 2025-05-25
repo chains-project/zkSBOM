@@ -16,7 +16,9 @@ use crate::method::sparse_merkle_tree::{
     create_proof as create_sparse_merkle_proof,
 };
 
-use log::{debug, error, warn};
+use log::{debug, error};
+#[cfg(target_arch = "aarch64")]
+use log::warn;
 use std::str;
 use std::time::{Duration, Instant};
 use std::{

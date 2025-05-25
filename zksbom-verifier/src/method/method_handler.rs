@@ -4,7 +4,9 @@ use crate::method::merkle_tree::verify as verify_merkle_tree;
 #[cfg(target_arch = "x86_64")]
 use crate::method::ozks::verify as verify_ozks;
 use crate::method::sparse_merkle_tree::verify as verify_sparse_merkle_tree;
-use log::{debug, error};
+use log::debug;
+#[cfg(target_arch = "aarch64")]
+use log::error;
 use std::str;
 use std::time::{Duration, Instant};
 use std::{
