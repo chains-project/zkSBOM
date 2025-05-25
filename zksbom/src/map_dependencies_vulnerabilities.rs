@@ -171,20 +171,34 @@ fn check_vulnerabilities(name: &str, version: &str, ecosystem: &str) -> Vec<Stri
                 Some(ghsa_id),
                 Some(first_patched_version),
                 Some(severity),
-                Some(permalink)
+                Some(permalink),
             ) = (
-                vulnerability.get("vulnerableVersionRange").and_then(|v| v.as_str()),
-                vulnerability.get("advisory").and_then(|a| a.get("ghsaId")).and_then(|v| v.as_str()),
-                vulnerability.get("firstPatchedVersion").and_then(|f| f.get("identifier")).and_then(|v| v.as_str()),
-                vulnerability.get("advisory").and_then(|a| a.get("severity")).and_then(|v| v.as_str()),
-                vulnerability.get("advisory").and_then(|a| a.get("permalink")).and_then(|v| v.as_str()),
+                vulnerability
+                    .get("vulnerableVersionRange")
+                    .and_then(|v| v.as_str()),
+                vulnerability
+                    .get("advisory")
+                    .and_then(|a| a.get("ghsaId"))
+                    .and_then(|v| v.as_str()),
+                vulnerability
+                    .get("firstPatchedVersion")
+                    .and_then(|f| f.get("identifier"))
+                    .and_then(|v| v.as_str()),
+                vulnerability
+                    .get("advisory")
+                    .and_then(|a| a.get("severity"))
+                    .and_then(|v| v.as_str()),
+                vulnerability
+                    .get("advisory")
+                    .and_then(|a| a.get("permalink"))
+                    .and_then(|v| v.as_str()),
             ) {
                 debug!("GHSA ID: {}", ghsa_id);
                 debug!("Vulnerable version range: {}", vulnerable_version_range);
                 debug!("First patched version: {}", first_patched_version);
                 debug!("Severity: {}", severity);
                 debug!("Advisory: {}", permalink);
-            
+
                 if let (Ok(version_req), Ok(current_version)) = (
                     VersionReq::parse(vulnerable_version_range),
                     Version::parse(version),
@@ -194,10 +208,10 @@ fn check_vulnerabilities(name: &str, version: &str, ecosystem: &str) -> Vec<Stri
                             "Your version {} is affected by this vulnerability!",
                             version
                         );
-            
+
                         let cve = get_cve_id(ghsa_id);
                         debug!("GHSA ID '{}' relates to CVE ID: '{}'", ghsa_id, cve);
-            
+
                         if !cve.is_empty() {
                             list_vulnerabilities.push(cve);
                         }
@@ -209,7 +223,10 @@ fn check_vulnerabilities(name: &str, version: &str, ecosystem: &str) -> Vec<Stri
                     );
                 }
             } else {
-                debug!("Skipping vulnerability due to missing required fields: {:?}", vulnerability);
+                debug!(
+                    "Skipping vulnerability due to missing required fields: {:?}",
+                    vulnerability
+                );
             }
         }
     }
