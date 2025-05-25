@@ -10,6 +10,7 @@ pub struct DependencyDbEntry {
     pub commitment_merkle_tree: String,
     pub commitment_sparse_merkle_tree: String,
     pub commitment_merkle_patricia_trie: String,
+    pub commitment_ozks: String,
     pub dependencies: String,
 }
 
@@ -38,8 +39,9 @@ pub fn init_db_dependency() {
                     commitment_merkle_tree TEXT NOT NULL UNIQUE,
                     commitment_sparse_merkle_tree TEXT NOT NULL UNIQUE,
                     commitment_merkle_patricia_trie TEXT NOT NULL UNIQUE,
+                    commitment_ozks TEXT NOT NULL UNIQUE,
                     dependencies TEXT NOT NULL,
-                    PRIMARY KEY (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie)
+                    PRIMARY KEY (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks)
                 )",
                 [],
             ) {
@@ -72,8 +74,8 @@ pub fn insert_dependency(dependency: DependencyDbEntry) {
     let conn = get_db_dependency_conneciton();
 
     match conn.execute(
-        "INSERT INTO dependency (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, dependencies) VALUES (?1, ?2, ?3, ?4)",
-        params![dependency.commitment_merkle_tree, dependency.commitment_sparse_merkle_tree, dependency.commitment_merkle_patricia_trie, dependency.dependencies],
+        "INSERT INTO dependency (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies) VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![dependency.commitment_merkle_tree, dependency.commitment_sparse_merkle_tree, dependency.commitment_merkle_patricia_trie, dependency.commitment_ozks, dependency.dependencies],
     ) {
         Ok(_) => debug!("Dependency inserted into the database."),
         Err(e) => error!("Error inserting dependency into the database: {}", e),
@@ -87,13 +89,16 @@ pub fn get_dependencies(commitment: String, method: &str) -> DependencyDbEntry {
     let sql_string: &str;
     match method {
         "merkle-tree" => {
-            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, dependencies FROM dependency WHERE commitment_merkle_tree = ?1";
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies FROM dependency WHERE commitment_merkle_tree = ?1";
         }
         "sparse-merkle-tree" => {
-            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, dependencies FROM dependency WHERE commitment_sparse_merkle_tree =?1";
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies FROM dependency WHERE commitment_sparse_merkle_tree =?1";
         }
         "merkle-patricia-trie" => {
-            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, dependencies FROM dependency WHERE commitment_merkle_patricia_trie =?1";
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies FROM dependency WHERE commitment_merkle_patricia_trie =?1";
+        }
+        "ozks" => {
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies FROM dependency WHERE commitment_ozks =?1";
         }
         _ => {
             panic!("Unknown method: {}", method);
@@ -105,7 +110,8 @@ pub fn get_dependencies(commitment: String, method: &str) -> DependencyDbEntry {
             commitment_merkle_tree: row.get(0)?,
             commitment_sparse_merkle_tree: row.get(1)?,
             commitment_merkle_patricia_trie: row.get(2)?,
-            dependencies: row.get(3)?,
+            commitment_ozks: row.get(3)?,
+            dependencies: row.get(4)?,
         })
     }) {
         Ok(dependency) => dependency,
@@ -115,6 +121,7 @@ pub fn get_dependencies(commitment: String, method: &str) -> DependencyDbEntry {
                 commitment_merkle_tree: "".to_string(),
                 commitment_sparse_merkle_tree: "".to_string(),
                 commitment_merkle_patricia_trie: "".to_string(),
+                commitment_ozks: "".to_string(),
                 dependencies: "".to_string(),
             }
         }

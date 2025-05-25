@@ -45,6 +45,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     let commitment_merkle_tree = commitments[0].clone();
     let commitment_sparse_merkle_tree = commitments[1].clone();
     let commitment_merkle_patricia_trie = commitments[2].clone();
+    let commitment_ozks = commitments[3].clone();
 
     // Save Commitments to database
     let commitment_entry = CommitmentDbEntry {
@@ -54,6 +55,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
         commitment_merkle_tree: commitment_merkle_tree.clone(),
         commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.clone(),
         commitment_merkle_patricia_trie: commitment_merkle_patricia_trie.clone(),
+        commitment_ozks: commitment_ozks.clone(),
     };
     insert_commitment(commitment_entry);
 
@@ -62,6 +64,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
         commitment_merkle_tree,
         commitment_sparse_merkle_tree,
         commitment_merkle_patricia_trie,
+        commitment_ozks,
         dependencies: dependencies.join(","),
     };
     insert_dependency(dependency_entry);

@@ -9,6 +9,7 @@ pub struct Config {
     pub db_sbom: DatabaseConfig,
     pub db_dependency: DatabaseConfig,
     pub db_vulnerabilities: DatabaseConfig,
+    pub db_ozks: DatabaseConfig,
 }
 
 #[derive(Debug, Deserialize)]
@@ -56,6 +57,9 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
     }
     if let Some(db_vulnerabilities_path) = matches.get_one::<String>("db_vulnerabilities_path") {
         config.db_vulnerabilities.path = db_vulnerabilities_path.clone();
+    }
+    if let Some(db_ozks_path) = matches.get_one::<String>("db_ozks_path") {
+        config.db_ozks.path = db_ozks_path.clone();
     }
     if let Some(timing_analysis) = matches.get_one::<String>("timing_analysis") {
         config.app.timing_analysis = timing_analysis.parse::<bool>()?;

@@ -7,10 +7,17 @@ use crate::method::merkle_patricia_trie::{
 use crate::method::merkle_tree::{
     create_commitment as create_merkle_commitment, create_proof as create_merkle_proof,
 };
+#[cfg(target_arch = "x86_64")]
+use crate::method::ozks::{
+    create_commitment as create_ozks_commitment, create_proof as create_ozks_proof,
+};
 use crate::method::sparse_merkle_tree::{
     create_commitment as create_sparse_merkle_commitment,
     create_proof as create_sparse_merkle_proof,
 };
+
+#[cfg(target_arch = "aarch64")]
+use log::warn;
 use log::{debug, error};
 use std::str;
 use std::time::{Duration, Instant};
@@ -74,10 +81,35 @@ pub fn create_commitments(dependencies: Vec<&str>) -> Vec<String> {
         merkle_patricia_trie_commitment
     );
 
+    // oZKS
+    debug!("Create oZKS commitment");
+    let o_zks_commitment: String;
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        debug!("Running on x86_64");
+        if is_timing_analysis {
+            let now = Instant::now();
+            o_zks_commitment = create_ozks_commitment(dependencies.clone());
+            let elapsed = now.elapsed();
+            print_timing(elapsed, "oZKS");
+        } else {
+            o_zks_commitment = create_ozks_commitment(dependencies.clone());
+        }
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    {
+        warn!("Running on aarch64, oZKS is not supported");
+        o_zks_commitment = String::from("oZKS not supported on aarch64 architecture");
+    }
+
+    // Return all commitments
     return vec![
         merkle_tree_commitment,
         sparse_merkle_tree_commitment,
         merkle_patricia_trie_commitment,
+        o_zks_commitment,
     ];
 }
 
@@ -137,6 +169,36 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) 
             }
             debug!("Merkle Patricia Trie Commitment: {}", commitment);
         }
+        "ozks" => {
+            #[cfg(target_arch = "x86_64")]
+            {
+                if is_timing_analysis {
+                    let now = Instant::now();
+                    commitment = get_db_commitment(
+                        vendor.to_string(),
+                        product.to_string(),
+                        version.to_string(),
+                    )
+                    .commitment_ozks;
+                    let elapsed = now.elapsed();
+                    print_timing(elapsed, "oZKS");
+                } else {
+                    commitment = get_db_commitment(
+                        vendor.to_string(),
+                        product.to_string(),
+                        version.to_string(),
+                    )
+                    .commitment_ozks;
+                }
+                debug!("oZKS Commitment: {}", commitment);
+            }
+
+            #[cfg(target_arch = "aarch64")]
+            {
+                warn!("Running on aarch64, oZKS is not supported");
+                commitment = String::from("oZKS not supported on aarch64 architecture");
+            }
+        }
         _ => {
             panic!("Unknown method: {}", method);
         }
@@ -180,6 +242,24 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
                 create_merkle_patricia_trie_proof(commitment, vulnerability);
             }
         }
+        "ozks" => {
+            #[cfg(target_arch = "x86_64")]
+            {
+                if is_timing_analysis {
+                    let now = Instant::now();
+                    create_ozks_proof(commitment, vulnerability);
+                    let elapsed = now.elapsed();
+                    print_timing(elapsed, "oZKS");
+                } else {
+                    create_ozks_proof(commitment, vulnerability);
+                }
+            }
+
+            #[cfg(target_arch = "aarch64")]
+            {
+                warn!("Running on aarch64, oZKS is not supported");
+            }
+        }
         _ => {
             error!("Unknown method: {}", method);
         }
@@ -217,9 +297,5 @@ fn print_timing(elapsed: Duration, method: &str) {
         .unwrap();
 
     let seconds = elapsed.as_secs_f64();
-    _ = writeln!(
-        file,
-        "Method: {}, Elapsed: {:.5} seconds",
-        method, seconds
-    );
+    _ = writeln!(file, "Method: {}, Elapsed: {:.5} seconds", method, seconds);
 }

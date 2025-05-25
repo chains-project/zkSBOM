@@ -63,6 +63,13 @@ pub fn build_cli() -> Command {
                 .global(true),
         )
         .arg(
+            Arg::new("db_ozks_path")
+                .long("db_ozks_path")
+                .value_name("DB_OZKS_PATH")
+                .help("")
+                .global(true),
+        )
+        .arg(
             Arg::new("timing_analysis")
                 .long("timing_analysis")
                 .value_name("TIMING_ANALYSIS")
