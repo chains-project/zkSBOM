@@ -1,9 +1,12 @@
 use crate::config::load_config;
 use crate::method::merkle_patricia_trie::verify as verify_merkle_patricia_trie;
 use crate::method::merkle_tree::verify as verify_merkle_tree;
+#[cfg(target_arch = "x86_64")]
 use crate::method::ozks::verify as verify_ozks;
 use crate::method::sparse_merkle_tree::verify as verify_sparse_merkle_tree;
 use log::debug;
+#[cfg(target_arch = "aarch64")]
+use log::error;
 use std::str;
 use std::time::{Duration, Instant};
 use std::{
@@ -57,9 +60,9 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
             return is_valid;
         }
         "ozks" => {
-            let is_valid: bool;
             #[cfg(target_arch = "x86_64")]
             {
+                let is_valid: bool;
                 if is_timing_analysis {
                     let now = Instant::now();
                     is_valid = verify_ozks(commitment, proof_path);
@@ -72,9 +75,9 @@ pub fn verify(commitment: &str, proof_path: &str, method: &str) -> bool {
                 return is_valid;
             }
 
-            #[cfg(target_arch = "arm")]
+            #[cfg(target_arch = "aarch64")]
             {
-                error!("Running on ARM, oZKS is not supported");
+                error!("Running on aarch64, oZKS is not supported");
                 return false;
             }
         }

@@ -7,6 +7,7 @@ use crate::method::merkle_patricia_trie::{
 use crate::method::merkle_tree::{
     create_commitment as create_merkle_commitment, create_proof as create_merkle_proof,
 };
+#[cfg(target_arch = "x86_64")]
 use crate::method::ozks::{
     create_commitment as create_ozks_commitment, create_proof as create_ozks_proof,
 };
@@ -15,6 +16,8 @@ use crate::method::sparse_merkle_tree::{
     create_proof as create_sparse_merkle_proof,
 };
 
+#[cfg(target_arch = "aarch64")]
+use log::warn;
 use log::{debug, error};
 use std::str;
 use std::time::{Duration, Instant};
@@ -95,10 +98,10 @@ pub fn create_commitments(dependencies: Vec<&str>) -> Vec<String> {
         }
     }
 
-    #[cfg(target_arch = "arm")]
+    #[cfg(target_arch = "aarch64")]
     {
-        warn!("Running on ARM, oZKS is not supported");
-        o_zks_commitment = String::from("oZKS not supported on ARM architecture");
+        warn!("Running on aarch64, oZKS is not supported");
+        o_zks_commitment = String::from("oZKS not supported on aarch64 architecture");
     }
 
     // Return all commitments
@@ -190,10 +193,10 @@ pub fn get_commitment(vendor: &str, product: &str, version: &str, method: &str) 
                 debug!("oZKS Commitment: {}", commitment);
             }
 
-            #[cfg(target_arch = "arm")]
+            #[cfg(target_arch = "aarch64")]
             {
-                warn!("Running on ARM, oZKS is not supported");
-                commitment = String::from("oZKS not supported on ARM architecture");
+                warn!("Running on aarch64, oZKS is not supported");
+                commitment = String::from("oZKS not supported on aarch64 architecture");
             }
         }
         _ => {
@@ -252,9 +255,9 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
                 }
             }
 
-            #[cfg(target_arch = "arm")]
+            #[cfg(target_arch = "aarch64")]
             {
-                warn!("Running on ARM, oZKS is not supported");
+                warn!("Running on aarch64, oZKS is not supported");
             }
         }
         _ => {
