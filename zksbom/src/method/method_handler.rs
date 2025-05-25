@@ -16,6 +16,8 @@ use crate::method::sparse_merkle_tree::{
     create_proof as create_sparse_merkle_proof,
 };
 
+#[cfg(target_arch = "aarch64")]
+use log::warn;
 use log::{debug, error};
 #[cfg(target_arch = "aarch64")]
 use log::warn;
