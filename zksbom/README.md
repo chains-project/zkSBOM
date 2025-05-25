@@ -128,7 +128,10 @@ cargo build --release
 
 target/release/zksbom upload_sbom --api-key 123 --sbom ../sboms/test_sbom_openssl.cdx.json
 
-target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-tree"
+target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "ozks"
+
+target/release/zksbom get_zkp --api-key 123 --method "ozks" --commitment "700000001000000000000A002E002800240004000A000000C474EDCEB14583E3BAA33B8E5F0FC9F777F7316C5D3710B332F63B9044A186D610000000010000000000060008000400060000000400000020000000C94BA2C2B3D22C143158F456C5E6595BA547325DAB27397D0CFC7A21FBA2DC9D" --vulnerability "CVE-2025-24898"
+
 
 target/release/zksbom map_vulnerabilities
 ```

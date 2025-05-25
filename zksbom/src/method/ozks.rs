@@ -179,4 +179,6 @@ fn print_proof(proof: String, dependency: String) {
         error!("Error writing to file: {}", e);
         return;
     }
+
+    println!("Proof written to: {}", output_path);
 }
