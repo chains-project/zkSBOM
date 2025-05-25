@@ -2,45 +2,39 @@
 
 zkSBOM is a proof of concept (PoC) for disclosing limited but verifiable SBOM information to authorized users.
 
-## Example Usage
+## Building the Project
 
-### Uploading an SBOM as a Vendor
+Build the project:
+
+```Bash
+cargo build --release
+```
+
+##   an SBOM as a Vendor
 
 This command uploads the specified SBOM to the system.
 
 ```Bash
-cargo run -- upload_sbom --api-key 123 --sbom ../sboms/test_sbom_openssl.cdx.json
+target/release/zksbom upload_sbom --api-key <api token> --sbom "<path to sbom>"
 ```
 
-### Retrieving a Commitment
+## Retrieving a Commitment
 
 This command fetches the generated commitment for an uploaded SBOM, if available.
 
 ```Bash
-cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-tree"
+target/release/zksbom get_commitment --vendor "<vendor>" --product "<product>" --version "<version>" --method "<method>"
 ```
 
-```Bash
-cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "sparse-merkle-tree"
-```
-
-```Bash
-cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-patricia-trie"
-```
-
-```Bash
-cargo run -- get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "ozks"
-```
-
-### Trigger Dependency-Vulnerability Mapping
+## Trigger Dependency-Vulnerability Mapping
 
 Ideally in a live system this should run regulary, e.g. every six hours.
 
 ```Bash
-cargo run -- map_vulnerabilities
+target/release/zksbom map_vulnerabilities
 ```
 
-### Obtaining the Zero-Knowledge Proof (ZKP)
+## Obtaining the Zero-Knowledge Proof (ZKP)
 
 There are two ways to retrieve the ZKP:
 
@@ -49,41 +43,19 @@ There are two ways to retrieve the ZKP:
 
 Additionally, the dependency to be checked must be specified.
 
-#### Retrieving ZKP Using a Commitment
+## Retrieving ZKP Using a Commitment
 
 ```Bash
-cargo run -- get_zkp --api-key 123 --method "merkle-tree" --commitment "0x3c0d917514e8f20f5f8063cd874305e07f79c4988293d8ac17512901da567d35" --vulnerability "CVE-2025-24898"
+target/release/zksbom get_zkp --api-key 123 --method "<method>" --commitment "<commitment>" --vulnerability "<vulnerability as CVE>"
 ```
+
+## Retrieving ZKP Using Vendor, Product Name, and Version
 
 ```Bash
-cargo run -- get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0x97a3794926b6fd5b8d7c9d5df5b500fe6902eb23224b7e6b4714f107944c9efd" --vulnerability "CVE-2025-24898"
+target/release/zksbom get_zkp_full --api-key 123 --method "<method>" --vendor "<vendor>" --product "<product>" --version "<version>" --vulnerability "<vulnerability as CVE>"
 ```
 
-```Bash
-cargo run -- get_zkp --api-key 123 --method "merkle-patricia-trie" --commitment "0xf672df5906e69514c0416b58461073fe4b177f285e1fe880697a95d065b10f93" --vulnerability "CVE-2025-24898"
-```
-
-```Bash
-cargo run -- get_zkp --api-key 123 --method "ozks" --commitment "0x747225b3b1869c50187be793d76edcbf4b403ad28802de3654c854a4d7018a0e" --vulnerability "CVE-2025-24898"
-```
-
-#### Retrieving ZKP Using Vendor, Product Name, and Version
-
-```Bash
-cargo run -- get_zkp_full --api-key 123 --method "merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
-```
-
-```Bash
-cargo run -- get_zkp_full --api-key 123 --method "sparse-merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
-```
-
-```Bash
-cargo run -- get_zkp_full --api-key 123 --method "merkle-patricia-trie" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
-```
-
-
-
-### Possible Flags
+## Possible Flags
 
 - `--log_level`:
   - A string that specifies the log level.
@@ -112,7 +84,7 @@ cargo run -- get_zkp_full --api-key 123 --method "merkle-patricia-trie" --vendor
 
 If a flag is not specified, the default value will be used.
 
-#### Example Usage with All Flags
+### Example Usage with All Flags
 
 Setting all configurations for this command is unnecessary.
 Instead, it should provide an example demonstrating the use of all possible flags.
@@ -121,17 +93,48 @@ Instead, it should provide an example demonstrating the use of all possible flag
 cargo run -- upload_sbom --api-key 123 --sbom ../sboms/zksbom-verifier.cdx.json  --log_level "info" --output "./proof.txt" --clean_init_dbs true --check_dependencies true --check_dependencies_output "./unfound_dependencies.log" --db_commitment_path "./commitment.db" --db_sbom_path "./sbom.db" --db_dependency_path "./dependency.db"
 ```
 
-### Change README to this
+## Example Usage
 
+### Merkle Tree
 ```Bash
-cargo build --release
+target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-tree"
+```
+```Bash
+target/release/zksbom get_zkp --api-key 123 --method "merkle-tree" --commitment "0x3c0d917514e8f20f5f8063cd874305e07f79c4988293d8ac17512901da567d35" --vulnerability "CVE-2025-24898"
+```
+```Bash
+target/release/zksbom get_zkp_full --api-key 123 --method "merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
+```
 
-target/release/zksbom upload_sbom --api-key 123 --sbom ../sboms/test_sbom_openssl.cdx.json
+### Sparse Merkle Tree
+```Bash
+target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "sparse-merkle-tree"
+```
+```Bash
+target/release/zksbom get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0x97a3794926b6fd5b8d7c9d5df5b500fe6902eb23224b7e6b4714f107944c9efd" --vulnerability "CVE-2025-24898"
+```
+```Bash
+target/release/zksbom get_zkp_full --api-key 123 --method "sparse-merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
+```
 
+### Merkle Patricia Trie
+```Bash
+target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-patricia-trie"
+```
+```Bash
+target/release/zksbom get_zkp --api-key 123 --method "merkle-patricia-trie" --commitment "0xf672df5906e69514c0416b58461073fe4b177f285e1fe880697a95d065b10f93" --vulnerability "CVE-2025-24898"
+```
+```Bash
+target/release/zksbom get_zkp_full --api-key 123 --method "merkle-patricia-trie" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
+```
+
+### OZKS
+```Bash
 target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "ozks"
-
-target/release/zksbom get_zkp --api-key 123 --method "ozks" --commitment "700000001000000000000A002E002800240004000A000000C474EDCEB14583E3BAA33B8E5F0FC9F777F7316C5D3710B332F63B9044A186D610000000010000000000060008000400060000000400000020000000C94BA2C2B3D22C143158F456C5E6595BA547325DAB27397D0CFC7A21FBA2DC9D" --vulnerability "CVE-2025-24898"
-
-
-target/release/zksbom map_vulnerabilities
+```
+```Bash
+target/release/zksbom get_zkp --api-key 123 --method "ozks" --commitment "700000001000000000000A002E002800240004000A000000A4E51D09D2AF41D8EC7CF816B920B56C00BCC0F3EEDE121391FF0CBE7DD9A844100000000100000000000600080004000600000004000000200000000F9547C4E9690EBAEE24009E3EB0181ECAB390D748D54B6E3BAB412F8F30CDA0" --vulnerability "CVE-2025-24898"
+```
+```Bash
+target/release/zksbom get_zkp_full --api-key 123 --method "ozks" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
