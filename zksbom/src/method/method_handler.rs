@@ -89,12 +89,11 @@ pub fn create_commitments(dependencies: Vec<&str>) -> Vec<String> {
     {
         debug!("Running on x86_64");
         if is_timing_analysis {
-            let now = Instant::now();
-            o_zks_commitment = create_ozks_commitment(dependencies.clone());
-            let elapsed = now.elapsed();
-            print_timing(elapsed, "oZKS");
+            let time_in_ms: String;
+            (o_zks_commitment, time_in_ms) = create_ozks_commitment(dependencies.clone());
+            print_timing_ns(&time_in_ms, "oZKS");
         } else {
-            o_zks_commitment = create_ozks_commitment(dependencies.clone());
+            (o_zks_commitment, _) = create_ozks_commitment(dependencies.clone());
         }
     }
 
@@ -246,12 +245,11 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
             #[cfg(target_arch = "x86_64")]
             {
                 if is_timing_analysis {
-                    let now = Instant::now();
-                    create_ozks_proof(commitment, vulnerability);
-                    let elapsed = now.elapsed();
-                    print_timing(elapsed, "oZKS");
+                    let time_in_ms: String;
+                    time_in_ms = create_ozks_proof(commitment, vulnerability);
+                    print_timing_ns(&time_in_ms, "oZKS");
                 } else {
-                    create_ozks_proof(commitment, vulnerability);
+                    _ = create_ozks_proof(commitment, vulnerability);
                 }
             }
 
@@ -298,4 +296,28 @@ fn print_timing(elapsed: Duration, method: &str) {
 
     let seconds = elapsed.as_secs_f64();
     _ = writeln!(file, "Method: {}, Elapsed: {:.5} seconds", method, seconds);
+}
+
+fn print_timing_ns(nanoseconds_str: &str, method: &str) {
+    let nanoseconds =  nanoseconds_str.parse::<u64>().unwrap();
+    let seconds = nanoseconds as f64 / 1_000_000_000.0;
+
+    let config = load_config().unwrap();
+    let filename = config.app.timing_analysis_output;
+    let path = Path::new(&filename);
+
+    // Check if the directory exists, and create it if not
+    if let Some(parent) = path.parent() {
+        if !parent.exists() {
+            _ = fs::create_dir_all(parent);
+        }
+    }
+
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+        .unwrap();
+
+    _ = writeln!(file, "Method: {}, Elapsed: {:.10} seconds", method, seconds);
 }

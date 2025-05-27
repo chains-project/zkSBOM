@@ -130,11 +130,11 @@ def main(command: str) -> None:
 
 if __name__ == "__main__":
     # zksbom
-    # command = "upload_sbom"
+    command = "upload_sbom"
     # command = "get_commitment"
     # command = "generate_proof"
     
     # zksbom-verifier
-    command = "verify_proof"
+    # command = "verify_proof"
 
     main(command)

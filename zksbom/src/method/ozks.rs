@@ -21,9 +21,18 @@ struct AddZksRequest {
 struct AddZksResponse {
     status: String,
     commitment: String,
+    time_in_ns: String,
 }
 
-pub fn create_commitment(dependencies: Vec<&str>) -> String {
+
+#[derive(Deserialize)]
+struct GenerateProofResponse {
+    status: String,
+    result: String,
+    time_in_ns: String,
+}
+
+pub fn create_commitment(dependencies: Vec<&str>) -> (String, String) {
     debug!("Creating oZKS commitment...");
     debug!("Dependencies: {:?}", dependencies);
 
@@ -83,11 +92,13 @@ pub fn create_commitment(dependencies: Vec<&str>) -> String {
         add_zks_body.status, add_zks_body.commitment
     );
 
+    debug!("Time Elapsed: {}", add_zks_body.time_in_ns);
+
     let commitment = add_zks_body.commitment; // Replace with actual commitment generation logic
-    return commitment;
+    return (commitment, add_zks_body.time_in_ns);
 }
 
-fn generate_proof(commitment: String, _dependencies: Vec<&str>, dependency: String) -> String {
+fn generate_proof(commitment: String, _dependencies: Vec<&str>, dependency: String) -> (String, String) {
     debug!(
         "Generating proof for dependency: {}; with commitment: {}",
         dependency, commitment
@@ -116,22 +127,24 @@ fn generate_proof(commitment: String, _dependencies: Vec<&str>, dependency: Stri
         .unwrap(); // No .await
 
     let get_query_status = get_query_res.status();
-    let get_query_body = get_query_res.text().unwrap(); // No .await
+    let get_query_body: GenerateProofResponse = get_query_res.json().unwrap();
 
     debug!("Response Status: {}", get_query_status);
-    debug!("Response Body: {}", get_query_body);
+    debug!("Response Body: {}, {}, {}", get_query_body.status, get_query_body.result, get_query_body.time_in_ns);
 
     if get_query_status.is_success() {
-        debug!("Successfully got query result: {}", get_query_body);
+        debug!("Successfully got query result: {}", get_query_body.result);
     } else {
-        error!("Failed to get query result: {}", get_query_body);
+        error!("Failed to get query result: {}", get_query_body.result);
     }
 
-    let proof = get_query_body;
-    return proof;
+    let proof = get_query_body.result;
+    debug!("Time Elapsed: {}", get_query_body.time_in_ns);
+    
+    return (proof, get_query_body.time_in_ns);
 }
 
-pub fn create_proof(commitment: &str, vulnerability: &str) {
+pub fn create_proof(commitment: &str, vulnerability: &str) -> String {
     let dependency_entry = get_dependencies(commitment.to_string(), "ozks");
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
     let dep_vul_map = get_mapping_for_dependencies(dependencies.clone());
@@ -141,13 +154,17 @@ pub fn create_proof(commitment: &str, vulnerability: &str) {
         if dep_vul_map.contains_key(stripped_dep) {
             if dep_vul_map[stripped_dep].contains(&vulnerability.to_string()) {
                 debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
-                let proof = generate_proof(commitment.to_string(), dependencies, dep.to_string());
+                let proof: String;
+                let time_in_ns: String;
+                (proof, time_in_ns) = generate_proof(commitment.to_string(), dependencies, dep.to_string());
                 print_proof(proof, dep.to_string());
 
-                break; // Break the loop after finding the first match
+                return time_in_ns;
             }
         }
     }
+
+    return "".to_string();
 }
 
 fn print_proof(proof: String, dependency: String) {

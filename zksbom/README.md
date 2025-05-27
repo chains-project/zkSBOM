@@ -130,10 +130,13 @@ target/release/zksbom get_zkp_full --api-key 123 --method "merkle-patricia-trie"
 
 ### OZKS
 ```Bash
+target/release/zksbom upload_sbom --api-key 123 --sbom "../sboms/other/test_sbom_openssl.cdx.json"
+```
+```Bash
 target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "ozks"
 ```
 ```Bash
-target/release/zksbom get_zkp --api-key 123 --method "ozks" --commitment "700000001000000000000A002E002800240004000A000000A4E51D09D2AF41D8EC7CF816B920B56C00BCC0F3EEDE121391FF0CBE7DD9A844100000000100000000000600080004000600000004000000200000000F9547C4E9690EBAEE24009E3EB0181ECAB390D748D54B6E3BAB412F8F30CDA0" --vulnerability "CVE-2025-24898"
+target/release/zksbom get_zkp --api-key 123 --method "ozks" --commitment "700000001000000000000A002E002800240004000A000000EAAA3E9D317E1A04740DF16C1E83FAD03241E0116CF336EA87BFB6DD4A10A88A10000000010000000000060008000400060000000400000020000000D9DD1ECD89B2A15CFCB4EC06A1F5BB37FEFBF33124B2461DDAC567D3C0EDF8D3" --vulnerability "CVE-2025-24898"
 ```
 ```Bash
 target/release/zksbom get_zkp_full --api-key 123 --method "ozks" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
