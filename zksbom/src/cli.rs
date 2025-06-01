@@ -83,6 +83,13 @@ pub fn build_cli() -> Command {
                 .help("")
                 .global(true),
         )
+        .arg(
+            Arg::new("salt")
+                .long("salt")
+                .value_name("SALT")
+                .help("")
+                .global(true),
+        )
         .subcommand(
             Command::new("upload_sbom")
                 .about("Upload or update an SBOM")
