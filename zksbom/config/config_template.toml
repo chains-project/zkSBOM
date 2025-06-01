@@ -8,6 +8,7 @@ check_dependencies_output = "./tmp/output/unfound_dependencies.log"
 github_token = "YOUR_TOKEN"
 timing_analysis = false
 timing_analysis_output = "./tmp/output/timing_analysis.log"
+salt = false
 
 [db_commitment]
 path = "./tmp/database/commitment.db"

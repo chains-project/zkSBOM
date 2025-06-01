@@ -134,14 +134,23 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
     if let Some(components) = json["components"].as_array() {
         let mut all_dependencies = Vec::new();
 
+        let config = load_config().unwrap();
+
         for component in components {
             debug!("Component: {:?}", component);
             if let (Some(name), Some(version)) =
                 (component["name"].as_str(), component["version"].as_str())
             {
                 let ecosystem = map_dependency_ecosystem(component["purl"].as_str().unwrap_or(""));
-                let salt = create_salt();
-                all_dependencies.push(format!("{}@{}@{};{}", name, version, ecosystem, salt));
+
+                if config.app.salt {
+                    debug!("Adding salt to dependency: {}@{}@{}", name, version, ecosystem);
+                    let salt = create_salt();
+                    all_dependencies.push(format!("{}@{}@{};{}", name, version, ecosystem, salt));
+                } else {
+                    debug!("No salt added for dependency: {}@{}@{}", name, version, ecosystem);
+                    all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
+                }
             }
         }
 
@@ -151,7 +160,6 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
         sbom_parsed.dependencies = all_dependencies.clone();
 
         // Check dependencies
-        let config = load_config().unwrap();
         if config.app.check_dependencies {
             check_dependencies(&all_dependencies);
         }

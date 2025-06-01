@@ -22,6 +22,7 @@ pub struct AppConfig {
     pub github_token: String,
     pub timing_analysis: bool,
     pub timing_analysis_output: String,
+    pub salt: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -66,6 +67,9 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
     }
     if let Some(timing_analysis_output) = matches.get_one::<String>("timing_analysis_output") {
         config.app.timing_analysis_output = timing_analysis_output.clone();
+    }
+    if let Some(salt) = matches.get_one::<String>("salt") {
+        config.app.salt = salt.parse::<bool>()?;
     }
 
     Ok(config)
