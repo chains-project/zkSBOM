@@ -16,6 +16,7 @@ use sparse_merkle_tree::{
 use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::Path;
+use std::time::Instant;
 
 // define SMT
 type SMT = SparseMerkleTree<Blake2bHasher, H256, DefaultStore<H256>>;
@@ -87,7 +88,11 @@ pub fn create_commitment(dependencies: Vec<&str>) -> String {
     return commitment;
 }
 
-fn generate_proof(commitment: &str, dependencies: Vec<&str>, dependency: String) -> String {
+fn generate_proof(
+    commitment: &str,
+    dependencies: Vec<&str>,
+    dependency: String,
+) -> (String, String) {
     // check if dependency exists
     if let Some(_) = dependencies.iter().position(|&leaf| leaf == dependency) {
         debug!("Dependency found");
@@ -117,21 +122,21 @@ fn generate_proof(commitment: &str, dependencies: Vec<&str>, dependency: String)
 
     let (key, _) = get_kv(&dependency);
 
+    let now = Instant::now();
     let proof = tree.merkle_proof(vec![key]).expect("proof");
-    debug!("Proof for key: {:?}", proof);
-
     let compiled_proof: CompiledMerkleProof =
         proof.clone().compile(vec![key]).expect("compile proof");
+    let elapsed = now.elapsed();
     debug!("Compiled proof for key: {:?}", compiled_proof);
 
     debug!("Inside proof: {:?}", compiled_proof.0.as_slice());
     let compiled_proof_hex = format!("0x{}", hex::encode(compiled_proof.0.as_slice()));
     debug!("Compiled Proof hex: {}", &compiled_proof_hex);
 
-    return compiled_proof_hex;
+    return (compiled_proof_hex, elapsed.as_nanos().to_string());
 }
 
-pub fn create_proof(commitment: &str, vulnerability: &str) {
+pub fn create_proof(commitment: &str, vulnerability: &str) -> String {
     let dependency_entry = get_dependencies(commitment.to_string(), "sparse-merkle-tree");
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
     let dep_vul_map = get_mapping_for_dependencies(dependencies.clone());
@@ -141,13 +146,13 @@ pub fn create_proof(commitment: &str, vulnerability: &str) {
         if dep_vul_map.contains_key(stripped_dep) {
             if dep_vul_map[stripped_dep].contains(&vulnerability.to_string()) {
                 debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
-                let proof = generate_proof(commitment, dependencies, dep.to_string());
+                let (proof, elapsed) = generate_proof(commitment, dependencies, dep.to_string());
                 print_proof(proof, dep.to_string());
-
-                break; // Break the loop after finding the first match
+                return elapsed;
             }
         }
     }
+    return "".to_string();
 }
 
 fn print_proof(proof: String, dependency: String) {

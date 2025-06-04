@@ -8,6 +8,7 @@ use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::Path;
 use std::str;
+use std::time::Instant;
 use trie_db::{
     proof::generate_proof as generate_proof_trie, DBValue, TrieDBMutBuilder, TrieLayout, TrieMut,
 };
@@ -41,7 +42,11 @@ pub fn create_commitment(dependencies: Vec<&str>) -> String {
     return commitment;
 }
 
-fn generate_proof(commitment: String, dependencies: Vec<&str>, dependency: String) -> String {
+fn generate_proof(
+    commitment: String,
+    dependencies: Vec<&str>,
+    dependency: String,
+) -> (String, String) {
     debug!("Generating proof for dependency: {}", dependency);
     debug!("Commitment: {}", commitment);
 
@@ -67,7 +72,9 @@ fn generate_proof(commitment: String, dependencies: Vec<&str>, dependency: Strin
     let key_u8 = kv.get(0).unwrap().0.as_bytes();
     let key = vec![key_u8];
 
+    let now = Instant::now();
     let proof = generate_proof_trie::<_, NoExtensionLayout, _, _>(&db, &root, &key).unwrap();
+    let elapsed = now.elapsed();
 
     let mut proof_hex = String::new();
 
@@ -78,10 +85,10 @@ fn generate_proof(commitment: String, dependencies: Vec<&str>, dependency: Strin
     proof_hex = proof_hex.trim_end_matches(';').to_string();
     debug!("Proof hex: {}", proof_hex);
 
-    return proof_hex;
+    return (proof_hex, elapsed.as_nanos().to_string());
 }
 
-pub fn create_proof(commitment: &str, vulnerability: &str) {
+pub fn create_proof(commitment: &str, vulnerability: &str) -> String {
     let dependency_entry = get_dependencies(commitment.to_string(), "merkle-patricia-trie");
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
     let dep_vul_map = get_mapping_for_dependencies(dependencies.clone());
@@ -91,13 +98,15 @@ pub fn create_proof(commitment: &str, vulnerability: &str) {
         if dep_vul_map.contains_key(stripped_dep) {
             if dep_vul_map[stripped_dep].contains(&vulnerability.to_string()) {
                 debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
-                let proof = generate_proof(commitment.to_string(), dependencies, dep.to_string());
+                let (proof, elapsed) =
+                    generate_proof(commitment.to_string(), dependencies, dep.to_string());
                 print_proof(proof, dep.to_string());
 
-                break; // Break the loop after finding the first match
+                return elapsed;
             }
         }
     }
+    return "".to_string();
 }
 
 fn print_proof(proof: String, dependency: String) {

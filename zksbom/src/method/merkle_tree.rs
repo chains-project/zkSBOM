@@ -10,6 +10,7 @@ use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::Path;
 use std::str;
+use std::time::Instant;
 
 pub struct MerkleRootLeaves {
     pub root: String,
@@ -27,7 +28,7 @@ pub fn create_commitment(dependencies: Vec<&str>) -> String {
     return commitment;
 }
 
-fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
+fn generate_proof(root: String, dependency: String) -> (MerkleProof<H256, H256>, String) {
     let dependency_entry = get_dependencies(root.clone(), "merkle-tree");
 
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
@@ -48,14 +49,17 @@ fn generate_proof(root: String, dependency: String) -> MerkleProof<H256, H256> {
 
     debug!("Hashed leaves: {:?}", hashed_leaves_list);
 
+    let now = Instant::now();
     let proof: MerkleProof<H256, H256> =
         merkle_proof::<BlakeTwo256, _, _>(hashed_leaves_list, index);
+    let elapsed = now.elapsed();
+
     debug!("Proof: {:?}", proof);
 
-    return proof;
+    return (proof, elapsed.as_nanos().to_string());
 }
 
-pub fn create_proof(commitment: &str, vulnerability: &str) {
+pub fn create_proof(commitment: &str, vulnerability: &str) -> String {
     let dependency_entry = get_dependencies(commitment.to_string(), "merkle-tree");
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
     let dep_vul_map = get_mapping_for_dependencies(dependencies.clone());
@@ -65,14 +69,16 @@ pub fn create_proof(commitment: &str, vulnerability: &str) {
         if dep_vul_map.contains_key(stripped_dep) {
             if dep_vul_map[stripped_dep].contains(&vulnerability.to_string()) {
                 debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
-                let proof: MerkleProof<H256, H256> =
-                    generate_proof(commitment.to_string(), dep.to_string());
+
+                let (proof, elapsed) = generate_proof(commitment.to_string(), dep.to_string());
+
                 print_proof(proof, dep.to_string());
 
-                break; // Break the loop after finding the first match
+                return elapsed;
             }
         }
     }
+    return "".to_string();
 }
 
 fn print_proof(proof: MerkleProof<H256, H256>, dependency: String) {

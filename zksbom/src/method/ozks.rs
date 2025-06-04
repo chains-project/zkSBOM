@@ -24,7 +24,6 @@ struct AddZksResponse {
     time_in_ns: String,
 }
 
-
 #[derive(Deserialize)]
 struct GenerateProofResponse {
     status: String,
@@ -98,7 +97,11 @@ pub fn create_commitment(dependencies: Vec<&str>) -> (String, String) {
     return (commitment, add_zks_body.time_in_ns);
 }
 
-fn generate_proof(commitment: String, _dependencies: Vec<&str>, dependency: String) -> (String, String) {
+fn generate_proof(
+    commitment: String,
+    _dependencies: Vec<&str>,
+    dependency: String,
+) -> (String, String) {
     debug!(
         "Generating proof for dependency: {}; with commitment: {}",
         dependency, commitment
@@ -130,7 +133,10 @@ fn generate_proof(commitment: String, _dependencies: Vec<&str>, dependency: Stri
     let get_query_body: GenerateProofResponse = get_query_res.json().unwrap();
 
     debug!("Response Status: {}", get_query_status);
-    debug!("Response Body: {}, {}, {}", get_query_body.status, get_query_body.result, get_query_body.time_in_ns);
+    debug!(
+        "Response Body: {}, {}, {}",
+        get_query_body.status, get_query_body.result, get_query_body.time_in_ns
+    );
 
     if get_query_status.is_success() {
         debug!("Successfully got query result: {}", get_query_body.result);
@@ -140,7 +146,7 @@ fn generate_proof(commitment: String, _dependencies: Vec<&str>, dependency: Stri
 
     let proof = get_query_body.result;
     debug!("Time Elapsed: {}", get_query_body.time_in_ns);
-    
+
     return (proof, get_query_body.time_in_ns);
 }
 
@@ -156,7 +162,8 @@ pub fn create_proof(commitment: &str, vulnerability: &str) -> String {
                 debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
                 let proof: String;
                 let time_in_ns: String;
-                (proof, time_in_ns) = generate_proof(commitment.to_string(), dependencies, dep.to_string());
+                (proof, time_in_ns) =
+                    generate_proof(commitment.to_string(), dependencies, dep.to_string());
                 print_proof(proof, dep.to_string());
 
                 return time_in_ns;

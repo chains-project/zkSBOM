@@ -144,11 +144,17 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
                 let ecosystem = map_dependency_ecosystem(component["purl"].as_str().unwrap_or(""));
 
                 if config.app.salt {
-                    debug!("Adding salt to dependency: {}@{}@{}", name, version, ecosystem);
+                    debug!(
+                        "Adding salt to dependency: {}@{}@{}",
+                        name, version, ecosystem
+                    );
                     let salt = create_salt();
                     all_dependencies.push(format!("{}@{}@{};{}", name, version, ecosystem, salt));
                 } else {
-                    debug!("No salt added for dependency: {}@{}@{}", name, version, ecosystem);
+                    debug!(
+                        "No salt added for dependency: {}@{}@{}",
+                        name, version, ecosystem
+                    );
                     all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
                 }
             }

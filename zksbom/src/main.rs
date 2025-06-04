@@ -30,7 +30,6 @@ use map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
 use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
 use std::str::FromStr;
 use upload::upload;
-use std::process::Command;
 
 fn main() {
     init_logger();

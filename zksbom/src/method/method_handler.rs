@@ -213,30 +213,24 @@ pub fn get_zkp(_api_key: &str, method: &str, commitment: &str, vulnerability: &s
     match method {
         "merkle-tree" => {
             if is_timing_analysis {
-                let now = Instant::now();
-                create_merkle_proof(commitment, vulnerability);
-                let elapsed = now.elapsed();
-                print_timing(elapsed, "merkle-tree");
+                let time_in_ns = create_merkle_proof(commitment, vulnerability);
+                print_timing_ns(&time_in_ns, "merkle-tree");
             } else {
-                create_merkle_proof(commitment, vulnerability);
+                _ = create_merkle_proof(commitment, vulnerability);
             }
         }
         "sparse-merkle-tree" => {
             if is_timing_analysis {
-                let now = Instant::now();
-                create_sparse_merkle_proof(commitment, vulnerability);
-                let elapsed = now.elapsed();
-                print_timing(elapsed, "sparse-merkle-tree");
+                let time_in_ns = create_sparse_merkle_proof(commitment, vulnerability);
+                print_timing_ns(&time_in_ns, "sparse-merkle-tree");
             } else {
-                create_sparse_merkle_proof(commitment, vulnerability);
+                _ = create_sparse_merkle_proof(commitment, vulnerability);
             }
         }
         "merkle-patricia-trie" => {
             if is_timing_analysis {
-                let now = Instant::now();
-                create_merkle_patricia_trie_proof(commitment, vulnerability);
-                let elapsed = now.elapsed();
-                print_timing(elapsed, "merkle-patricia-trie");
+                let time_in_ns = create_merkle_patricia_trie_proof(commitment, vulnerability);
+                print_timing_ns(&time_in_ns, "merkle-patricia-trie");
             } else {
                 create_merkle_patricia_trie_proof(commitment, vulnerability);
             }
@@ -299,7 +293,7 @@ fn print_timing(elapsed: Duration, method: &str) {
 }
 
 fn print_timing_ns(nanoseconds_str: &str, method: &str) {
-    let nanoseconds =  nanoseconds_str.parse::<u64>().unwrap();
+    let nanoseconds = nanoseconds_str.parse::<u64>().unwrap();
     let seconds = nanoseconds as f64 / 1_000_000_000.0;
 
     let config = load_config().unwrap();
