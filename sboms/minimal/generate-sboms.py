@@ -15,7 +15,7 @@ REGISTRIES = [
 ]
 
 def fetch_crates(limit):
-    resp = requests.get(f"{REGISTRIES[0]['url']}?page=11&per_page={limit}")
+    resp = requests.get(f"{REGISTRIES[0]['url']}?page=0&per_page={limit}")
     crates = resp.json()["crates"]
     out = []
     for crate in crates:
@@ -41,10 +41,10 @@ def fetch_maven(limit):
 
 def main():
     print("Generating SBOM with minimal data...")
-    desired = 64
+    desired = 101
     per_registry = {
-        "cargo": 32,
-        "maven": 32
+        "cargo": 101,
+        "maven": 0
     }
     sbom = []
     sbom.extend(fetch_crates(per_registry["cargo"]))

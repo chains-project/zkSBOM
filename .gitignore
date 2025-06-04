@@ -24,3 +24,4 @@ zksbom/config/config.toml
 /zksbom-verifier/tmp
 zksbom-verifier/config/config.toml
 sboms/real-world/sbom-files.tar.ztsd
+/zksbom/tmp_old

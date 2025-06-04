@@ -33,9 +33,9 @@
         },
         {
             "type": "library",
-            "name": "openssl", 
-            "version": "0.10.1",
-            "purl": "pkg:cargo/openssl@0.10.1"
+            "name": "ABC_Game_Engine",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/ABC_Game_Engine@0.1.2"
         },
         {
             "type": "library",
@@ -585,6 +585,12 @@
         },
         {
             "type": "library",
+            "name": "ClawFoxyVision",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/ClawFoxyVision@0.2.0"
+        },
+        {
+            "type": "library",
             "name": "Clig",
             "version": "0.1.1",
             "purl": "pkg:cargo/Clig@0.1.1"
@@ -804,12 +810,6 @@
             "name": "Dictionary_",
             "version": "0.1.0",
             "purl": "pkg:cargo/Dictionary_@0.1.0"
-        },
-        {
-            "type": "library",
-            "name": "DifferentialEquations",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/DifferentialEquations@0.1.0"
         },
         {
             "type": "library",
@@ -1444,8 +1444,8 @@
         {
             "type": "library",
             "name": "IP-Hacker",
-            "version": "0.0.19",
-            "purl": "pkg:cargo/IP-Hacker@0.0.19"
+            "version": "0.0.20",
+            "purl": "pkg:cargo/IP-Hacker@0.0.20"
         },
         {
             "type": "library",
@@ -1602,6 +1602,12 @@
             "name": "KeyBoxen",
             "version": "0.1.0",
             "purl": "pkg:cargo/KeyBoxen@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Kget",
+            "version": "1.5.0",
+            "purl": "pkg:cargo/Kget@1.5.0"
         },
         {
             "type": "library",
@@ -1768,8 +1774,8 @@
         {
             "type": "library",
             "name": "Lion-cli",
-            "version": "0.4.0",
-            "purl": "pkg:cargo/Lion-cli@0.4.0"
+            "version": "0.5.0",
+            "purl": "pkg:cargo/Lion-cli@0.5.0"
         },
         {
             "type": "library",
@@ -1852,8 +1858,8 @@
         {
             "type": "library",
             "name": "Mademoiselle_Entropia",
-            "version": "1.11.11",
-            "purl": "pkg:cargo/Mademoiselle_Entropia@1.11.11"
+            "version": "1.11.16",
+            "purl": "pkg:cargo/Mademoiselle_Entropia@1.11.16"
         },
         {
             "type": "library",
@@ -2154,6 +2160,12 @@
             "name": "Osirisbot",
             "version": "0.1.1",
             "purl": "pkg:cargo/Osirisbot@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "OxLog",
+            "version": "0.0.1",
+            "purl": "pkg:cargo/OxLog@0.0.1"
         },
         {
             "type": "library",
@@ -2655,6 +2667,12 @@
         },
         {
             "type": "library",
+            "name": "R4DCB08",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/R4DCB08@0.2.0"
+        },
+        {
+            "type": "library",
             "name": "RAufbau",
             "version": "0.1.1",
             "purl": "pkg:cargo/RAufbau@0.1.1"
@@ -2766,6 +2784,12 @@
             "name": "ReSet-Lib",
             "version": "0.6.3",
             "purl": "pkg:cargo/ReSet-Lib@0.6.3"
+        },
+        {
+            "type": "library",
+            "name": "ReentryUDP",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/ReentryUDP@0.2.0"
         },
         {
             "type": "library",
@@ -3058,8 +3082,8 @@
         {
             "type": "library",
             "name": "RustedSciThe",
-            "version": "0.2.25",
-            "purl": "pkg:cargo/RustedSciThe@0.2.25"
+            "version": "0.2.28",
+            "purl": "pkg:cargo/RustedSciThe@0.2.28"
         },
         {
             "type": "library",
@@ -3465,6 +3489,18 @@
         },
         {
             "type": "library",
+            "name": "TextEditor",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/TextEditor@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "TextToEmoji",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/TextToEmoji@0.1.0"
+        },
+        {
+            "type": "library",
             "name": "Text_Processing_Toolkit",
             "version": "0.0.0",
             "purl": "pkg:cargo/Text_Processing_Toolkit@0.0.0"
@@ -3670,8 +3706,8 @@
         {
             "type": "library",
             "name": "XPManager",
-            "version": "2.1.0",
-            "purl": "pkg:cargo/XPManager@2.1.0"
+            "version": "2.3.0",
+            "purl": "pkg:cargo/XPManager@2.3.0"
         },
         {
             "type": "library",
@@ -3690,6 +3726,12 @@
             "name": "YAPL",
             "version": "0.1.0",
             "purl": "pkg:cargo/YAPL@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "YetAnotherGeometryLibrary",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/YetAnotherGeometryLibrary@0.1.2"
         },
         {
             "type": "library",
@@ -3783,6 +3825,12 @@
         },
         {
             "type": "library",
+            "name": "a-sixel",
+            "version": "0.3.0",
+            "purl": "pkg:cargo/a-sixel@0.3.0"
+        },
+        {
+            "type": "library",
             "name": "a-star_traitbased",
             "version": "0.1.3",
             "purl": "pkg:cargo/a-star_traitbased@0.1.3"
@@ -3855,6 +3903,12 @@
         },
         {
             "type": "library",
+            "name": "a1q",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/a1q@0.0.0"
+        },
+        {
+            "type": "library",
             "name": "a2",
             "version": "0.10.0",
             "purl": "pkg:cargo/a2@0.10.0"
@@ -3876,6 +3930,12 @@
             "name": "a2a",
             "version": "0.1.0",
             "purl": "pkg:cargo/a2a@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "a2a-rs",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/a2a-rs@0.1.0"
         },
         {
             "type": "library",
@@ -3960,6 +4020,12 @@
             "name": "a42-__-",
             "version": "0.0.0",
             "purl": "pkg:cargo/a42-__-@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "a5",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/a5@0.1.0"
         },
         {
             "type": "library",
@@ -4068,6 +4134,12 @@
             "name": "a_rusty_cli",
             "version": "0.1.0",
             "purl": "pkg:cargo/a_rusty_cli@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "a_uniquie189193",
+            "version": "0.2.0-alpha.7",
+            "purl": "pkg:cargo/a_uniquie189193@0.2.0-alpha.7"
         },
         {
             "type": "library",
@@ -4390,14 +4462,14 @@
         {
             "type": "library",
             "name": "aargvark",
-            "version": "0.8.3",
-            "purl": "pkg:cargo/aargvark@0.8.3"
+            "version": "0.8.4",
+            "purl": "pkg:cargo/aargvark@0.8.4"
         },
         {
             "type": "library",
             "name": "aargvark_proc_macros",
-            "version": "3.4.3",
-            "purl": "pkg:cargo/aargvark_proc_macros@3.4.3"
+            "version": "3.4.4",
+            "purl": "pkg:cargo/aargvark_proc_macros@3.4.4"
         },
         {
             "type": "library",
@@ -4498,8 +4570,8 @@
         {
             "type": "library",
             "name": "ab-av1",
-            "version": "0.10.0",
-            "purl": "pkg:cargo/ab-av1@0.10.0"
+            "version": "0.10.1",
+            "purl": "pkg:cargo/ab-av1@0.10.1"
         },
         {
             "type": "library",
@@ -4552,8 +4624,8 @@
         {
             "type": "library",
             "name": "abacatepay-rust-sdk",
-            "version": "0.1.6",
-            "purl": "pkg:cargo/abacatepay-rust-sdk@0.1.6"
+            "version": "0.1.12",
+            "purl": "pkg:cargo/abacatepay-rust-sdk@0.1.12"
         },
         {
             "type": "library",
@@ -4696,8 +4768,8 @@
         {
             "type": "library",
             "name": "abc-rs",
-            "version": "0.2.6",
-            "purl": "pkg:cargo/abc-rs@0.2.6"
+            "version": "0.2.7",
+            "purl": "pkg:cargo/abc-rs@0.2.7"
         },
         {
             "type": "library",
@@ -5157,12 +5229,6 @@
         },
         {
             "type": "library",
-            "name": "abook",
-            "version": "0.1.1",
-            "purl": "pkg:cargo/abook@0.1.1"
-        },
-        {
-            "type": "library",
             "name": "abootcrafter",
             "version": "1.1.0",
             "purl": "pkg:cargo/abootcrafter@1.1.0"
@@ -5560,8 +5626,8 @@
         {
             "type": "library",
             "name": "abstract-account",
-            "version": "0.26.0",
-            "purl": "pkg:cargo/abstract-account@0.26.0"
+            "version": "0.26.1",
+            "purl": "pkg:cargo/abstract-account@0.26.1"
         },
         {
             "type": "library",
@@ -5614,14 +5680,14 @@
         {
             "type": "library",
             "name": "abstract-bits",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/abstract-bits@0.1.0"
+            "version": "0.2.0",
+            "purl": "pkg:cargo/abstract-bits@0.2.0"
         },
         {
             "type": "library",
             "name": "abstract-bits-derive",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/abstract-bits-derive@0.1.0"
+            "version": "0.2.0",
+            "purl": "pkg:cargo/abstract-bits-derive@0.2.0"
         },
         {
             "type": "library",
@@ -5938,8 +6004,8 @@
         {
             "type": "library",
             "name": "abstract-std",
-            "version": "0.26.0",
-            "purl": "pkg:cargo/abstract-std@0.26.0"
+            "version": "0.26.1",
+            "purl": "pkg:cargo/abstract-std@0.26.1"
         },
         {
             "type": "library",
@@ -6015,111 +6081,81 @@
         },
         {
             "type": "library",
-            "name": "I_dont_eat_beef",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/I_dont_eat_beef@0.1.0"
-        },
-        {
-            "type": "library",
-            "name": "Icarus-nrf9160-bsp",
-            "version": "0.0.0",
-            "purl": "pkg:cargo/Icarus-nrf9160-bsp@0.0.0"
-        },
-        {
-            "type": "library",
-            "name": "ImageCompressor",
-            "version": "1.2.1",
-            "purl": "pkg:cargo/ImageCompressor@1.2.1"
-        },
-        {
-            "type": "library",
-            "name": "ImtiazGermain",
-            "version": "0.1.2",
-            "purl": "pkg:cargo/ImtiazGermain@0.1.2"
-        },
-        {
-            "type": "library",
-            "name": "IndicScriptSwap",
-            "version": "0.6.0",
-            "purl": "pkg:cargo/IndicScriptSwap@0.6.0"
-        },
-        {
-            "type": "library",
-            "name": "Inflector",
-            "version": "0.11.4",
-            "purl": "pkg:cargo/Inflector@0.11.4"
-        },
-        {
-            "type": "library",
-            "name": "InheritDerive",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/InheritDerive@0.1.0"
-        },
-        {
-            "type": "library",
-            "name": "IntegerScaling",
-            "version": "1.3.2",
-            "purl": "pkg:cargo/IntegerScaling@1.3.2"
-        },
-        {
-            "type": "library",
-            "name": "Invyria",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/Invyria@0.1.0"
-        },
-        {
-            "type": "library",
-            "name": "IronShell",
+            "name": "absurdler",
             "version": "0.1.1",
-            "purl": "pkg:cargo/IronShell@0.1.1"
+            "purl": "pkg:cargo/absurdler@0.1.1"
         },
         {
             "type": "library",
-            "name": "Ironn-cli",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/Ironn-cli@0.1.0"
-        },
-        {
-            "type": "library",
-            "name": "Ironn-core",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/Ironn-core@0.1.0"
-        },
-        {
-            "type": "library",
-            "name": "IsmailTestrustLib",
-            "version": "0.1.1",
-            "purl": "pkg:cargo/IsmailTestrustLib@0.1.1"
-        },
-        {
-            "type": "library",
-            "name": "JL_IA7",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/JL_IA7@0.1.0"
-        },
-        {
-            "type": "library",
-            "name": "JSpoiRust",
-            "version": "0.1.0",
-            "purl": "pkg:cargo/JSpoiRust@0.1.0"
-        },
-        {
-            "type": "library",
-            "name": "JWST",
+            "name": "abuild",
             "version": "0.0.0",
-            "purl": "pkg:cargo/JWST@0.0.0"
+            "purl": "pkg:cargo/abuild@0.0.0"
         },
         {
             "type": "library",
-            "name": "Jeebs",
-            "version": "0.0.0",
-            "purl": "pkg:cargo/Jeebs@0.0.0"
+            "name": "abuseipdb",
+            "version": "0.2.1",
+            "purl": "pkg:cargo/abuseipdb@0.2.1"
         },
         {
             "type": "library",
-            "name": "Jinn",
-            "version": "0.0.0",
-            "purl": "pkg:cargo/Jinn@0.0.0"
+            "name": "abuseipdb2",
+            "version": "0.3.2",
+            "purl": "pkg:cargo/abuseipdb2@0.3.2"
+        },
+        {
+            "type": "library",
+            "name": "abv",
+            "version": "0.3.0",
+            "purl": "pkg:cargo/abv@0.3.0"
+        },
+        {
+            "type": "library",
+            "name": "abx",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/abx@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "abxml",
+            "version": "0.8.2",
+            "purl": "pkg:cargo/abxml@0.8.2"
+        },
+        {
+            "type": "library",
+            "name": "abyss",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/abyss@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "abyss-lang",
+            "version": "0.0.2",
+            "purl": "pkg:cargo/abyss-lang@0.0.2"
+        },
+        {
+            "type": "library",
+            "name": "abyss-promise",
+            "version": "0.2.1",
+            "purl": "pkg:cargo/abyss-promise@0.2.1"
+        },
+        {
+            "type": "library",
+            "name": "abyssiniandb",
+            "version": "0.1.4",
+            "purl": "pkg:cargo/abyssiniandb@0.1.4"
+        },
+        {
+            "type": "library",
+            "name": "ac-compose-macros",
+            "version": "1.17.0",
+            "purl": "pkg:cargo/ac-compose-macros@1.17.0"
+        },
+        {
+            "type": "library",
+            "name": "ac-ffmpeg",
+            "version": "0.19.0",
+            "purl": "pkg:cargo/ac-ffmpeg@0.19.0"
         }
     ],
     "dependencies": []
