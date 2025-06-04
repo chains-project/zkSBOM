@@ -12,1544 +12,1543 @@
             "version": "0.1.0"
         }
     },
-    "components":
-        [
-            {
-                "type": "library",
-                "name": "A-Mazed",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/A-Mazed@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "A2VConverter",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/A2VConverter@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "ABC-ECS",
-                "version": "0.2.1",
-                "purl": "pkg:cargo/ABC-ECS@0.2.1"
-            },
-            {
-                "type": "library",
-                "name": "ABC_Game_Engine",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/ABC_Game_Engine@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "ABC_lumenpyx",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/ABC_lumenpyx@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "ABtree",
-                "version": "0.8.0",
-                "purl": "pkg:cargo/ABtree@0.8.0"
-            },
-            {
-                "type": "library",
-                "name": "ADA_Standards",
-                "version": "0.3.0",
-                "purl": "pkg:cargo/ADA_Standards@0.3.0"
-            },
-            {
-                "type": "library",
-                "name": "ADuCM302x",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/ADuCM302x@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AJ_find",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/AJ_find@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AJ_jmp",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/AJ_jmp@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AT42QT2120",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/AT42QT2120@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "Acatsama0871",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Acatsama0871@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AccountingCenter",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/AccountingCenter@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AddNumber",
-                "version": "1.0.0",
-                "purl": "pkg:cargo/AddNumber@1.0.0"
-            },
-            {
-                "type": "library",
-                "name": "AeP",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/AeP@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Aetherus",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Aetherus@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "AgRV2K_PAC",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/AgRV2K_PAC@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Agentic-rs",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Agentic-rs@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AitSar",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/AitSar@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "AjusteOnuDeReferencia",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/AjusteOnuDeReferencia@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AlankuoRust",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/AlankuoRust@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Algod",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Algod@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Alice-DBMS",
-                "version": "1.2.5",
-                "purl": "pkg:cargo/Alice-DBMS@1.2.5"
-            },
-            {
-                "type": "library",
-                "name": "Alice-Database_DBMS",
-                "version": "1.2.3",
-                "purl": "pkg:cargo/Alice-Database_DBMS@1.2.3"
-            },
-            {
-                "type": "library",
-                "name": "AliceDBMS",
-                "version": "1.2.8",
-                "purl": "pkg:cargo/AliceDBMS@1.2.8"
-            },
-            {
-                "type": "library",
-                "name": "AmanitaMuscaria",
-                "version": "0.0.5",
-                "purl": "pkg:cargo/AmanitaMuscaria@0.0.5"
-            },
-            {
-                "type": "library",
-                "name": "Amputate",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/Amputate@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Analyzer",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Analyzer@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AngryWolf",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/AngryWolf@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "AntonsRus",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/AntonsRus@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "AntonsRust",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/AntonsRust@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Anxiety",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/Anxiety@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "ApacheLogAnonymizer",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/ApacheLogAnonymizer@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "App1",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/App1@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "AqueiraInput",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/AqueiraInput@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Arcade",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/Arcade@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Arknights",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/Arknights@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "ArmanDris-grrs",
-                "version": "1.0.0",
-                "purl": "pkg:cargo/ArmanDris-grrs@1.0.0"
-            },
-            {
-                "type": "library",
-                "name": "ArmlabRadio",
-                "version": "0.6.5",
-                "purl": "pkg:cargo/ArmlabRadio@0.6.5"
-            },
-            {
-                "type": "library",
-                "name": "AronIS_GPS_Crate",
-                "version": "0.1.5",
-                "purl": "pkg:cargo/AronIS_GPS_Crate@0.1.5"
-            },
-            {
-                "type": "library",
-                "name": "Arsalan_Crate",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Arsalan_Crate@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Art_lib_test",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/Art_lib_test@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "AsciiArts",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/AsciiArts@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "AsgoreCore",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/AsgoreCore@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "AskAI",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/AskAI@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Assignment",
-                "version": "0.0.2",
-                "purl": "pkg:cargo/Assignment@0.0.2"
-            },
-            {
-                "type": "library",
-                "name": "AthenaEngine",
-                "version": "0.1.7",
-                "purl": "pkg:cargo/AthenaEngine@0.1.7"
-            },
-            {
-                "type": "library",
-                "name": "Azi_Libs",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Azi_Libs@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "BBP",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/BBP@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "BO_rs_minigrep",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/BO_rs_minigrep@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "BeerHolderBot",
-                "version": "0.3.8",
-                "purl": "pkg:cargo/BeerHolderBot@0.3.8"
-            },
-            {
-                "type": "library",
-                "name": "BiliupApi",
-                "version": "0.1.7",
-                "purl": "pkg:cargo/BiliupApi@0.1.7"
-            },
-            {
-                "type": "library",
-                "name": "BinaryHelper",
-                "version": "0.2.3",
-                "purl": "pkg:cargo/BinaryHelper@0.2.3"
-            },
-            {
-                "type": "library",
-                "name": "Binary_package",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Binary_package@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "BlueHash",
-                "version": "0.1.8",
-                "purl": "pkg:cargo/BlueHash@0.1.8"
-            },
-            {
-                "type": "library",
-                "name": "Boa",
-                "version": "0.13.1",
-                "purl": "pkg:cargo/Boa@0.13.1"
-            },
-            {
-                "type": "library",
-                "name": "BobB",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/BobB@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "BobThe",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/BobThe@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "BobbyB",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/BobbyB@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "BookmarkDirectories",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/BookmarkDirectories@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Boot-Banner",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Boot-Banner@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Brains",
-                "version": "0.2.0",
-                "purl": "pkg:cargo/Brains@0.2.0"
-            },
-            {
-                "type": "library",
-                "name": "BrandoCulqi",
-                "version": "1.0.5",
-                "purl": "pkg:cargo/BrandoCulqi@1.0.5"
-            },
-            {
-                "type": "library",
-                "name": "BrewStillery",
-                "version": "6.2.0",
-                "purl": "pkg:cargo/BrewStillery@6.2.0"
-            },
-            {
-                "type": "library",
-                "name": "BuildEAR",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/BuildEAR@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "C4lc",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/C4lc@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "CABA585464F6405BBB47F730F5150322",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/CABA585464F6405BBB47F730F5150322@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "CESE4015_Concurrency_RJN_JVL",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/CESE4015_Concurrency_RJN_JVL@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "CFDTCP",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/CFDTCP@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "CIC-bitboard",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/CIC-bitboard@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "CLAAR",
-                "version": "0.3.0",
-                "purl": "pkg:cargo/CLAAR@0.3.0"
-            },
-            {
-                "type": "library",
-                "name": "CLAiR-testing",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/CLAiR-testing@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "CLI-Rhythm",
-                "version": "0.6.6",
-                "purl": "pkg:cargo/CLI-Rhythm@0.6.6"
-            },
-            {
-                "type": "library",
-                "name": "CLI-game-of-life",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/CLI-game-of-life@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "CLIApps",
-                "version": "0.2.5",
-                "purl": "pkg:cargo/CLIApps@0.2.5"
-            },
-            {
-                "type": "library",
-                "name": "CLITools",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/CLITools@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "CLI_Project_Scott_Coakley",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/CLI_Project_Scott_Coakley@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "CLI_Tools",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/CLI_Tools@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "COXave",
-                "version": "1.0.8",
-                "purl": "pkg:cargo/COXave@1.0.8"
-            },
-            {
-                "type": "library",
-                "name": "Caching",
-                "version": "0.2.5",
-                "purl": "pkg:cargo/Caching@0.2.5"
-            },
-            {
-                "type": "library",
-                "name": "Calculater",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Calculater@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Calen-sCLI",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Calen-sCLI@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Caltech",
-                "version": "2.0.0",
-                "purl": "pkg:cargo/Caltech@2.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Cambridg",
-                "version": "2.0.0",
-                "purl": "pkg:cargo/Cambridg@2.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Cambridge",
-                "version": "3.1.2",
-                "purl": "pkg:cargo/Cambridge@3.1.2"
-            },
-            {
-                "type": "library",
-                "name": "CanaryKeysCore",
-                "version": "0.0.1",
-                "purl": "pkg:cargo/CanaryKeysCore@0.0.1"
-            },
-            {
-                "type": "library",
-                "name": "CanaryValidationLib",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/CanaryValidationLib@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Cantor-Pair",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/Cantor-Pair@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "CarbonJS",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/CarbonJS@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "CargoLibrary",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/CargoLibrary@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Carl_Pin_my_crate",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Carl_Pin_my_crate@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Cecile",
-                "version": "0.1.7",
-                "purl": "pkg:cargo/Cecile@0.1.7"
-            },
-            {
-                "type": "library",
-                "name": "ChristmasTree",
-                "version": "1.1.0",
-                "purl": "pkg:cargo/ChristmasTree@1.1.0"
-            },
-            {
-                "type": "library",
-                "name": "ChromedriverManager",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/ChromedriverManager@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Circle_Area",
-                "version": "0.1.4",
-                "purl": "pkg:cargo/Circle_Area@0.1.4"
-            },
-            {
-                "type": "library",
-                "name": "ClawFoxyVision",
-                "version": "0.2.0",
-                "purl": "pkg:cargo/ClawFoxyVision@0.2.0"
-            },
-            {
-                "type": "library",
-                "name": "Clig",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Clig@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "CodeGenLib",
-                "version": "0.0.1",
-                "purl": "pkg:cargo/CodeGenLib@0.0.1"
-            },
-            {
-                "type": "library",
-                "name": "CoinbaseCommerce_rust",
-                "version": "0.0.1",
-                "purl": "pkg:cargo/CoinbaseCommerce_rust@0.0.1"
-            },
-            {
-                "type": "library",
-                "name": "ColorShell",
-                "version": "1.1.5",
-                "purl": "pkg:cargo/ColorShell@1.1.5"
-            },
-            {
-                "type": "library",
-                "name": "CommandLib",
-                "version": "1.0.0",
-                "purl": "pkg:cargo/CommandLib@1.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Command_Line_Interface_v1",
-                "version": "0.2.0",
-                "purl": "pkg:cargo/Command_Line_Interface_v1@0.2.0"
-            },
-            {
-                "type": "library",
-                "name": "CompactPrefixRadix",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/CompactPrefixRadix@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "ComplexNum",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/ComplexNum@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "ComplexNumbers",
-                "version": "0.1.3",
-                "purl": "pkg:cargo/ComplexNumbers@0.1.3"
-            },
-            {
-                "type": "library",
-                "name": "ConExpression",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/ConExpression@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "ConsistentHashing",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/ConsistentHashing@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "ConsoleEngine",
-                "version": "0.0.7",
-                "purl": "pkg:cargo/ConsoleEngine@0.0.7"
-            },
-            {
-                "type": "library",
-                "name": "CoreFoundation-sys",
-                "version": "0.1.4",
-                "purl": "pkg:cargo/CoreFoundation-sys@0.1.4"
-            },
-            {
-                "type": "library",
-                "name": "CorrosionMark",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/CorrosionMark@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Counting_Crate",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Counting_Crate@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Cours_Rust_Guess_The_Number",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Cours_Rust_Guess_The_Number@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Crates_More",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Crates_More@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Crates_push",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Crates_push@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "CreateProcessW",
-                "version": "0.1.7",
-                "purl": "pkg:cargo/CreateProcessW@0.1.7"
-            },
-            {
-                "type": "library",
-                "name": "CryptTool",
-                "version": "0.1.4",
-                "purl": "pkg:cargo/CryptTool@0.1.4"
-            },
-            {
-                "type": "library",
-                "name": "Cryptonic",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/Cryptonic@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "CuTE-tui",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/CuTE-tui@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "Cupcake",
-                "version": "0.2.1",
-                "purl": "pkg:cargo/Cupcake@0.2.1"
-            },
-            {
-                "type": "library",
-                "name": "D88FileIO",
-                "version": "0.0.8",
-                "purl": "pkg:cargo/D88FileIO@0.0.8"
-            },
-            {
-                "type": "library",
-                "name": "DBeaverPasswordViewer",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/DBeaverPasswordViewer@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "DCSR",
-                "version": "0.0.5",
-                "purl": "pkg:cargo/DCSR@0.0.5"
-            },
-            {
-                "type": "library",
-                "name": "DDNA",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/DDNA@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "DEWQ",
-                "version": "0.0.4",
-                "purl": "pkg:cargo/DEWQ@0.0.4"
-            },
-            {
-                "type": "library",
-                "name": "DPM-Core",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/DPM-Core@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "DPM-Server",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/DPM-Server@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Data_GPS",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Data_GPS@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "DeepIron",
-                "version": "0.1.4",
-                "purl": "pkg:cargo/DeepIron@0.1.4"
-            },
-            {
-                "type": "library",
-                "name": "DemoApp",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/DemoApp@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "DesignerHelper-rs",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/DesignerHelper-rs@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "DevCore",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/DevCore@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "DictionaryPhi",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/DictionaryPhi@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Dictionary_",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Dictionary_@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "DigitShield",
-                "version": "0.1.6",
-                "purl": "pkg:cargo/DigitShield@0.1.6"
-            },
-            {
-                "type": "library",
-                "name": "DiscordMessenger",
-                "version": "1.0.0",
-                "purl": "pkg:cargo/DiscordMessenger@1.0.0"
-            },
-            {
-                "type": "library",
-                "name": "DiskAnalyzer",
-                "version": "1.1.1",
-                "purl": "pkg:cargo/DiskAnalyzer@1.1.1"
-            },
-            {
-                "type": "library",
-                "name": "DisplaySettings",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/DisplaySettings@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "Dzahui",
-                "version": "0.2.0",
-                "purl": "pkg:cargo/Dzahui@0.2.0"
-            },
-            {
-                "type": "library",
-                "name": "EIP1193",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/EIP1193@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "EMCompute",
-                "version": "6.0.0",
-                "purl": "pkg:cargo/EMCompute@6.0.0"
-            },
-            {
-                "type": "library",
-                "name": "EMDisi_lib",
-                "version": "0.1.7",
-                "purl": "pkg:cargo/EMDisi_lib@0.1.7"
-            },
-            {
-                "type": "library",
-                "name": "EMNetChain",
-                "version": "0.1.3",
-                "purl": "pkg:cargo/EMNetChain@0.1.3"
-            },
-            {
-                "type": "library",
-                "name": "EMUtil",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/EMUtil@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "EOF-Parser",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/EOF-Parser@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "EZAIMD",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/EZAIMD@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "EZDB",
-                "version": "0.1.15",
-                "purl": "pkg:cargo/EZDB@0.1.15"
-            },
-            {
-                "type": "library",
-                "name": "EasyAlgolia",
-                "version": "1.0.4",
-                "purl": "pkg:cargo/EasyAlgolia@1.0.4"
-            },
-            {
-                "type": "library",
-                "name": "EasyCrypto",
-                "version": "0.8.1",
-                "purl": "pkg:cargo/EasyCrypto@0.8.1"
-            },
-            {
-                "type": "library",
-                "name": "EasyDist",
-                "version": "0.2.0",
-                "purl": "pkg:cargo/EasyDist@0.2.0"
-            },
-            {
-                "type": "library",
-                "name": "Easy_Math",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/Easy_Math@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Echo_Matt_C",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Echo_Matt_C@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Emily",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Emily@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Engima",
-                "version": "0.2.3",
-                "purl": "pkg:cargo/Engima@0.2.3"
-            },
-            {
-                "type": "library",
-                "name": "EnumBitFlags",
-                "version": "1.0.10",
-                "purl": "pkg:cargo/EnumBitFlags@1.0.10"
-            },
-            {
-                "type": "library",
-                "name": "EnvSync",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/EnvSync@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Even_odd_checker",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Even_odd_checker@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "EventEmitter",
-                "version": "0.0.4",
-                "purl": "pkg:cargo/EventEmitter@0.0.4"
-            },
-            {
-                "type": "library",
-                "name": "ExploitBuilder",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/ExploitBuilder@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "ExportandoApi",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/ExportandoApi@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "F80A18",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/F80A18@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "F921",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/F921@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "FEA_code",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/FEA_code@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "FPS",
-                "version": "0.0.3",
-                "purl": "pkg:cargo/FPS@0.0.3"
-            },
-            {
-                "type": "library",
-                "name": "FahtocelCONV_RS",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/FahtocelCONV_RS@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Fasching",
-                "version": "0.2.4",
-                "purl": "pkg:cargo/Fasching@0.2.4"
-            },
-            {
-                "type": "library",
-                "name": "Fasma",
-                "version": "1.1.2",
-                "purl": "pkg:cargo/Fasma@1.1.2"
-            },
-            {
-                "type": "library",
-                "name": "FastORM",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/FastORM@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Fastatsplit",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/Fastatsplit@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "FerriteChatter",
-                "version": "6.3.0",
-                "purl": "pkg:cargo/FerriteChatter@6.3.0"
-            },
-            {
-                "type": "library",
-                "name": "Ferros",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Ferros@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "FerrousLearn",
-                "version": "0.1.6",
-                "purl": "pkg:cargo/FerrousLearn@0.1.6"
-            },
-            {
-                "type": "library",
-                "name": "FetchDemo",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/FetchDemo@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "FileSorterX",
-                "version": "1.2.1",
-                "purl": "pkg:cargo/FileSorterX@1.2.1"
-            },
-            {
-                "type": "library",
-                "name": "Find_Matt_C",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Find_Matt_C@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "FirmNetter",
-                "version": "0.1.7",
-                "purl": "pkg:cargo/FirmNetter@0.1.7"
-            },
-            {
-                "type": "library",
-                "name": "FlexAPI",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/FlexAPI@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "ForceFeedback-sys",
-                "version": "0.0.1",
-                "purl": "pkg:cargo/ForceFeedback-sys@0.0.1"
-            },
-            {
-                "type": "library",
-                "name": "Fortility",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/Fortility@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "FullMathOP",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/FullMathOP@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Fullerene",
-                "version": "0.4.1",
-                "purl": "pkg:cargo/Fullerene@0.4.1"
-            },
-            {
-                "type": "library",
-                "name": "FunnyString",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/FunnyString@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "GITREMOTE",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/GITREMOTE@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "GOAP",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GOAP@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "GORBIE",
-                "version": "0.2.1",
-                "purl": "pkg:cargo/GORBIE@0.2.1"
-            },
-            {
-                "type": "library",
-                "name": "GPS-Gunnlaug",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GPS-Gunnlaug@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "GPS-Gunnlaug_18",
-                "version": "0.1.6",
-                "purl": "pkg:cargo/GPS-Gunnlaug_18@0.1.6"
-            },
-            {
-                "type": "library",
-                "name": "GPS_datacollector_dagur",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/GPS_datacollector_dagur@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "GPS_project_aisha",
-                "version": "0.1.4",
-                "purl": "pkg:cargo/GPS_project_aisha@0.1.4"
-            },
-            {
-                "type": "library",
-                "name": "GRE_dictation",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GRE_dictation@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "GSL",
-                "version": "7.0.0",
-                "purl": "pkg:cargo/GSL@7.0.0"
-            },
-            {
-                "type": "library",
-                "name": "GSL-sys",
-                "version": "4.0.0",
-                "purl": "pkg:cargo/GSL-sys@4.0.0"
-            },
-            {
-                "type": "library",
-                "name": "GalaxyBudsLive-rs",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GalaxyBudsLive-rs@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Galois",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Galois@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "GemFetch",
-                "version": "0.1.6",
-                "purl": "pkg:cargo/GemFetch@0.1.6"
-            },
-            {
-                "type": "library",
-                "name": "GenGen",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GenGen@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Gen_Prime",
-                "version": "1.1.9",
-                "purl": "pkg:cargo/Gen_Prime@1.1.9"
-            },
-            {
-                "type": "library",
-                "name": "GeosCoin",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/GeosCoin@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "GetLocalInfo",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GetLocalInfo@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "GetPDB",
-                "version": "1.0.1",
-                "purl": "pkg:cargo/GetPDB@1.0.1"
-            },
-            {
-                "type": "library",
-                "name": "GitPolicyEnforcer",
-                "version": "0.3.0",
-                "purl": "pkg:cargo/GitPolicyEnforcer@0.3.0"
-            },
-            {
-                "type": "library",
-                "name": "GoodSql",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/GoodSql@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "GraphQL",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GraphQL@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "GraphicsEngine",
-                "version": "0.2.2",
-                "purl": "pkg:cargo/GraphicsEngine@0.2.2"
-            },
-            {
-                "type": "library",
-                "name": "Grep_Matt_C",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Grep_Matt_C@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Grepulous",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Grepulous@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "GrindingStone_art",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GrindingStone_art@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Grow-r502-a_fingerprint_sensor",
-                "version": "0.1.4",
-                "purl": "pkg:cargo/Grow-r502-a_fingerprint_sensor@0.1.4"
-            },
-            {
-                "type": "library",
-                "name": "GuiNistRs",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/GuiNistRs@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "HArcMut",
-                "version": "1.1.1",
-                "purl": "pkg:cargo/HArcMut@1.1.1"
-            },
-            {
-                "type": "library",
-                "name": "HDprogrammutator",
-                "version": "0.1.264",
-                "purl": "pkg:cargo/HDprogrammutator@0.1.264"
-            },
-            {
-                "type": "library",
-                "name": "HKGYMVS",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/HKGYMVS@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "HOLP",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/HOLP@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "HOPA",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/HOPA@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "HPGO",
-                "version": "0.9.2",
-                "purl": "pkg:cargo/HPGO@0.9.2"
-            },
-            {
-                "type": "library",
-                "name": "HTMoLe",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/HTMoLe@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "HTU21D",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/HTU21D@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Halloy",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Halloy@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "HandleEngine",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/HandleEngine@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Hangman_Matt_C",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Hangman_Matt_C@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Harvard",
-                "version": "0.0.1",
-                "purl": "pkg:cargo/Harvard@0.0.1"
-            },
-            {
-                "type": "library",
-                "name": "HashLimette",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/HashLimette@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Hash_Pool",
-                "version": "1.0.22-beta",
-                "purl": "pkg:cargo/Hash_Pool@1.0.22-beta"
-            },
-            {
-                "type": "library",
-                "name": "Hconfig",
-                "version": "1.1.0",
-                "purl": "pkg:cargo/Hconfig@1.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Hela",
-                "version": "0.1.4",
-                "purl": "pkg:cargo/Hela@0.1.4"
-            },
-            {
-                "type": "library",
-                "name": "Hello_how_are_you",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/Hello_how_are_you@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "Hemoglycin",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Hemoglycin@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "HiRE",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/HiRE@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "HiddenBytes",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/HiddenBytes@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "HoLib",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/HoLib@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "HorseShoe",
-                "version": "0.0.1",
-                "purl": "pkg:cargo/HorseShoe@0.0.1"
-            },
-            {
-                "type": "library",
-                "name": "Htrace",
-                "version": "1.0.2",
-                "purl": "pkg:cargo/Htrace@1.0.2"
-            },
-            {
-                "type": "library",
-                "name": "HyperBoolean",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/HyperBoolean@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "HyperSweeper",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/HyperSweeper@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "IMAPServer",
-                "version": "0.2.0",
-                "purl": "pkg:cargo/IMAPServer@0.2.0"
-            },
-            {
-                "type": "library",
-                "name": "IMAPServer-cli",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/IMAPServer-cli@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "IMAPServer-shared",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/IMAPServer-shared@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "IOKit-sys",
-                "version": "0.1.5",
-                "purl": "pkg:cargo/IOKit-sys@0.1.5"
-            },
-            {
-                "type": "library",
-                "name": "IOT_B3",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/IOT_B3@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "IP-Hacker",
-                "version": "0.0.20",
-                "purl": "pkg:cargo/IP-Hacker@0.0.20"
-            },
-            {
-                "type": "library",
-                "name": "ISP-SDK",
-                "version": "0.2.3",
-                "purl": "pkg:cargo/ISP-SDK@0.2.3"
-            },
-            {
-                "type": "library",
-                "name": "I_dont_eat_beef",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/I_dont_eat_beef@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Icarus-nrf9160-bsp",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/Icarus-nrf9160-bsp@0.0.0"
-            },
-            {
-                "type": "library",
-                "name": "ImageCompressor",
-                "version": "1.2.1",
-                "purl": "pkg:cargo/ImageCompressor@1.2.1"
-            },
-            {
-                "type": "library",
-                "name": "ImtiazGermain",
-                "version": "0.1.2",
-                "purl": "pkg:cargo/ImtiazGermain@0.1.2"
-            },
-            {
-                "type": "library",
-                "name": "IndicScriptSwap",
-                "version": "0.6.0",
-                "purl": "pkg:cargo/IndicScriptSwap@0.6.0"
-            },
-            {
-                "type": "library",
-                "name": "Inflector",
-                "version": "0.11.4",
-                "purl": "pkg:cargo/Inflector@0.11.4"
-            },
-            {
-                "type": "library",
-                "name": "InheritDerive",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/InheritDerive@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "IntegerScaling",
-                "version": "1.3.2",
-                "purl": "pkg:cargo/IntegerScaling@1.3.2"
-            },
-            {
-                "type": "library",
-                "name": "Invyria",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Invyria@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "IronShell",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/IronShell@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "Ironn-cli",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Ironn-cli@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "Ironn-core",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/Ironn-core@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "IsmailTestrustLib",
-                "version": "0.1.1",
-                "purl": "pkg:cargo/IsmailTestrustLib@0.1.1"
-            },
-            {
-                "type": "library",
-                "name": "JL_IA7",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/JL_IA7@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "JSpoiRust",
-                "version": "0.1.0",
-                "purl": "pkg:cargo/JSpoiRust@0.1.0"
-            },
-            {
-                "type": "library",
-                "name": "JWST",
-                "version": "0.0.0",
-                "purl": "pkg:cargo/JWST@0.0.0"
-            }
-        ],
+    "components": [
+        {
+            "type": "library",
+            "name": "A-Mazed",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/A-Mazed@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "A2VConverter",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/A2VConverter@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "ABC-ECS",
+            "version": "0.2.1",
+            "purl": "pkg:cargo/ABC-ECS@0.2.1"
+        },
+        {
+            "type": "library",
+            "name": "openssl",
+            "version": "0.10.1",
+            "purl": "pkg:cargo/openssl@0.10.1"
+        },
+        {
+            "type": "library",
+            "name": "ABC_lumenpyx",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ABC_lumenpyx@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ABtree",
+            "version": "0.8.0",
+            "purl": "pkg:cargo/ABtree@0.8.0"
+        },
+        {
+            "type": "library",
+            "name": "ADA_Standards",
+            "version": "0.3.0",
+            "purl": "pkg:cargo/ADA_Standards@0.3.0"
+        },
+        {
+            "type": "library",
+            "name": "ADuCM302x",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ADuCM302x@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AJ_find",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AJ_find@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AJ_jmp",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AJ_jmp@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AT42QT2120",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/AT42QT2120@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "Acatsama0871",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Acatsama0871@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AccountingCenter",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AccountingCenter@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AddNumber",
+            "version": "1.0.0",
+            "purl": "pkg:cargo/AddNumber@1.0.0"
+        },
+        {
+            "type": "library",
+            "name": "AeP",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AeP@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Aetherus",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Aetherus@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AgRV2K_PAC",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AgRV2K_PAC@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Agentic-rs",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Agentic-rs@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AitSar",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AitSar@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AjusteOnuDeReferencia",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AjusteOnuDeReferencia@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AlankuoRust",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AlankuoRust@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Algod",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Algod@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Alice-DBMS",
+            "version": "1.2.5",
+            "purl": "pkg:cargo/Alice-DBMS@1.2.5"
+        },
+        {
+            "type": "library",
+            "name": "Alice-Database_DBMS",
+            "version": "1.2.3",
+            "purl": "pkg:cargo/Alice-Database_DBMS@1.2.3"
+        },
+        {
+            "type": "library",
+            "name": "AliceDBMS",
+            "version": "1.2.8",
+            "purl": "pkg:cargo/AliceDBMS@1.2.8"
+        },
+        {
+            "type": "library",
+            "name": "AmanitaMuscaria",
+            "version": "0.0.5",
+            "purl": "pkg:cargo/AmanitaMuscaria@0.0.5"
+        },
+        {
+            "type": "library",
+            "name": "Amputate",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Amputate@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Analyzer",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Analyzer@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AngryWolf",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/AngryWolf@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AntonsRus",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AntonsRus@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "AntonsRust",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AntonsRust@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Anxiety",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Anxiety@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "ApacheLogAnonymizer",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/ApacheLogAnonymizer@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "App1",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/App1@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "AqueiraInput",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/AqueiraInput@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Arcade",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Arcade@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Arknights",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/Arknights@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "ArmanDris-grrs",
+            "version": "1.0.0",
+            "purl": "pkg:cargo/ArmanDris-grrs@1.0.0"
+        },
+        {
+            "type": "library",
+            "name": "ArmlabRadio",
+            "version": "0.6.5",
+            "purl": "pkg:cargo/ArmlabRadio@0.6.5"
+        },
+        {
+            "type": "library",
+            "name": "AronIS_GPS_Crate",
+            "version": "0.1.5",
+            "purl": "pkg:cargo/AronIS_GPS_Crate@0.1.5"
+        },
+        {
+            "type": "library",
+            "name": "Arsalan_Crate",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Arsalan_Crate@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Art_lib_test",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Art_lib_test@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "AsciiArts",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AsciiArts@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "AsgoreCore",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/AsgoreCore@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "AskAI",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/AskAI@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Assignment",
+            "version": "0.0.2",
+            "purl": "pkg:cargo/Assignment@0.0.2"
+        },
+        {
+            "type": "library",
+            "name": "AthenaEngine",
+            "version": "0.1.7",
+            "purl": "pkg:cargo/AthenaEngine@0.1.7"
+        },
+        {
+            "type": "library",
+            "name": "Azi_Libs",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Azi_Libs@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BBP",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/BBP@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "BO_rs_minigrep",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/BO_rs_minigrep@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "BeerHolderBot",
+            "version": "0.3.8",
+            "purl": "pkg:cargo/BeerHolderBot@0.3.8"
+        },
+        {
+            "type": "library",
+            "name": "BiliupApi",
+            "version": "0.1.7",
+            "purl": "pkg:cargo/BiliupApi@0.1.7"
+        },
+        {
+            "type": "library",
+            "name": "BinaryHelper",
+            "version": "0.2.3",
+            "purl": "pkg:cargo/BinaryHelper@0.2.3"
+        },
+        {
+            "type": "library",
+            "name": "Binary_package",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Binary_package@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BlueHash",
+            "version": "0.1.8",
+            "purl": "pkg:cargo/BlueHash@0.1.8"
+        },
+        {
+            "type": "library",
+            "name": "Boa",
+            "version": "0.13.1",
+            "purl": "pkg:cargo/Boa@0.13.1"
+        },
+        {
+            "type": "library",
+            "name": "BobB",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/BobB@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BobThe",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/BobThe@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BobbyB",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/BobbyB@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "BookmarkDirectories",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/BookmarkDirectories@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Boot-Banner",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Boot-Banner@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Brains",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/Brains@0.2.0"
+        },
+        {
+            "type": "library",
+            "name": "BrandoCulqi",
+            "version": "1.0.5",
+            "purl": "pkg:cargo/BrandoCulqi@1.0.5"
+        },
+        {
+            "type": "library",
+            "name": "BrewStillery",
+            "version": "6.2.0",
+            "purl": "pkg:cargo/BrewStillery@6.2.0"
+        },
+        {
+            "type": "library",
+            "name": "BuildEAR",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/BuildEAR@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "C4lc",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/C4lc@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "CABA585464F6405BBB47F730F5150322",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/CABA585464F6405BBB47F730F5150322@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "CESE4015_Concurrency_RJN_JVL",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/CESE4015_Concurrency_RJN_JVL@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "CFDTCP",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/CFDTCP@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "CIC-bitboard",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/CIC-bitboard@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "CLAAR",
+            "version": "0.3.0",
+            "purl": "pkg:cargo/CLAAR@0.3.0"
+        },
+        {
+            "type": "library",
+            "name": "CLAiR-testing",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/CLAiR-testing@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "CLI-Rhythm",
+            "version": "0.6.6",
+            "purl": "pkg:cargo/CLI-Rhythm@0.6.6"
+        },
+        {
+            "type": "library",
+            "name": "CLI-game-of-life",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/CLI-game-of-life@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "CLIApps",
+            "version": "0.2.5",
+            "purl": "pkg:cargo/CLIApps@0.2.5"
+        },
+        {
+            "type": "library",
+            "name": "CLITools",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/CLITools@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "CLI_Project_Scott_Coakley",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/CLI_Project_Scott_Coakley@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "CLI_Tools",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/CLI_Tools@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "COXave",
+            "version": "1.0.8",
+            "purl": "pkg:cargo/COXave@1.0.8"
+        },
+        {
+            "type": "library",
+            "name": "Caching",
+            "version": "0.2.5",
+            "purl": "pkg:cargo/Caching@0.2.5"
+        },
+        {
+            "type": "library",
+            "name": "Calculater",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Calculater@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Calen-sCLI",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Calen-sCLI@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Caltech",
+            "version": "2.0.0",
+            "purl": "pkg:cargo/Caltech@2.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Cambridg",
+            "version": "2.0.0",
+            "purl": "pkg:cargo/Cambridg@2.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Cambridge",
+            "version": "3.1.2",
+            "purl": "pkg:cargo/Cambridge@3.1.2"
+        },
+        {
+            "type": "library",
+            "name": "CanaryKeysCore",
+            "version": "0.0.1",
+            "purl": "pkg:cargo/CanaryKeysCore@0.0.1"
+        },
+        {
+            "type": "library",
+            "name": "CanaryValidationLib",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/CanaryValidationLib@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Cantor-Pair",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/Cantor-Pair@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "CarbonJS",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/CarbonJS@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "CargoLibrary",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/CargoLibrary@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Carl_Pin_my_crate",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Carl_Pin_my_crate@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Cecile",
+            "version": "0.1.7",
+            "purl": "pkg:cargo/Cecile@0.1.7"
+        },
+        {
+            "type": "library",
+            "name": "ChristmasTree",
+            "version": "1.1.0",
+            "purl": "pkg:cargo/ChristmasTree@1.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ChromedriverManager",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/ChromedriverManager@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Circle_Area",
+            "version": "0.1.4",
+            "purl": "pkg:cargo/Circle_Area@0.1.4"
+        },
+        {
+            "type": "library",
+            "name": "ClawFoxyVision",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/ClawFoxyVision@0.2.0"
+        },
+        {
+            "type": "library",
+            "name": "Clig",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Clig@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "CodeGenLib",
+            "version": "0.0.1",
+            "purl": "pkg:cargo/CodeGenLib@0.0.1"
+        },
+        {
+            "type": "library",
+            "name": "CoinbaseCommerce_rust",
+            "version": "0.0.1",
+            "purl": "pkg:cargo/CoinbaseCommerce_rust@0.0.1"
+        },
+        {
+            "type": "library",
+            "name": "ColorShell",
+            "version": "1.1.5",
+            "purl": "pkg:cargo/ColorShell@1.1.5"
+        },
+        {
+            "type": "library",
+            "name": "CommandLib",
+            "version": "1.0.0",
+            "purl": "pkg:cargo/CommandLib@1.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Command_Line_Interface_v1",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/Command_Line_Interface_v1@0.2.0"
+        },
+        {
+            "type": "library",
+            "name": "CompactPrefixRadix",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/CompactPrefixRadix@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "ComplexNum",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ComplexNum@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ComplexNumbers",
+            "version": "0.1.3",
+            "purl": "pkg:cargo/ComplexNumbers@0.1.3"
+        },
+        {
+            "type": "library",
+            "name": "ConExpression",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ConExpression@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ConsistentHashing",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/ConsistentHashing@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "ConsoleEngine",
+            "version": "0.0.7",
+            "purl": "pkg:cargo/ConsoleEngine@0.0.7"
+        },
+        {
+            "type": "library",
+            "name": "CoreFoundation-sys",
+            "version": "0.1.4",
+            "purl": "pkg:cargo/CoreFoundation-sys@0.1.4"
+        },
+        {
+            "type": "library",
+            "name": "CorrosionMark",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/CorrosionMark@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Counting_Crate",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Counting_Crate@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Cours_Rust_Guess_The_Number",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Cours_Rust_Guess_The_Number@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Crates_More",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Crates_More@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Crates_push",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Crates_push@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "CreateProcessW",
+            "version": "0.1.7",
+            "purl": "pkg:cargo/CreateProcessW@0.1.7"
+        },
+        {
+            "type": "library",
+            "name": "CryptTool",
+            "version": "0.1.4",
+            "purl": "pkg:cargo/CryptTool@0.1.4"
+        },
+        {
+            "type": "library",
+            "name": "Cryptonic",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/Cryptonic@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "CuTE-tui",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/CuTE-tui@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "Cupcake",
+            "version": "0.2.1",
+            "purl": "pkg:cargo/Cupcake@0.2.1"
+        },
+        {
+            "type": "library",
+            "name": "D88FileIO",
+            "version": "0.0.8",
+            "purl": "pkg:cargo/D88FileIO@0.0.8"
+        },
+        {
+            "type": "library",
+            "name": "DBeaverPasswordViewer",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/DBeaverPasswordViewer@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "DCSR",
+            "version": "0.0.5",
+            "purl": "pkg:cargo/DCSR@0.0.5"
+        },
+        {
+            "type": "library",
+            "name": "DDNA",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/DDNA@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "DEWQ",
+            "version": "0.0.4",
+            "purl": "pkg:cargo/DEWQ@0.0.4"
+        },
+        {
+            "type": "library",
+            "name": "DPM-Core",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/DPM-Core@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "DPM-Server",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/DPM-Server@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Data_GPS",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Data_GPS@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "DeepIron",
+            "version": "0.1.4",
+            "purl": "pkg:cargo/DeepIron@0.1.4"
+        },
+        {
+            "type": "library",
+            "name": "DemoApp",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/DemoApp@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "DesignerHelper-rs",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/DesignerHelper-rs@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "DevCore",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/DevCore@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "DictionaryPhi",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/DictionaryPhi@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Dictionary_",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Dictionary_@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "DigitShield",
+            "version": "0.1.6",
+            "purl": "pkg:cargo/DigitShield@0.1.6"
+        },
+        {
+            "type": "library",
+            "name": "DiscordMessenger",
+            "version": "1.0.0",
+            "purl": "pkg:cargo/DiscordMessenger@1.0.0"
+        },
+        {
+            "type": "library",
+            "name": "DiskAnalyzer",
+            "version": "1.1.1",
+            "purl": "pkg:cargo/DiskAnalyzer@1.1.1"
+        },
+        {
+            "type": "library",
+            "name": "DisplaySettings",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/DisplaySettings@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "Dzahui",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/Dzahui@0.2.0"
+        },
+        {
+            "type": "library",
+            "name": "EIP1193",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/EIP1193@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "EMCompute",
+            "version": "6.0.0",
+            "purl": "pkg:cargo/EMCompute@6.0.0"
+        },
+        {
+            "type": "library",
+            "name": "EMDisi_lib",
+            "version": "0.1.7",
+            "purl": "pkg:cargo/EMDisi_lib@0.1.7"
+        },
+        {
+            "type": "library",
+            "name": "EMNetChain",
+            "version": "0.1.3",
+            "purl": "pkg:cargo/EMNetChain@0.1.3"
+        },
+        {
+            "type": "library",
+            "name": "EMUtil",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/EMUtil@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "EOF-Parser",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/EOF-Parser@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "EZAIMD",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/EZAIMD@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "EZDB",
+            "version": "0.1.15",
+            "purl": "pkg:cargo/EZDB@0.1.15"
+        },
+        {
+            "type": "library",
+            "name": "EasyAlgolia",
+            "version": "1.0.4",
+            "purl": "pkg:cargo/EasyAlgolia@1.0.4"
+        },
+        {
+            "type": "library",
+            "name": "EasyCrypto",
+            "version": "0.8.1",
+            "purl": "pkg:cargo/EasyCrypto@0.8.1"
+        },
+        {
+            "type": "library",
+            "name": "EasyDist",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/EasyDist@0.2.0"
+        },
+        {
+            "type": "library",
+            "name": "Easy_Math",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Easy_Math@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Echo_Matt_C",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Echo_Matt_C@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Emily",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Emily@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Engima",
+            "version": "0.2.3",
+            "purl": "pkg:cargo/Engima@0.2.3"
+        },
+        {
+            "type": "library",
+            "name": "EnumBitFlags",
+            "version": "1.0.10",
+            "purl": "pkg:cargo/EnumBitFlags@1.0.10"
+        },
+        {
+            "type": "library",
+            "name": "EnvSync",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/EnvSync@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Even_odd_checker",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Even_odd_checker@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "EventEmitter",
+            "version": "0.0.4",
+            "purl": "pkg:cargo/EventEmitter@0.0.4"
+        },
+        {
+            "type": "library",
+            "name": "ExploitBuilder",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/ExploitBuilder@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ExportandoApi",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/ExportandoApi@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "F80A18",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/F80A18@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "F921",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/F921@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "FEA_code",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/FEA_code@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "FPS",
+            "version": "0.0.3",
+            "purl": "pkg:cargo/FPS@0.0.3"
+        },
+        {
+            "type": "library",
+            "name": "FahtocelCONV_RS",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/FahtocelCONV_RS@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Fasching",
+            "version": "0.2.4",
+            "purl": "pkg:cargo/Fasching@0.2.4"
+        },
+        {
+            "type": "library",
+            "name": "Fasma",
+            "version": "1.1.2",
+            "purl": "pkg:cargo/Fasma@1.1.2"
+        },
+        {
+            "type": "library",
+            "name": "FastORM",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/FastORM@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Fastatsplit",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/Fastatsplit@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "FerriteChatter",
+            "version": "6.3.0",
+            "purl": "pkg:cargo/FerriteChatter@6.3.0"
+        },
+        {
+            "type": "library",
+            "name": "Ferros",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Ferros@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "FerrousLearn",
+            "version": "0.1.6",
+            "purl": "pkg:cargo/FerrousLearn@0.1.6"
+        },
+        {
+            "type": "library",
+            "name": "FetchDemo",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/FetchDemo@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "FileSorterX",
+            "version": "1.2.1",
+            "purl": "pkg:cargo/FileSorterX@1.2.1"
+        },
+        {
+            "type": "library",
+            "name": "Find_Matt_C",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Find_Matt_C@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "FirmNetter",
+            "version": "0.1.7",
+            "purl": "pkg:cargo/FirmNetter@0.1.7"
+        },
+        {
+            "type": "library",
+            "name": "FlexAPI",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/FlexAPI@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "ForceFeedback-sys",
+            "version": "0.0.1",
+            "purl": "pkg:cargo/ForceFeedback-sys@0.0.1"
+        },
+        {
+            "type": "library",
+            "name": "Fortility",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Fortility@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "FullMathOP",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/FullMathOP@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Fullerene",
+            "version": "0.4.1",
+            "purl": "pkg:cargo/Fullerene@0.4.1"
+        },
+        {
+            "type": "library",
+            "name": "FunnyString",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/FunnyString@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "GITREMOTE",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/GITREMOTE@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "GOAP",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GOAP@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "GORBIE",
+            "version": "0.2.1",
+            "purl": "pkg:cargo/GORBIE@0.2.1"
+        },
+        {
+            "type": "library",
+            "name": "GPS-Gunnlaug",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GPS-Gunnlaug@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "GPS-Gunnlaug_18",
+            "version": "0.1.6",
+            "purl": "pkg:cargo/GPS-Gunnlaug_18@0.1.6"
+        },
+        {
+            "type": "library",
+            "name": "GPS_datacollector_dagur",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/GPS_datacollector_dagur@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "GPS_project_aisha",
+            "version": "0.1.4",
+            "purl": "pkg:cargo/GPS_project_aisha@0.1.4"
+        },
+        {
+            "type": "library",
+            "name": "GRE_dictation",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GRE_dictation@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "GSL",
+            "version": "7.0.0",
+            "purl": "pkg:cargo/GSL@7.0.0"
+        },
+        {
+            "type": "library",
+            "name": "GSL-sys",
+            "version": "4.0.0",
+            "purl": "pkg:cargo/GSL-sys@4.0.0"
+        },
+        {
+            "type": "library",
+            "name": "GalaxyBudsLive-rs",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GalaxyBudsLive-rs@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Galois",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Galois@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "GemFetch",
+            "version": "0.1.6",
+            "purl": "pkg:cargo/GemFetch@0.1.6"
+        },
+        {
+            "type": "library",
+            "name": "GenGen",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GenGen@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Gen_Prime",
+            "version": "1.1.9",
+            "purl": "pkg:cargo/Gen_Prime@1.1.9"
+        },
+        {
+            "type": "library",
+            "name": "GeosCoin",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/GeosCoin@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "GetLocalInfo",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GetLocalInfo@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "GetPDB",
+            "version": "1.0.1",
+            "purl": "pkg:cargo/GetPDB@1.0.1"
+        },
+        {
+            "type": "library",
+            "name": "GitPolicyEnforcer",
+            "version": "0.3.0",
+            "purl": "pkg:cargo/GitPolicyEnforcer@0.3.0"
+        },
+        {
+            "type": "library",
+            "name": "GoodSql",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/GoodSql@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "GraphQL",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GraphQL@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "GraphicsEngine",
+            "version": "0.2.2",
+            "purl": "pkg:cargo/GraphicsEngine@0.2.2"
+        },
+        {
+            "type": "library",
+            "name": "Grep_Matt_C",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Grep_Matt_C@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Grepulous",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Grepulous@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "GrindingStone_art",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GrindingStone_art@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Grow-r502-a_fingerprint_sensor",
+            "version": "0.1.4",
+            "purl": "pkg:cargo/Grow-r502-a_fingerprint_sensor@0.1.4"
+        },
+        {
+            "type": "library",
+            "name": "GuiNistRs",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/GuiNistRs@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "HArcMut",
+            "version": "1.1.1",
+            "purl": "pkg:cargo/HArcMut@1.1.1"
+        },
+        {
+            "type": "library",
+            "name": "HDprogrammutator",
+            "version": "0.1.264",
+            "purl": "pkg:cargo/HDprogrammutator@0.1.264"
+        },
+        {
+            "type": "library",
+            "name": "HKGYMVS",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/HKGYMVS@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "HOLP",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/HOLP@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "HOPA",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/HOPA@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "HPGO",
+            "version": "0.9.2",
+            "purl": "pkg:cargo/HPGO@0.9.2"
+        },
+        {
+            "type": "library",
+            "name": "HTMoLe",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/HTMoLe@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "HTU21D",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/HTU21D@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Halloy",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Halloy@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "HandleEngine",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/HandleEngine@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Hangman_Matt_C",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Hangman_Matt_C@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Harvard",
+            "version": "0.0.1",
+            "purl": "pkg:cargo/Harvard@0.0.1"
+        },
+        {
+            "type": "library",
+            "name": "HashLimette",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/HashLimette@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Hash_Pool",
+            "version": "1.0.22-beta",
+            "purl": "pkg:cargo/Hash_Pool@1.0.22-beta"
+        },
+        {
+            "type": "library",
+            "name": "Hconfig",
+            "version": "1.1.0",
+            "purl": "pkg:cargo/Hconfig@1.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Hela",
+            "version": "0.1.4",
+            "purl": "pkg:cargo/Hela@0.1.4"
+        },
+        {
+            "type": "library",
+            "name": "Hello_how_are_you",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Hello_how_are_you@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "Hemoglycin",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Hemoglycin@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "HiRE",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/HiRE@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "HiddenBytes",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/HiddenBytes@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "HoLib",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/HoLib@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "HorseShoe",
+            "version": "0.0.1",
+            "purl": "pkg:cargo/HorseShoe@0.0.1"
+        },
+        {
+            "type": "library",
+            "name": "Htrace",
+            "version": "1.0.2",
+            "purl": "pkg:cargo/Htrace@1.0.2"
+        },
+        {
+            "type": "library",
+            "name": "HyperBoolean",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/HyperBoolean@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "HyperSweeper",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/HyperSweeper@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "IMAPServer",
+            "version": "0.2.0",
+            "purl": "pkg:cargo/IMAPServer@0.2.0"
+        },
+        {
+            "type": "library",
+            "name": "IMAPServer-cli",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/IMAPServer-cli@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "IMAPServer-shared",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/IMAPServer-shared@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "IOKit-sys",
+            "version": "0.1.5",
+            "purl": "pkg:cargo/IOKit-sys@0.1.5"
+        },
+        {
+            "type": "library",
+            "name": "IOT_B3",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/IOT_B3@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "IP-Hacker",
+            "version": "0.0.20",
+            "purl": "pkg:cargo/IP-Hacker@0.0.20"
+        },
+        {
+            "type": "library",
+            "name": "ISP-SDK",
+            "version": "0.2.3",
+            "purl": "pkg:cargo/ISP-SDK@0.2.3"
+        },
+        {
+            "type": "library",
+            "name": "I_dont_eat_beef",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/I_dont_eat_beef@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Icarus-nrf9160-bsp",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/Icarus-nrf9160-bsp@0.0.0"
+        },
+        {
+            "type": "library",
+            "name": "ImageCompressor",
+            "version": "1.2.1",
+            "purl": "pkg:cargo/ImageCompressor@1.2.1"
+        },
+        {
+            "type": "library",
+            "name": "ImtiazGermain",
+            "version": "0.1.2",
+            "purl": "pkg:cargo/ImtiazGermain@0.1.2"
+        },
+        {
+            "type": "library",
+            "name": "IndicScriptSwap",
+            "version": "0.6.0",
+            "purl": "pkg:cargo/IndicScriptSwap@0.6.0"
+        },
+        {
+            "type": "library",
+            "name": "Inflector",
+            "version": "0.11.4",
+            "purl": "pkg:cargo/Inflector@0.11.4"
+        },
+        {
+            "type": "library",
+            "name": "InheritDerive",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/InheritDerive@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "IntegerScaling",
+            "version": "1.3.2",
+            "purl": "pkg:cargo/IntegerScaling@1.3.2"
+        },
+        {
+            "type": "library",
+            "name": "Invyria",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Invyria@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "IronShell",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/IronShell@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "Ironn-cli",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Ironn-cli@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "Ironn-core",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/Ironn-core@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "IsmailTestrustLib",
+            "version": "0.1.1",
+            "purl": "pkg:cargo/IsmailTestrustLib@0.1.1"
+        },
+        {
+            "type": "library",
+            "name": "JL_IA7",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/JL_IA7@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "JSpoiRust",
+            "version": "0.1.0",
+            "purl": "pkg:cargo/JSpoiRust@0.1.0"
+        },
+        {
+            "type": "library",
+            "name": "JWST",
+            "version": "0.0.0",
+            "purl": "pkg:cargo/JWST@0.0.0"
+        }
+    ],
     "dependencies": []
 }
