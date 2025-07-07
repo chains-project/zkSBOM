@@ -10,7 +10,7 @@ Build the project:
 cargo build --release
 ```
 
-##   an SBOM as a Vendor
+## Upload an SBOM as a Vendor
 
 This command uploads the specified SBOM to the system.
 
@@ -96,48 +96,61 @@ cargo run -- upload_sbom --api-key 123 --sbom ../sboms/zksbom-verifier.cdx.json 
 ## Example Usage
 
 ### Merkle Tree
+
 ```Bash
 target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-tree"
 ```
+
 ```Bash
 target/release/zksbom get_zkp --api-key 123 --method "merkle-tree" --commitment "0x3c0d917514e8f20f5f8063cd874305e07f79c4988293d8ac17512901da567d35" --vulnerability "CVE-2025-24898"
 ```
+
 ```Bash
 target/release/zksbom get_zkp_full --api-key 123 --method "merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
 
 ### Sparse Merkle Tree
+
 ```Bash
 target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "sparse-merkle-tree"
 ```
+
 ```Bash
 target/release/zksbom get_zkp --api-key 123 --method "sparse-merkle-tree" --commitment "0x97a3794926b6fd5b8d7c9d5df5b500fe6902eb23224b7e6b4714f107944c9efd" --vulnerability "CVE-2025-24898"
 ```
+
 ```Bash
 target/release/zksbom get_zkp_full --api-key 123 --method "sparse-merkle-tree" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
 
 ### Merkle Patricia Trie
+
 ```Bash
 target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "merkle-patricia-trie"
 ```
+
 ```Bash
 target/release/zksbom get_zkp --api-key 123 --method "merkle-patricia-trie" --commitment "0xf672df5906e69514c0416b58461073fe4b177f285e1fe880697a95d065b10f93" --vulnerability "CVE-2025-24898"
 ```
+
 ```Bash
 target/release/zksbom get_zkp_full --api-key 123 --method "merkle-patricia-trie" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
 
 ### OZKS
+
 ```Bash
 target/release/zksbom upload_sbom --api-key 123 --sbom "../sboms/other/test_sbom_openssl.cdx.json"
 ```
+
 ```Bash
 target/release/zksbom get_commitment --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --method "ozks"
 ```
+
 ```Bash
 target/release/zksbom get_zkp --api-key 123 --method "ozks" --commitment "700000001000000000000A002E002800240004000A00000024A02B18081CC0C445F5DAC4C2EBD343CCED60BFEC4EA4C2052D52F7326BF6091000000001000000000006000800040006000000040000002000000096DD135FDA4A4BF286F9651DE025107896A722DEDF7976DD9CBFA5E2DC949074" --vulnerability "CVE-2025-24898"
 ```
+
 ```Bash
 target/release/zksbom get_zkp_full --api-key 123 --method "ozks" --vendor "Tom Sorger <sorger@kth.se>" --product "test_openssl" --version "0.1.0" --vulnerability "CVE-2025-24898"
 ```
