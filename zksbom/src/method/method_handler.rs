@@ -19,6 +19,8 @@ use crate::method::sparse_merkle_tree::{
 #[cfg(target_arch = "aarch64")]
 use log::warn;
 use log::{debug, error};
+use rand::distr::Alphanumeric;
+use rand::Rng;
 use std::str;
 use std::time::{Duration, Instant};
 use std::{
@@ -100,7 +102,16 @@ pub fn create_commitments(dependencies: Vec<&str>) -> Vec<String> {
     #[cfg(target_arch = "aarch64")]
     {
         warn!("Running on aarch64, oZKS is not supported");
-        o_zks_commitment = String::from("oZKS not supported on aarch64 architecture");
+        let commitment = String::from("oZKS not supported on aarch64 architecture.");
+
+        // Generate a 16-character random alphanumeric string
+        let random_string: String = rand::rng()
+            .sample_iter(Alphanumeric)
+            .take(16)
+            .map(char::from)
+            .collect();
+
+        o_zks_commitment = commitment + &random_string;
     }
 
     // Return all commitments

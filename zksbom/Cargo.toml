@@ -23,12 +23,8 @@ sparse-merkle-tree = "=0.6.1"
 blake2b-rs = "0.2.0"
 blake2 = "0.10"
 rand = "0.9.1"
-
-
 hash-db = "0.16.0"
 keccak-hasher = "0.16.0"
 memory-db = "0.32.0"
 reference-trie = "0.29.1"
 trie-db = "0.27.1"
-
-
