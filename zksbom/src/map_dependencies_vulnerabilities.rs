@@ -92,7 +92,7 @@ fn mapping(dependencies: Vec<&str>) -> HashMap<String, Vec<String>> {
 fn check_vulnerabilities(name: &str, version: &str, ecosystem: &str) -> Vec<String> {
     // Construct GraphQL query
     let query = format!(
-        r#"{{"query": "{{ securityVulnerabilities(first: 2, ecosystem: {}, package: \"{}\") {{ nodes {{ package {{ name ecosystem }} vulnerableVersionRange firstPatchedVersion {{ identifier }} advisory {{ ghsaId summary severity permalink }} }} }} }}"}}"#,
+        r#"{{"query": "{{ securityVulnerabilities(first: 5, ecosystem: {}, package: \"{}\") {{ nodes {{ package {{ name ecosystem }} vulnerableVersionRange firstPatchedVersion {{ identifier }} advisory {{ ghsaId summary severity permalink }} }} }} }}"}}"#,
         ecosystem, name
     );
 
@@ -133,39 +133,6 @@ fn check_vulnerabilities(name: &str, version: &str, ecosystem: &str) -> Vec<Stri
         response_json["data"]["securityVulnerabilities"]["nodes"].as_array()
     {
         for vulnerability in vulnerabilities {
-            // let vulnerable_version_range =
-            //     vulnerability["vulnerableVersionRange"].as_str().unwrap();
-            // let ghsa_id = vulnerability["advisory"]["ghsaId"].as_str().unwrap();
-            // let first_patched_version = vulnerability["firstPatchedVersion"]["identifier"]
-            //     .as_str()
-            //     .unwrap();
-            // let severity = vulnerability["advisory"]["severity"].as_str().unwrap();
-            // let permalink = vulnerability["advisory"]["permalink"].as_str().unwrap();
-
-            // debug!("GHSA ID: {}", ghsa_id);
-            // debug!("Vulnerable version range: {}", vulnerable_version_range);
-            // debug!("First patched version: {}", first_patched_version);
-            // debug!("Severity: {}", severity);
-            // debug!("Advisory: {}", permalink);
-
-            // // Compare your version with the vulnerable version range
-            // let version_req = VersionReq::parse(vulnerable_version_range).unwrap();
-            // let current_version = Version::parse(version).unwrap();
-
-            // if version_req.matches(&current_version) {
-            //     debug!(
-            //         "Your version {} is affected by this vulnerability!",
-            //         version
-            //     );
-
-            //     // Get the CVE ID from the GHSA ID
-            //     let cve = get_cve_id(ghsa_id);
-            //     debug!("GHSA ID '{}' relates to CVE ID: '{}'", ghsa_id, cve);
-
-            //     // Add vulnerability to list if not empty sting
-            //     if cve != String::new() {
-            //         list_vulnerabilities.push(cve);
-            //     }
             if let (
                 Some(vulnerable_version_range),
                 Some(ghsa_id),
