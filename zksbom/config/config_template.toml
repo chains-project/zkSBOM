@@ -5,6 +5,7 @@ clean_init_dbs = false
 # Checks if Rust dependencies in the SBOM are available on crates.io.
 check_dependencies = false
 check_dependencies_output = "./tmp/output/unfound_dependencies.log"
+# Add your own GitHub personal access token here
 github_token = "YOUR_TOKEN"
 timing_analysis = false
 timing_analysis_output = "./tmp/output/timing_analysis.log"
