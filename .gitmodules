@@ -1,0 +1,4 @@
+[submodule "zksbom/src/method/ozks/dev"]
+	path = zksbom/src/method/ozks/dev
+	url = https://github.com/t-sorger/oZKS.git
+	branch = zksbom

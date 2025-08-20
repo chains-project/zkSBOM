@@ -19,8 +19,6 @@ use crate::method::sparse_merkle_tree::{
 #[cfg(target_arch = "aarch64")]
 use log::warn;
 use log::{debug, error};
-use rand::distr::Alphanumeric;
-use rand::Rng;
 use std::str;
 use std::time::{Duration, Instant};
 use std::{
