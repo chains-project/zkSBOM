@@ -32,7 +32,7 @@ Clone the repository:
 git clone git@github.com:chains-project/zkSBOM.git
 ```
 
-Copy and edit the configuration file:
+Copy and edit the `zksbom` configuration file:
 
 ```Bash
 cp zksbom/config/config_template.toml zksbom/config/config.toml
@@ -41,6 +41,11 @@ cp zksbom/config/config_template.toml zksbom/config/config.toml
 Update the [configuration file](zksbom/config/config.toml) with your [GitHub Personal Access Token (PAT)]((https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)) under the `github_token` field.
 This token is required to query the [GitHub Advisory Database](https://github.com/advisories).
 
+Copy and edit the `zksbom-verifier` configuration file:
+
+```Bash
+cp zksbom-verifier/config/config_template.toml zksbom-verifier/config/config.toml
+```
 ---
 
 ## Usage
