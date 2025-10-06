@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Sorger"
+  given-names: "Tom"
+  orcid: "https://orcid.org/0009-0002-8986-5539"
+title: "Towards Zero-Knowledge Software Bill of Materials"
+type: masterthesis
+date-released: 2025-06-18
+url: "https://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-369919"
