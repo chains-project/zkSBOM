@@ -1,4 +1,4 @@
-use crate::config::load_config;
+use crate::config::Config;
 use log::{debug, error};
 use rusqlite::{params, Connection};
 use std::fs;
@@ -14,10 +14,9 @@ pub struct DependencyDbEntry {
     pub dependencies: String,
 }
 
-pub fn init_db_dependency() {
+pub fn init_db_dependency(config: &Config) {
     debug!("Initializing the dependency database...");
-    let config = load_config().unwrap();
-    let db_path = config.db_dependency.path;
+    let db_path = &config.db_dependency.path;
 
     // Check if the directory exists, and create it if not
     let db_path_obj = Path::new(&db_path);
@@ -32,7 +31,7 @@ pub fn init_db_dependency() {
     }
 
     // Create the Dependency table if it doesn't exist
-    match Connection::open(db_path) {
+    match Connection::open(db_path.as_str()) {
         Ok(conn) => {
             match conn.execute(
                 "CREATE TABLE IF NOT EXISTS dependency (
@@ -45,7 +44,10 @@ pub fn init_db_dependency() {
                 )",
                 [],
             ) {
-                Ok(_) => debug!("Dependency database initialized."),
+                Ok(_) => {
+                    debug!("Dependency database initialized.");
+                    let _ = conn.close();
+                }
                 Err(e) => error!("Error initializing Dependency database: {}", e),
             };
         }
@@ -53,12 +55,11 @@ pub fn init_db_dependency() {
     };
 }
 
-fn get_db_dependency_conneciton() -> Connection {
+fn get_db_dependency_conneciton(config: &Config) -> Connection {
     debug!("Getting the dependency database connection...");
-    let config = load_config().unwrap();
-    let db_path = config.db_dependency.path;
+    let db_path = &config.db_dependency.path;
 
-    match Connection::open(&db_path) {
+    match Connection::open(db_path.as_str()) {
         Ok(conn) => {
             debug!("Dependency database connection established.");
             conn
@@ -69,22 +70,27 @@ fn get_db_dependency_conneciton() -> Connection {
     }
 }
 
-pub fn insert_dependency(dependency: DependencyDbEntry) {
+pub fn insert_dependency(dependency: DependencyDbEntry, config: &Config) {
     debug!("Inserting dependency into the database...");
-    let conn = get_db_dependency_conneciton();
+    let conn = get_db_dependency_conneciton(config);
 
     match conn.execute(
         "INSERT INTO dependency (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies) VALUES (?1, ?2, ?3, ?4, ?5)",
         params![dependency.commitment_merkle_tree, dependency.commitment_sparse_merkle_tree, dependency.commitment_merkle_patricia_trie, dependency.commitment_ozks, dependency.dependencies],
     ) {
-        Ok(_) => debug!("Dependency inserted into the database."),
-        Err(e) => error!("Error inserting dependency into the database: {}", e),
+        Ok(_) => {
+            debug!("Dependency inserted into the database.");
+            let _ = conn.close();
+        }
+        Err(e) => {
+            error!("Error inserting dependency into the database: {}", e);
+        }
     };
 }
 
-pub fn get_dependencies(commitment: String, method: &str) -> DependencyDbEntry {
+pub fn get_dependencies(commitment: String, method: &str, config: &Config) -> DependencyDbEntry {
     debug!("Getting dependency from the database...");
-    let conn = get_db_dependency_conneciton();
+    let conn = get_db_dependency_conneciton(config);
 
     let sql_string: &str;
     match method {
@@ -130,15 +136,15 @@ pub fn get_dependencies(commitment: String, method: &str) -> DependencyDbEntry {
     dependency
 }
 
-pub fn delete_db_dependency() {
+pub fn delete_db_dependency(config: &Config) {
     debug!("Deleting the dependency database...");
-    let conn = get_db_dependency_conneciton();
+    let conn = get_db_dependency_conneciton(config);
     _ = conn.execute("DELETE FROM dependency", []);
 }
 
-pub fn get_all_dependencies() -> Result<Vec<String>, rusqlite::Error> {
+pub fn get_all_dependencies(config: &Config) -> Result<Vec<String>, rusqlite::Error> {
     debug!("Getting all dependency strings from the database...");
-    let conn = get_db_dependency_conneciton();
+    let conn = get_db_dependency_conneciton(config);
     let mut stmt = conn.prepare("SELECT dependencies FROM dependency")?;
     let rows = stmt.query_map([], |row| row.get::<_, String>(0))?;
 

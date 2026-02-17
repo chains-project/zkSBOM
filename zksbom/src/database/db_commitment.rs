@@ -1,4 +1,4 @@
-use crate::config::load_config;
+use crate::config::Config;
 use log::{debug, error};
 use rusqlite::{params, Connection};
 use std::fs;
@@ -16,10 +16,9 @@ pub struct CommitmentDbEntry {
     pub commitment_ozks: String,
 }
 
-pub fn init_db_commitment() {
+pub fn init_db_commitment(config: &Config) {
     debug!("Initializing the commitment database...");
-    let config = load_config().unwrap();
-    let db_path = config.db_commitment.path;
+    let db_path = &config.db_commitment.path;
 
     // Check if the directory exists, and create it if not
     let db_path_obj = Path::new(&db_path);
@@ -34,7 +33,7 @@ pub fn init_db_commitment() {
     }
 
     // Create the Commitment table if it doesn't exist
-    match Connection::open(db_path) {
+    match Connection::open(db_path.as_str()) {
         Ok(conn) => {
             match conn.execute(
                 "CREATE TABLE IF NOT EXISTS commitment (
@@ -49,7 +48,10 @@ pub fn init_db_commitment() {
                 )",
                 [],
             ) {
-                Ok(_) => debug!("Commitment database initialized."),
+                Ok(_) => {
+                    debug!("Commitment database initialized.");
+                    let _ = conn.close();
+                }
                 Err(e) => error!("Error initializing Commitment database: {}", e),
             };
         }
@@ -57,12 +59,11 @@ pub fn init_db_commitment() {
     };
 }
 
-fn get_db_commitment_conneciton() -> Connection {
+fn get_db_commitment_conneciton(config: &Config) -> Connection {
     debug!("Getting the commitment database connection...");
-    let config = load_config().unwrap();
-    let db_path = config.db_commitment.path;
+    let db_path = &config.db_commitment.path;
 
-    match Connection::open(&db_path) {
+    match Connection::open(db_path.as_str()) {
         Ok(conn) => {
             debug!("Commitment database connection established.");
             conn
@@ -73,9 +74,9 @@ fn get_db_commitment_conneciton() -> Connection {
     }
 }
 
-pub fn insert_commitment(commitment: CommitmentDbEntry) {
+pub fn insert_commitment(commitment: CommitmentDbEntry, config: &Config) {
     debug!("Inserting commitment into the database...");
-    let conn = get_db_commitment_conneciton();
+    let conn = get_db_commitment_conneciton(config);
 
     match conn.execute(
         "INSERT INTO commitment (vendor, product, version, commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
@@ -89,14 +90,25 @@ pub fn insert_commitment(commitment: CommitmentDbEntry) {
             commitment.commitment_ozks,
         ],
     ) {
-        Ok(_) => debug!("Commitment inserted into the database."),
-        Err(e) => error!("Error inserting commitment into the database: {} (vendor: {}, product: {}, version: {})", e, commitment.vendor, commitment.product, commitment.version),
+        Ok(_) => {
+            debug!("Commitment inserted into the database.");
+            let _ = conn.close();
+        }
+        Err(e) => {
+            error!("Error inserting commitment into the database: {} (vendor: {}, product: {}, version: {})", e, commitment.vendor, commitment.product, commitment.version);
+            // panic!("Error committing commitment to database: {}", e);
+        }
     };
 }
 
-pub fn get_commitment(vendor: String, product: String, version: String) -> CommitmentDbEntry {
+pub fn get_commitment(
+    vendor: String,
+    product: String,
+    version: String,
+    config: &Config,
+) -> CommitmentDbEntry {
     debug!("Getting commitment from the database...");
-    let conn = get_db_commitment_conneciton();
+    let conn = get_db_commitment_conneciton(config);
 
     let commitment = match conn.query_row(
         "SELECT vendor, product, version, commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks FROM commitment WHERE vendor = ?1 AND product = ?2 AND version = ?3",
@@ -131,8 +143,8 @@ pub fn get_commitment(vendor: String, product: String, version: String) -> Commi
     commitment
 }
 
-pub fn delete_db_commitment() {
+pub fn delete_db_commitment(config: &Config) {
     debug!("Deleting the commitment database...");
-    let conn = get_db_commitment_conneciton();
+    let conn = get_db_commitment_conneciton(config);
     _ = conn.execute("DELETE FROM commitment", []);
 }

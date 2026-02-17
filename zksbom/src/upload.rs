@@ -1,5 +1,5 @@
 use crate::check_dependencies_crates_io::check_dependencies;
-use crate::config::load_config;
+use crate::config::Config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::github_advisory_database_mapping::MAPPINGS;
@@ -17,14 +17,14 @@ struct SbomParsed {
     dependencies: Vec<String>,
 }
 
-pub fn upload(_api_key: &str, sbom_path: &str) {
-    debug!("Uploading SBOM...");
+pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
+    debug!("Uploading SBOM with path: {sbom_path}");
 
     // Get the SBOM file content
     let sbom_content = get_file_content(&sbom_path);
 
     // Parse SBOM file for dependencies, vendor, product, and version
-    let parsed_sbom = parse_sbom(&sbom_content);
+    let parsed_sbom = parse_sbom(&sbom_content, config);
     debug!("Parsed SBOM: {:?}", parsed_sbom);
 
     let vendor = parsed_sbom.vendor;
@@ -41,7 +41,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
     );
 
     // Generate Commitments
-    let commitments = create_commitments(dependencies.clone());
+    let commitments = create_commitments(dependencies.clone(), config);
     let commitment_merkle_tree = commitments[0].clone();
     let commitment_sparse_merkle_tree = commitments[1].clone();
     let commitment_merkle_patricia_trie = commitments[2].clone();
@@ -57,7 +57,7 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
         commitment_merkle_patricia_trie: commitment_merkle_patricia_trie.clone(),
         commitment_ozks: commitment_ozks.clone(),
     };
-    insert_commitment(commitment_entry);
+    insert_commitment(commitment_entry, config);
 
     // Save dependencies to database
     let dependency_entry = DependencyDbEntry {
@@ -67,7 +67,9 @@ pub fn upload(_api_key: &str, sbom_path: &str) {
         commitment_ozks,
         dependencies: dependencies.join(","),
     };
-    insert_dependency(dependency_entry);
+    insert_dependency(dependency_entry, config);
+
+    println!("Uploading SBOM completed.")
 }
 
 fn get_file_content(file_path: &str) -> String {
@@ -82,7 +84,7 @@ fn get_file_content(file_path: &str) -> String {
     return sbom_string;
 }
 
-fn parse_sbom(sbom_content: &str) -> SbomParsed {
+fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
     let json_str = sbom_content;
     let mut sbom_parsed = SbomParsed::default();
 
@@ -134,8 +136,6 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
     if let Some(components) = json["components"].as_array() {
         let mut all_dependencies = Vec::new();
 
-        let config = load_config().unwrap();
-
         for component in components {
             debug!("Component: {:?}", component);
             if let (Some(name), Some(version)) =
@@ -167,7 +167,7 @@ fn parse_sbom(sbom_content: &str) -> SbomParsed {
 
         // Check dependencies
         if config.app.check_dependencies {
-            check_dependencies(&all_dependencies);
+            check_dependencies(&all_dependencies, config);
         }
     } else {
         warn!("No components array found in the SBOM.");

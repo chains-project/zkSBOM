@@ -1,4 +1,4 @@
-use crate::config::load_config;
+use crate::config::Config;
 use crate::database::db_dependency::get_dependencies;
 use crate::hasher::hash_h256;
 use crate::map_dependencies_vulnerabilities::get_mapping_for_dependencies;
@@ -28,8 +28,12 @@ pub fn create_commitment(dependencies: Vec<&str>) -> String {
     return commitment;
 }
 
-fn generate_proof(root: String, dependency: String) -> (MerkleProof<H256, H256>, String) {
-    let dependency_entry = get_dependencies(root.clone(), "merkle-tree");
+fn generate_proof(
+    root: String,
+    dependency: String,
+    config: &Config,
+) -> (MerkleProof<H256, H256>, String) {
+    let dependency_entry = get_dependencies(root.clone(), "merkle-tree", config);
 
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
     debug!("dependencies: {:?}", dependencies);
@@ -59,31 +63,36 @@ fn generate_proof(root: String, dependency: String) -> (MerkleProof<H256, H256>,
     return (proof, elapsed.as_nanos().to_string());
 }
 
-pub fn create_proof(commitment: &str, vulnerability: &str) -> String {
-    let dependency_entry = get_dependencies(commitment.to_string(), "merkle-tree");
+pub fn create_proof(commitment: &str, check: &str, config: &Config) -> String {
+    let dependency_entry = get_dependencies(commitment.to_string(), "merkle-tree", config);
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
-    let dep_vul_map = get_mapping_for_dependencies(dependencies.clone());
+    let dep_vul_map = get_mapping_for_dependencies(dependencies.clone(), config);
 
     for dep in dependencies {
         let stripped_dep = dep.split(';').next().unwrap_or(dep);
         if dep_vul_map.contains_key(stripped_dep) {
-            if dep_vul_map[stripped_dep].contains(&vulnerability.to_string()) {
-                debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
+            if dep_vul_map[stripped_dep].contains(&check.to_string()) || stripped_dep == check {
+                debug!(
+                    "Dependency: {} is vulnerable to/in the SBOM: {}",
+                    dep, check
+                );
 
-                let (proof, elapsed) = generate_proof(commitment.to_string(), dep.to_string());
+                let (proof, elapsed) =
+                    generate_proof(commitment.to_string(), dep.to_string(), config);
 
-                print_proof(proof, dep.to_string());
+                print_proof(proof, dep.to_string(), config);
 
                 return elapsed;
             }
         }
     }
+
+    println!("Merkle Tree doesn't support non-inclusion proofs.");
     return "".to_string();
 }
 
-fn print_proof(proof: MerkleProof<H256, H256>, dependency: String) {
-    let config = load_config().unwrap();
-    let output_path = config.app.output;
+fn print_proof(proof: MerkleProof<H256, H256>, dependency: String, config: &Config) {
+    let output_path = &config.app.output;
 
     let path = Path::new(&output_path);
     if let Some(parent) = path.parent() {
@@ -93,7 +102,7 @@ fn print_proof(proof: MerkleProof<H256, H256>, dependency: String) {
         }
     }
 
-    let mut file = match File::create(&output_path) {
+    let mut file = match File::create(output_path.as_str()) {
         Ok(file) => file,
         Err(e) => {
             error!("Error creating file: {}", e);

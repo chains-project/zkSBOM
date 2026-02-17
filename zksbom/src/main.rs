@@ -1,97 +1,69 @@
-pub mod check_dependencies_crates_io;
-pub mod cli;
-pub mod config;
-mod database {
-    pub mod db_commitment;
-    pub mod db_dependency;
-    pub mod db_vulnerabilities;
-}
-pub mod github_advisory_database_mapping;
-pub mod hasher;
-pub mod map_dependencies_vulnerabilities;
-pub mod method {
-    pub mod merkle_patricia_trie;
-    pub mod merkle_tree;
-    pub mod method_handler;
-    pub mod ozks;
-    pub mod sparse_merkle_tree;
-}
-pub mod upload;
-
-use cli::build_cli;
-use config::load_config;
-use database::{
+use log::{debug, error, info, LevelFilter};
+use std::str::FromStr;
+use zksbom::cli::build_cli;
+use zksbom::config::load_config;
+use zksbom::database::{
     db_commitment::{delete_db_commitment, init_db_commitment},
     db_dependency::{delete_db_dependency, init_db_dependency},
     db_vulnerabilities::{delete_db_vulnerabilities, init_db_vulnerabilities},
 };
-use log::{debug, error, info, LevelFilter};
-use map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
-use method::method_handler::{get_commitment as mh_get_commitment, get_zkp, get_zkp_full};
-use std::str::FromStr;
-use upload::upload;
+use zksbom::map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
+use zksbom::method::method_handler::{create_proof, create_proof_no_commitment, get_commitment};
+use zksbom::upload::upload;
 
 fn main() {
-    init_logger();
     let config = load_config().unwrap();
+    init_logger(&config);
     let is_clean_init = config.app.clean_init_dbs;
-    delete_dbs(is_clean_init);
-    init_dbs();
-    parse_cli();
+    delete_dbs(is_clean_init, &config);
+    init_dbs(&config);
+    parse_cli(&config);
 }
 
-fn init_logger() {
-    let config = load_config().unwrap();
-    let log_level = config.app.log_level;
+fn init_logger(config: &zksbom::config::Config) {
+    let log_level = &config.app.log_level;
 
-    match LevelFilter::from_str(&log_level) {
+    match LevelFilter::from_str(log_level) {
         Ok(_) => {
-            env_logger::init_from_env(env_logger::Env::new().default_filter_or(&log_level));
-            debug!("Setting log level to '{}'", &log_level);
+            env_logger::init_from_env(env_logger::Env::new().default_filter_or(log_level));
+            debug!("Setting log level to '{}'", log_level);
         }
         Err(_) => {
             env_logger::init_from_env(env_logger::Env::new().default_filter_or("warn"));
             error!(
                 "Invalid log level '{}' in config.toml. Using default 'warn'.",
-                &log_level
+                log_level
             );
         }
     };
     debug!("Logger initialized.");
 }
 
-fn init_dbs() {
+fn init_dbs(config: &zksbom::config::Config) {
     debug!("Initializing the databases...");
-    init_db_commitment();
-    init_db_dependency();
-    init_db_vulnerabilities();
+    init_db_commitment(config);
+    init_db_dependency(config);
+    init_db_vulnerabilities(config);
 }
 
-fn delete_dbs(is_clean_init: bool) {
+fn delete_dbs(is_clean_init: bool, config: &zksbom::config::Config) {
     if is_clean_init {
-        delete_db_commitment();
-        delete_db_dependency();
-        delete_db_vulnerabilities();
+        delete_db_commitment(config);
+        delete_db_dependency(config);
+        delete_db_vulnerabilities(config);
+        // Also delete the oZKS SQLite database
+        let ozks_db_path = &config.db_ozks.path;
+        if std::path::Path::new(ozks_db_path).exists() {
+            if let Err(e) = std::fs::remove_file(ozks_db_path) {
+                log::error!("Error deleting oZKS database: {}", e);
+            } else {
+                log::debug!("Deleted oZKS database at: {}", ozks_db_path);
+            }
+        }
     }
 }
 
-// fn start_ozks_server() {
-//     let output = Command::new("./src/mehod/ozks/ozks-server.exe")
-//         .status();
-
-//     match output {
-//         Ok(status) => {
-//             if status.success() {
-//                 debug!("`ozks-server.exe` ran successfully!");
-//             } else {
-//                 error!("`ozks-server`.exe` failed with exit code: {:?}", status.code());
-//             }
-//         }
-//         Err(e) => error!("Failed to execute `ozks-sever.exe`: {}", e),
-//     }
-// }
-
-fn parse_cli() {
+fn parse_cli(config: &zksbom::config::Config) {
     debug!("Parse cli...");
     let matches = build_cli().get_matches();
 
@@ -100,7 +72,7 @@ fn parse_cli() {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();
             let sbom_path = sub_matches.get_one::<String>("sbom").unwrap();
             debug!("API Key: {}, SBOM Path: {}", api_key, sbom_path);
-            upload(&api_key, &sbom_path);
+            upload(&api_key, &sbom_path, config);
             info!("Upload SBOM completed successfully.");
         }
         Some(("get_commitment", sub_matches)) => {
@@ -112,43 +84,38 @@ fn parse_cli() {
                 "Vendor: {}, Product: {}, Version: {}, Method: {}",
                 vendor, product, version, method
             );
-            let commitment = mh_get_commitment(&vendor, &product, &version, &method);
+            let commitment = get_commitment(&vendor, &product, &version, &method, config);
             println!("Commitment: {}", commitment);
         }
-        Some(("get_zkp", sub_matches)) => {
+        Some(("create_proof", sub_matches)) => {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();
             let method = sub_matches.get_one::<String>("method").unwrap();
             let commitment = sub_matches.get_one::<String>("commitment").unwrap();
-            let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
+            let check = sub_matches.get_one::<String>("check").unwrap();
             debug!(
-                "API Key: {}, Method: {}, Commitment: {}, Vulnerability: {}",
-                api_key, method, commitment, vulnerability
+                "API Key: {}, Method: {}, Commitment: {}, Check: {}",
+                api_key, method, commitment, check
             );
-            get_zkp(&api_key, &method, &commitment, &vulnerability);
+            create_proof(&api_key, &method, &commitment, &check, config);
         }
-        Some(("get_zkp_full", sub_matches)) => {
+        Some(("create_proof_no_commitment", sub_matches)) => {
             let api_key = sub_matches.get_one::<String>("api-key").unwrap();
             let method = sub_matches.get_one::<String>("method").unwrap();
             let vendor = sub_matches.get_one::<String>("vendor").unwrap();
             let product = sub_matches.get_one::<String>("product").unwrap();
             let version = sub_matches.get_one::<String>("version").unwrap();
-            let vulnerability = sub_matches.get_one::<String>("vulnerability").unwrap();
+            let check = sub_matches.get_one::<String>("check").unwrap();
             debug!(
-                "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Vulnerability: {}",
-                api_key, method, vendor, product, version, vulnerability
+                "API Key: {}, Method: {}, Vendor: {}, Product: {}, Version: {}, Check: {}",
+                api_key, method, vendor, product, version, check
             );
-            get_zkp_full(
-                &api_key,
-                &method,
-                &vendor,
-                &product,
-                &version,
-                &vulnerability,
+            create_proof_no_commitment(
+                &api_key, &method, &vendor, &product, &version, &check, config,
             );
         }
         Some(("map_vulnerabilities", _)) => {
-            let is_successfull = map_dependencies_vulnerabilities();
-            if is_successfull {
+            let is_successful = map_dependencies_vulnerabilities(config);
+            if is_successful {
                 info!("Vulnerabilities mapping completed successfully.");
             } else {
                 error!("Vulnerabilities mapping failed.");

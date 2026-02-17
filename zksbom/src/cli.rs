@@ -141,7 +141,7 @@ pub fn build_cli() -> Command {
                 ),
         )
         .subcommand(
-            Command::new("get_zkp_full")
+            Command::new("create_proof_no_commitment")
                 .about("Get a ZK proof")
                 .arg(
                     Arg::new("api-key")
@@ -179,15 +179,15 @@ pub fn build_cli() -> Command {
                         .required(true),
                 )
                 .arg(
-                    Arg::new("vulnerability")
-                        .long("vulnerability")
-                        .value_name("VULNERABILITY")
-                        .help("Vulnerability to check")
+                    Arg::new("check")
+                        .long("check")
+                        .value_name("Check")
+                        .help("Vulnerability or dependency to check")
                         .required(true),
                 ),
         )
         .subcommand(
-            Command::new("get_zkp")
+            Command::new("create_proof")
                 .about("Get a ZK proof")
                 .arg(
                     Arg::new("api-key")
@@ -210,10 +210,10 @@ pub fn build_cli() -> Command {
                         .help("The commitment hash (required if method is 'commitment')"),
                 )
                 .arg(
-                    Arg::new("vulnerability")
-                        .long("vulnerability")
-                        .value_name("VULNERABILITY")
-                        .help("Vulnerability to check")
+                    Arg::new("check")
+                        .long("check")
+                        .value_name("CHECK")
+                        .help("Vulnerability or dependency to check")
                         .required(true),
                 ),
         )

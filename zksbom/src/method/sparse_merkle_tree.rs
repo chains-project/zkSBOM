@@ -1,19 +1,21 @@
-use crate::config::load_config;
+use crate::config::Config;
 use crate::database::db_dependency::get_dependencies;
-use crate::map_dependencies_vulnerabilities::get_mapping_for_dependencies;
+use crate::map_dependencies_vulnerabilities::{
+    get_mapping_for_dependencies, get_vulnerable_packages_for_cve,
+};
 use blake2::{
     digest::{Update, VariableOutput},
     Blake2bVar,
 };
 use blake2b_rs::{Blake2b, Blake2bBuilder};
 use core::panic;
-use log::debug;
 use log::error;
+use log::{debug, info};
 use sparse_merkle_tree::{
     blake2b::Blake2bHasher, default_store::DefaultStore, traits::Value, CompiledMerkleProof,
     SparseMerkleTree, H256,
 };
-use std::fs::{create_dir_all, File};
+use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
@@ -92,14 +94,8 @@ fn generate_proof(
     commitment: &str,
     dependencies: Vec<&str>,
     dependency: String,
+    _: &Config,
 ) -> (String, String) {
-    // check if dependency exists
-    if let Some(_) = dependencies.iter().position(|&leaf| leaf == dependency) {
-        debug!("Dependency found");
-    } else {
-        panic!("Dependency not found");
-    };
-
     // update tree
     let mut tree = SMT::default();
 
@@ -136,58 +132,109 @@ fn generate_proof(
     return (compiled_proof_hex, elapsed.as_nanos().to_string());
 }
 
-pub fn create_proof(commitment: &str, vulnerability: &str) -> String {
-    let dependency_entry = get_dependencies(commitment.to_string(), "sparse-merkle-tree");
+pub fn create_proof(commitment: &str, check: &str, config: &Config) -> String {
+    let dependency_entry = get_dependencies(commitment.to_string(), "sparse-merkle-tree", config);
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
-    let dep_vul_map = get_mapping_for_dependencies(dependencies.clone());
+    let dep_vul_map = get_mapping_for_dependencies(dependencies.clone(), config);
+
+    let mut message = "".to_string();
 
     for dep in dependencies.clone() {
         let stripped_dep = dep.split(';').next().unwrap_or(dep);
-        if dep_vul_map.contains_key(stripped_dep) {
-            if dep_vul_map[stripped_dep].contains(&vulnerability.to_string()) {
-                debug!("Dependency: {} is vulnerable to: {}", dep, vulnerability);
-                let (proof, elapsed) = generate_proof(commitment, dependencies, dep.to_string());
-                print_proof(proof, dep.to_string());
+        if dep_vul_map.contains_key(stripped_dep) || stripped_dep == check {
+            if dep_vul_map[stripped_dep].contains(&check.to_string()) {
+                debug!(
+                    "Dependency: {} is vulnerable to/in the SBOM: {}",
+                    dep, check
+                );
+                let (proof, elapsed) =
+                    generate_proof(commitment, dependencies, dep.to_string(), config);
+                message = print_proof(proof, dep.to_string(), false, config);
+                println!("{message}");
+
                 return elapsed;
             }
         }
     }
-    return "".to_string();
+
+    // None-inclusion Proof:
+    let dep_list: Vec<String>;
+
+    if check.to_lowercase().starts_with("cve") {
+        dep_list = get_vulnerable_packages_for_cve(check, &config);
+    } else {
+        dep_list = [check.to_string()].to_vec();
+    }
+
+    // Clear the output file before starting non-inclusion proofs
+    let output_path = &config.app.output;
+    if let Err(e) = File::create(output_path.as_str()) {
+        debug!("Error creating output file for non-inclusion proofs, due to file not being there, that's fine: {}", e);
+    }
+
+    for dep in dep_list {
+        info!("Dependency: {} is vulnerable/in the SBOM: {}", dep, check);
+        let (proof, _) = generate_proof(commitment, dependencies.clone(), dep.clone(), config);
+        message = print_proof(proof, dep, true, config);
+    }
+
+    println!("{message}");
+    "".to_string()
 }
 
-fn print_proof(proof: String, dependency: String) {
-    let config = load_config().unwrap();
-    let output_path = config.app.output;
+fn print_proof(
+    proof: String,
+    dependency: String,
+    is_non_inclusion: bool,
+    config: &Config,
+) -> String {
+    let output_path = &config.app.output;
 
     let path = Path::new(&output_path);
     if let Some(parent) = path.parent() {
         if let Err(e) = create_dir_all(parent) {
             error!("Error creating directory: {}", e);
-            return;
+            return "An error occurred printing the proof.".to_string();
         }
     }
 
-    let mut file = match File::create(&output_path) {
-        Ok(file) => file,
-        Err(e) => {
-            error!("Error creating file: {}", e);
-            return;
+    let mut file = if is_non_inclusion {
+        // For non-inclusion proofs, append to the file
+        match OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&output_path)
+        {
+            Ok(file) => file,
+            Err(e) => {
+                error!("Error opening file for appending: {}", e);
+                return "An error occurred printing the proof.".to_string();
+            }
+        }
+    } else {
+        // For inclusion proofs, create/overwrite the file
+        match File::create(output_path.as_str()) {
+            Ok(file) => file,
+            Err(e) => {
+                error!("Error creating file: {}", e);
+                return "An error occurred printing the proof.".to_string();
+            }
         }
     };
 
     if let Err(e) = writeln!(file, "Proof: {}", proof) {
         error!("Error writing to file: {}", e);
-        return;
+        return "An error occurred printing the proof.".to_string();
     }
 
     if let Err(e) = writeln!(file, "Leaf: {}", dependency) {
         error!("Error writing to file: {}", e);
-        return;
+        return "An error occurred printing the proof.".to_string();
     }
 
     if let Err(e) = writeln!(file, "# Hashes input bytes using the Blake2b algorithm with the dependency as `key` and the `key || dependency` as value, then storing as HEX.") {
         error!("Error writing to file: {}", e);
-        return;
+        return "An error occurred printing the proof.".to_string();
     }
 
     let (key, value) = get_kv(&dependency);
@@ -197,13 +244,21 @@ fn print_proof(proof: String, dependency: String) {
 
     if let Err(e) = writeln!(file, "Key: {}", key_hex) {
         error!("Error writing to file: {}", e);
-        return;
+        return "An error occurred printing the proof.".to_string();
     }
 
     if let Err(e) = writeln!(file, "Value: {}", value_hex) {
         error!("Error writing to file: {}", e);
-        return;
+        return "An error occurred printing the proof.".to_string();
     }
 
-    println!("Proof written to: {}", output_path);
+    // Add separator for non-inclusion proofs
+    if is_non_inclusion {
+        if let Err(e) = writeln!(file, "---") {
+            error!("Error writing separator to file: {}", e);
+            return "An error occurred printing the proof.".to_string();
+        }
+    }
+
+    format!("Proof written to: {output_path}")
 }

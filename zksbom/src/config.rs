@@ -6,7 +6,6 @@ use std::fs;
 pub struct Config {
     pub app: AppConfig,
     pub db_commitment: DatabaseConfig,
-    pub db_sbom: DatabaseConfig,
     pub db_dependency: DatabaseConfig,
     pub db_vulnerabilities: DatabaseConfig,
     pub db_ozks: DatabaseConfig,
@@ -30,10 +29,17 @@ pub struct DatabaseConfig {
     pub path: String,
 }
 
+/// Load config from file only (without CLI argument parsing)
+/// Useful for tests and non-CLI use cases
+pub fn load_config_from_file(path: &str) -> Result<Config, Box<dyn std::error::Error>> {
+    let contents = fs::read_to_string(path)?;
+    let config: Config = toml::from_str(&contents)?;
+    Ok(config)
+}
+
 pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
     let path = "./config/config.toml";
-    let contents = fs::read_to_string(path)?;
-    let mut config: Config = toml::from_str(&contents)?;
+    let mut config = load_config_from_file(path)?;
 
     let matches = build_cli().get_matches();
 

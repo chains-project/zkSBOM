@@ -1,0 +1,6 @@
+Proof: 0x805020809fcf3814b08f3c65ba78e201a0dfe0b45a763e167dbc0be7e36db0a8f7608d5f80aa2be7f3a2a9c0f1a40d01ea469309ce4519951cf812b29e00e0b0e35cf77c4e807d58209210e8fd12ba6384b859c68701c9ff2824643714990ba514bd669253cc
+Leaf: foo@0.0.1@foo
+# The Key is the Keccak-256 hash of the dependency string,and the Value is the Keccak-256 hash of the same dependency string, both of which are used asthe key-value pair inserted into the Merkle Patricia Trie and can be recomputed by hashing theleaf dependency with the hash function.
+Key: 0x7abce335f8277a18775efe9c2aa1dc573a6e8f213481b8803cac9e627cf66b08
+Value: 0xe03df719c5056b5295eb6a631fba94aeea536c55dbb1edaa4778647b22b7031d
+---

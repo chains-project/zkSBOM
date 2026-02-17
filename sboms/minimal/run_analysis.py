@@ -100,7 +100,7 @@ def main(command: str) -> None:
                 test_output = f".\\tmp\\timing_analysis\\generate_proof\\proofs_{method}\\proof_{count}_{method}.txt"
                 os.makedirs(os.path.dirname(test_output), exist_ok=True)
 
-                cmd = f".\\target\\release\\zksbom get_zkp --api-key 123 --method \"{method}\" --commitment \"{commitment}\" --vulnerability \"CVE-2025-24898\" --timing_analysis_output \"{output_file}\" --output \"{test_output}\" --timing_analysis true"
+                cmd = f".\\target\\release\\zksbom create_proof --api-key 123 --method \"{method}\" --commitment \"{commitment}\" --vulnerability \"CVE-2025-24898\" --timing_analysis_output \"{output_file}\" --output \"{test_output}\" --timing_analysis true"
 
                 # print(f"Running command: {cmd}")
                 subprocess.run(cmd, shell=True, check=True)

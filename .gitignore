@@ -19,9 +19,10 @@ target/
 **/*.DS_Store
 
 /zksbom/tmp
-zksbom/config/config.toml
-/sboms/minimal/generate
+/zksbom/config/config.toml
+/zksbom/tests/tmp
+/zksbom/tests/config/config.toml
+
 /zksbom-verifier/tmp
 zksbom-verifier/config/config.toml
-sboms/real-world/sbom-files.tar.ztsd
-/zksbom/tmp_old
+zksbom-verifier/tests/config/config.toml

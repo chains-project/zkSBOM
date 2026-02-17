@@ -7,6 +7,17 @@ use std::io::{self, BufRead};
 use std::path::Path;
 use trie_db::{proof::verify_proof, DBValue};
 
+pub struct VerificationResult {
+    pub is_valid: bool,
+    pub is_non_inclusion: bool,
+    pub details: Vec<ProofVerificationDetail>,
+}
+
+pub struct ProofVerificationDetail {
+    pub leaf: String,
+    pub is_proof_valid: bool,
+}
+
 pub fn hash_h256_kv(dependencies_clear_text: Vec<&str>) -> Vec<(H256, H256)> {
     let mut hash_kv: Vec<(H256, H256)> = Vec::new();
     for dependency_clear_text in dependencies_clear_text {
@@ -20,129 +31,303 @@ pub fn hash_h256_kv(dependencies_clear_text: Vec<&str>) -> Vec<(H256, H256)> {
     return hash_kv;
 }
 
-pub fn verify(commitment: &str, proof_path: &str) -> bool {
-    let (proof, leaf, input_key, input_value) = parse_proof_file(proof_path).unwrap();
+pub fn verify(commitment: &str, proof_path: &str) -> VerificationResult {
+    debug!("Commitment: {}, Proof Path: {}", commitment, proof_path);
+
+    let proofs = match parse_proof_file(proof_path) {
+        Ok(proofs) => proofs,
+        Err(e) => {
+            error!("Failed to parse proof file: {}", e);
+            return VerificationResult {
+                is_valid: false,
+                is_non_inclusion: false,
+                details: vec![],
+            };
+        }
+    };
+
+    let num_proofs = proofs.len();
+    debug!("Found {} proof(s) in file", num_proofs);
 
     // Prepare Commitment
     let commitment = commitment.strip_prefix("0x").unwrap_or(commitment);
-    let commitment = hex::decode(commitment).unwrap();
-    let commitment: [u8; 32] = commitment.try_into().unwrap();
-
-    // Check if key and value are correct in case they are present
-    let kv_calc = hash_h256_kv(vec![&leaf]);
-    let key_calc = kv_calc.get(0).unwrap().0.as_bytes();
-    let value_calc = kv_calc.get(0).unwrap().1.as_bytes();
-
-    if input_key.is_some() {
-        let input_key = input_key.clone().unwrap();
-        let input_key = input_key.strip_prefix("0x").unwrap_or(&input_key);
-        let input_key = hex::decode(input_key).unwrap();
-
-        if key_calc == input_key {
-            debug!("Key is present in Proof File and matches the computed hash.");
-        } else {
-            warn!("Key Hash is present in Proof File but does not match the computed hash.");
+    let commitment = match hex::decode(commitment) {
+        Ok(bytes) => match <[u8; 32]>::try_from(bytes) {
+            Ok(arr) => arr,
+            Err(e) => {
+                error!("Failed to convert commitment to [u8; 32]: {:?}", e);
+                return VerificationResult {
+                    is_valid: false,
+                    is_non_inclusion: false,
+                    details: vec![],
+                };
+            }
+        },
+        Err(e) => {
+            error!("Failed to decode commitment hex: {}", e);
+            return VerificationResult {
+                is_valid: false,
+                is_non_inclusion: false,
+                details: vec![],
+            };
         }
-    } else {
-        debug!("Key Hash Not Present in Proof File.");
+    };
+
+    let mut all_valid = true;
+    let mut details = Vec::new();
+    let mut is_non_inclusion = false;
+
+    for (idx, (proof_hex, leaf, input_key, input_value)) in proofs.into_iter().enumerate() {
+        debug!(
+            "Verifying proof {} of {}: leaf '{}'",
+            idx + 1,
+            num_proofs,
+            leaf
+        );
+
+        // Check if key and value are correct in case they are present
+        let kv_calc = hash_h256_kv(vec![&leaf]);
+        let key_calc = kv_calc.get(0).unwrap().0.as_bytes();
+        let value_calc = kv_calc.get(0).unwrap().1.as_bytes();
+
+        let mut key_binding_valid = true;
+
+        if let Some(input_key) = &input_key {
+            let input_key_str = input_key.strip_prefix("0x").unwrap_or(&input_key);
+            match hex::decode(input_key_str) {
+                Ok(decoded) => {
+                    if key_calc == decoded.as_slice() {
+                        debug!("Key is present in Proof File and matches the computed hash.");
+                    } else {
+                        warn!("Key Hash is present in Proof File but does not match the computed hash.");
+                        key_binding_valid = false;
+                        all_valid = false;
+                    }
+                }
+                Err(e) => {
+                    error!("Failed to decode input key hex: {}", e);
+                    key_binding_valid = false;
+                    all_valid = false;
+                }
+            }
+        } else {
+            debug!("Key Hash Not Present in Proof File.");
+        }
+
+        let mut value_binding_valid = true;
+
+        if let Some(input_value) = &input_value {
+            let input_value_str = input_value.strip_prefix("0x").unwrap_or(&input_value);
+            match hex::decode(input_value_str) {
+                Ok(decoded) => {
+                    if value_calc == decoded.as_slice() {
+                        debug!("Value is present in Proof File and matches the computed hash.");
+                    } else {
+                        warn!("Value Hash is present in Proof File but does not match the computed hash.");
+                        value_binding_valid = false;
+                        all_valid = false;
+                    }
+                }
+                Err(e) => {
+                    error!("Failed to decode input value hex: {}", e);
+                    value_binding_valid = false;
+                    all_valid = false;
+                }
+            }
+        } else {
+            debug!("Value Hash Not Present in Proof File.");
+        }
+
+        // Get Proof
+        let proof = proof_hex.split(";").collect::<Vec<&str>>();
+        let proof = proof
+            .iter()
+            .map(|part| part.strip_prefix("0x").unwrap_or(part))
+            .collect::<Vec<&str>>();
+        let proof = match proof
+            .iter()
+            .map(|part| hex::decode(part))
+            .collect::<Result<Vec<Vec<u8>>, _>>()
+        {
+            Ok(p) => p,
+            Err(e) => {
+                error!("Failed to decode proof hex: {}", e);
+                all_valid = false;
+                details.push(ProofVerificationDetail {
+                    leaf: leaf.clone(),
+                    is_proof_valid: false,
+                });
+                continue;
+            }
+        };
+
+        // Prepare Value
+        let input_value_decoded = match input_value {
+            Some(val) => {
+                let val_str = val.strip_prefix("0x").unwrap_or(&val);
+                match hex::decode(val_str) {
+                    Ok(decoded) => decoded,
+                    Err(e) => {
+                        error!("Failed to decode input value: {}", e);
+                        all_valid = false;
+                        details.push(ProofVerificationDetail {
+                            leaf: leaf.clone(),
+                            is_proof_valid: false,
+                        });
+                        continue;
+                    }
+                }
+            }
+            None => {
+                error!("Input value is required for verification");
+                all_valid = false;
+                details.push(ProofVerificationDetail {
+                    leaf: leaf.clone(),
+                    is_proof_valid: false,
+                });
+                continue;
+            }
+        };
+
+        // Prepare Key
+        let input_key_decoded = match input_key {
+            Some(key) => {
+                let key_str = key.strip_prefix("0x").unwrap_or(&key);
+                match hex::decode(key_str) {
+                    Ok(decoded) => decoded,
+                    Err(e) => {
+                        error!("Failed to decode input key: {}", e);
+                        all_valid = false;
+                        details.push(ProofVerificationDetail {
+                            leaf: leaf.clone(),
+                            is_proof_valid: false,
+                        });
+                        continue;
+                    }
+                }
+            }
+            None => {
+                error!("Input key is required for verification");
+                all_valid = false;
+                details.push(ProofVerificationDetail {
+                    leaf: leaf.clone(),
+                    is_proof_valid: false,
+                });
+                continue;
+            }
+        };
+
+        // Prepare Items with Key and Value
+        let items_new: Vec<(Vec<u8>, Option<DBValue>)> =
+            vec![(input_key_decoded, Some(input_value_decoded))];
+
+        // Verify Proof
+        let res = verify_proof::<NoExtensionLayout, _, _, _>(&commitment, &proof, items_new.iter());
+
+        let proof_valid = match res {
+            Ok(()) => {
+                debug!("Proof is valid!");
+                debug!("Leaf in trie");
+                true
+            }
+            Err(e) => {
+                debug!("Proof verification error: {:?}", e);
+                let err_str = format!("{:?}", e);
+                is_non_inclusion = true;
+                err_str.contains("ValueMismatch")
+            }
+        };
+
+        if !proof_valid || !key_binding_valid || !value_binding_valid {
+            all_valid = false;
+        }
+
+        details.push(ProofVerificationDetail {
+            leaf: leaf.clone(),
+            is_proof_valid: proof_valid && key_binding_valid && value_binding_valid,
+        });
     }
 
-    if input_value.is_some() {
-        let input_value = input_value.clone().unwrap();
-        let input_value = input_value.strip_prefix("0x").unwrap_or(&input_value);
-        let input_value = hex::decode(input_value).unwrap();
-
-        if value_calc == input_value {
-            debug!("Value is present in Proof File and matches the computed hash.");
-        } else {
-            warn!("Value Hash is present in Proof File but does not match the computed hash.");
-        }
-    } else {
-        debug!("Value Hash Not Present in Proof File.");
-    }
-
-    // Get Proof
-    let proof = proof.split(";").collect::<Vec<&str>>();
-    let proof = proof
-        .iter()
-        .map(|part| part.strip_prefix("0x").unwrap_or(part))
-        .collect::<Vec<&str>>();
-    let proof = proof
-        .iter()
-        .map(|part| hex::decode(part).unwrap())
-        .collect::<Vec<Vec<u8>>>();
-
-    // Prepare Value
-    let input_value_hex = input_value.unwrap();
-    let input_value_hex = input_value_hex
-        .strip_prefix("0x")
-        .unwrap_or(&input_value_hex);
-    let input_value_decoded = hex::decode(input_value_hex).unwrap();
-    let input_value_decoded = input_value_decoded.to_vec();
-
-    // Prepare Key
-    let input_key_hex = input_key.unwrap();
-    let input_key_hex = input_key_hex.strip_prefix("0x").unwrap_or(&input_key_hex);
-    let input_key_decoded = hex::decode(input_key_hex).unwrap();
-    let input_key_decoded = input_key_decoded.to_vec();
-
-    // Prepare Items with Key and Value
-    let items_new: Vec<(Vec<u8>, Option<DBValue>)> =
-        vec![(input_key_decoded, Some(input_value_decoded))];
-
-    // Verify Proof
-    let res = verify_proof::<NoExtensionLayout, _, _, _>(&commitment, &proof, items_new.iter());
-
-    match res {
-        Ok(_) => {
-            debug!("Leaf in trie");
-            return true;
-        }
-        Err(_) => {
-            error!("Leaf not in trie");
-            return false;
-        }
+    VerificationResult {
+        is_valid: all_valid,
+        is_non_inclusion: is_non_inclusion,
+        details,
     }
 }
 
 fn parse_proof_file(
     proof_path: &str,
-) -> Result<(String, String, Option<String>, Option<String>), io::Error> {
+) -> Result<Vec<(String, String, Option<String>, Option<String>)>, io::Error> {
     let path = Path::new(proof_path);
     let file = File::open(path)?;
     let reader = io::BufReader::new(file);
 
-    let mut proof = String::new();
-    let mut leaf = String::new();
-    let mut key = String::new();
-    let mut value = String::new();
+    let mut proofs: Vec<(String, String, Option<String>, Option<String>)> = Vec::new();
+    let mut current_proof = String::new();
+    let mut current_leaf = String::new();
+    let mut current_key = String::new();
+    let mut current_value = String::new();
 
     for line_result in reader.lines() {
         let line = line_result?;
         let trimmed_line = line.trim();
+
+        // Check for separator between proofs
+        if trimmed_line == "---" {
+            if !current_proof.is_empty() && !current_leaf.is_empty() {
+                let key = if current_key.is_empty() {
+                    None
+                } else {
+                    Some(current_key.clone())
+                };
+                let value = if current_value.is_empty() {
+                    None
+                } else {
+                    Some(current_value.clone())
+                };
+                proofs.push((current_proof.clone(), current_leaf.clone(), key, value));
+                current_proof.clear();
+                current_leaf.clear();
+                current_key.clear();
+                current_value.clear();
+            }
+            continue;
+        }
 
         if trimmed_line.is_empty() || trimmed_line.starts_with("#") {
             continue;
         }
 
         if let Some(separator_index) = trimmed_line.find(':') {
-            let i_key = trimmed_line[..separator_index].trim().to_string();
-            let i_value = trimmed_line[separator_index + 1..].trim().to_string();
+            let key = trimmed_line[..separator_index].trim().to_string();
+            let value = trimmed_line[separator_index + 1..].trim().to_string();
 
-            match i_key.as_str() {
-                "Proof" => proof = i_value,
-                "Leaf" => leaf = i_value,
-                "Key" => key = i_value,
-                "Value" => value = i_value,
-                _ => eprintln!("Warning: Unknown key: {}", i_key), // Handle unknown keys
+            match key.as_str() {
+                "Proof" => current_proof = value,
+                "Leaf" => current_leaf = value,
+                "Key" => current_key = value,
+                "Value" => current_value = value,
+                _ => debug!("Ignoring unknown key: {}", key),
             }
         } else {
-            eprintln!("Warning: Invalid line format: {}", trimmed_line);
+            debug!("Ignoring line without key-value format: {}", trimmed_line);
         }
     }
 
-    let key = if key.is_empty() { None } else { Some(key) };
-    let value = if value.is_empty() { None } else { Some(value) };
+    // Don't forget to add the last proof if it exists
+    if !current_proof.is_empty() && !current_leaf.is_empty() {
+        let key = if current_key.is_empty() {
+            None
+        } else {
+            Some(current_key)
+        };
+        let value = if current_value.is_empty() {
+            None
+        } else {
+            Some(current_value)
+        };
+        proofs.push((current_proof, current_leaf, key, value));
+    }
 
-    Ok((proof, leaf, key, value))
+    Ok(proofs)
 }

@@ -1,0 +1,6 @@
+Proof: 0x4c4ffd51fd48dc909505a3112ea22312367a734f0fdfa185a4ee7c7df1a8022fa8001c35fdff8b2a2ff0eb8e4c2ab28398cc21d6b9af1aecc50a12953b3ffff5845318230c51fe46c7370a118778f7cbb8bd2569e74894c6aae73e9276ebbbced4ab746480dd49d5676617ec909c3ee5f3fd74810275de40e22f9b5cc3ddde41c51e480f4106014f01
+Leaf: openssl@0.10.1@RUST
+# Hashes input bytes using the Blake2b algorithm with the dependency as `key` and the `key || dependency` as value, then storing as HEX.
+Key: 0x49dd318c3e4b6711991299f6bd07c7468bfa9075b63a0a6fed842c10fb990c46
+Value: 0x0f8a714a5e59649722752391b91a28b05d0e85e6a0e67ebe87bb4d892c6ca060
+---

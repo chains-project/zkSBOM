@@ -1,0 +1,24 @@
+[app]
+log_level = "error"
+output = "./tmp/tests/output/proof.txt"
+clean_init_dbs = false
+# Checks if Rust dependencies in the SBOM are available on crates.io.
+check_dependencies = false
+check_dependencies_output = "./tmp/tests/output/unfound_dependencies.log"
+# Add your own GitHub personal access token here
+github_token = "YOUR_TOKEN"
+timing_analysis = false
+timing_analysis_output = "./tests/tmp/output/timing_analysis.log"
+salt = false
+
+[db_commitment]
+path = "./tests/tmp/database/commitment.db"
+
+[db_dependency]
+path = "./tests/tmp/database/dependency.db"
+
+[db_vulnerabilities]
+path = "./tests/tmp/database/vulnerabilities.db"
+
+[db_ozks]
+path = "./tests/tmp/database/ozks.db"

@@ -1,4 +1,4 @@
-use crate::config::load_config;
+use crate::config::Config;
 use log::{debug, error};
 use reqwest::blocking::Client;
 use reqwest::header::USER_AGENT;
@@ -19,9 +19,8 @@ fn is_url_available(url: &str) -> bool {
     }
 }
 
-pub fn check_dependencies(dependencies: &Vec<String>) {
-    let config = load_config().unwrap();
-    let log_path = config.app.check_dependencies_output;
+pub fn check_dependencies(dependencies: &Vec<String>, config: &Config) {
+    let log_path = &config.app.check_dependencies_output;
 
     // Check if the directory exists, and create it if not
     let log_path_obj = Path::new(&log_path);
@@ -38,7 +37,11 @@ pub fn check_dependencies(dependencies: &Vec<String>) {
         }
     }
 
-    let mut log_file = match OpenOptions::new().append(true).create(true).open(&log_path) {
+    let mut log_file = match OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open(log_path.as_str())
+    {
         Ok(file) => file,
         Err(e) => {
             error!("Failed to open log file: {}", e);

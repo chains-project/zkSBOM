@@ -1,4 +1,8 @@
-[submodule "zksbom/src/method/ozks/dev"]
-	path = zksbom/src/method/ozks/dev
-	url = https://github.com/t-sorger/oZKS.git
-	branch = zksbom
+[submodule "zksbom/third_party/oZKS"]
+	path = zksbom/third_party/oZKS
+	url = git@github.com:chains-project/oZKS.git
+	branch = zkSBOM
+[submodule "zksbom-verifier/third_party/oZKS"]
+	path = zksbom-verifier/third_party/oZKS
+	url = git@github.com:chains-project/oZKS.git
+	branch = zkSBOM

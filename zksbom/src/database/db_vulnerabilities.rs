@@ -1,4 +1,4 @@
-use crate::config::load_config;
+use crate::config::Config;
 use log::{debug, error};
 use rusqlite::{params, Connection, Result};
 use std::fs;
@@ -11,10 +11,9 @@ pub struct VulnerabilityDbEntry {
     pub vulnerabilities: String, // comma-separated string
 }
 
-pub fn init_db_vulnerabilities() {
+pub fn init_db_vulnerabilities(config: &Config) {
     debug!("Initializing the vulnerabilities database...");
-    let config = load_config().unwrap();
-    let db_path = config.db_vulnerabilities.path;
+    let db_path = &config.db_vulnerabilities.path;
 
     // Check if the directory exists, and create it if not
     let db_path_obj = Path::new(&db_path);
@@ -29,7 +28,7 @@ pub fn init_db_vulnerabilities() {
     }
 
     // Create the Vulnerability table if it doesn't exist.
-    match Connection::open(db_path) {
+    match Connection::open(db_path.as_str()) {
         Ok(conn) => {
             match conn.execute(
                 "CREATE TABLE IF NOT EXISTS vulnerabilities (
@@ -38,7 +37,10 @@ pub fn init_db_vulnerabilities() {
                 )",
                 [],
             ) {
-                Ok(_) => debug!("Vulnerabilities database initialized."),
+                Ok(_) => {
+                    debug!("Vulnerabilities database initialized.");
+                    let _ = conn.close();
+                }
                 Err(e) => error!(
                     "Error initializing db_vulnerabilitiesulnerabilities database: {}",
                     e
@@ -49,12 +51,11 @@ pub fn init_db_vulnerabilities() {
     };
 }
 
-fn get_db_vulnerabilities_connection() -> Connection {
+fn get_db_vulnerabilities_connection(config: &Config) -> Connection {
     debug!("Getting the db_vulnerabilities database connection...");
-    let config = load_config().unwrap();
-    let db_path = config.db_vulnerabilities.path;
+    let db_path = &config.db_vulnerabilities.path;
 
-    match Connection::open(&db_path) {
+    match Connection::open(db_path.as_str()) {
         Ok(conn) => {
             debug!("Vulnerabilities database connection established.");
             conn
@@ -67,25 +68,26 @@ fn get_db_vulnerabilities_connection() -> Connection {
 
 /// Inserts a new dependency and its vulnerabilities into the database.
 /// If the dependency already exists, it will be overwritten.
-pub fn insert_vulnerabilities(entry: VulnerabilityDbEntry) -> Result<()> {
+pub fn insert_vulnerabilities(entry: VulnerabilityDbEntry, config: &Config) -> Result<()> {
     debug!("Inserting vulnerability into the database...");
-    let conn = get_db_vulnerabilities_connection();
+    let conn = get_db_vulnerabilities_connection(config);
 
     conn.execute(
         "INSERT OR REPLACE INTO vulnerabilities (dependency, vulnerabilities_list) VALUES (?1, ?2)",
         params![entry.dependency, entry.vulnerabilities],
     )?;
     debug!("Vulnerability inserted into the database.");
+    let _ = conn.close();
     Ok(())
 }
 
 /// Retrieves the vulnerabilities for a given dependency.
-pub fn get_vulnerabilities(dependency: &str) -> Result<Option<Vec<String>>> {
+pub fn get_vulnerabilities(dependency: &str, config: &Config) -> Result<Option<Vec<String>>> {
     debug!(
         "Getting vulnerabilities from the database for dependency: {}",
         dependency
     );
-    let conn = get_db_vulnerabilities_connection();
+    let conn = get_db_vulnerabilities_connection(config);
 
     let mut stmt =
         conn.prepare("SELECT vulnerabilities_list FROM vulnerabilities WHERE dependency = ?1")?;
@@ -108,8 +110,8 @@ pub fn get_vulnerabilities(dependency: &str) -> Result<Option<Vec<String>>> {
     }
 }
 
-pub fn delete_db_vulnerabilities() {
+pub fn delete_db_vulnerabilities(config: &Config) {
     debug!("Deleting the vulnerability database...");
-    let conn = get_db_vulnerabilities_connection();
+    let conn = get_db_vulnerabilities_connection(config);
     _ = conn.execute("DELETE FROM vulnerabilities", []);
 }

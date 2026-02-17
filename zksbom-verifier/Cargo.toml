@@ -24,3 +24,7 @@ keccak-hasher = "0.16.0"
 memory-db = "0.32.0"
 reference-trie = "0.29.1"
 trie-db = "0.27.1"
+
+[build-dependencies]
+cc = "1"
+bindgen = "0.71"
