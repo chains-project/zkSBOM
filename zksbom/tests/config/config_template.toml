@@ -1,10 +1,10 @@
 [app]
 log_level = "error"
-output = "./tmp/tests/output/proof.txt"
+output = "./tests/tmp/output/proof.txt"
 clean_init_dbs = false
 # Checks if Rust dependencies in the SBOM are available on crates.io.
 check_dependencies = false
-check_dependencies_output = "./tmp/tests/output/unfound_dependencies.log"
+check_dependencies_output = "./tests/tmp/output/unfound_dependencies.log"
 # Add your own GitHub personal access token here
 github_token = "YOUR_TOKEN"
 timing_analysis = false
