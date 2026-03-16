@@ -30,18 +30,46 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     let vendor = parsed_sbom.vendor;
     let product = parsed_sbom.product;
     let version = parsed_sbom.version;
-    let dependencies: Vec<&str> = parsed_sbom
+    let mut dependencies: Vec<String> = parsed_sbom
         .dependencies
         .iter()
-        .map(|s| s.as_str())
+        .map(|s| s.to_string())
         .collect();
-    debug!(
+    error!(
         "Vendor: {}, Product: {}, Version: {}, dependencies: {:?}",
         vendor, product, version, dependencies
     );
 
+    // Add concealed dependency to list of leaves
+    let mut concealed_dependency = Vec::new();
+    for dependency in &dependencies {
+        let parts: Vec<&str> = dependency.split('@').collect();
+
+        // Keep first and last parts, join with '@'
+        if parts.len() >= 2 {
+            let result = format!("{}@{}", parts.first().unwrap(), parts.last().unwrap());
+            concealed_dependency.push(result);
+        } else {
+            error!("Problem parsing dependency: {}", dependency);
+        }
+    }
+
+    // Append the new prefixes to the original list
+    dependencies.extend(concealed_dependency);
+
+    debug!(
+        "Dependencies with concealed dependencies: {:?}",
+        dependencies
+    );
+
     // Generate Commitments
-    let commitments = create_commitments(dependencies.clone(), config);
+    let commitments = create_commitments(
+        dependencies
+            .iter()
+            .map(|s| s.as_str())
+            .collect::<Vec<&str>>(),
+        config,
+    );
     let commitment_merkle_tree = commitments[0].clone();
     let commitment_sparse_merkle_tree = commitments[1].clone();
     let commitment_merkle_patricia_trie = commitments[2].clone();

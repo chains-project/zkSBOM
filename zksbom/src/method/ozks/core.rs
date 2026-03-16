@@ -226,16 +226,31 @@ pub fn create_proof(commitment: &str, check: &str, config: &Config) -> String {
                     "Dependency: {} is vulnerable to/in the SBOM: {}",
                     dep, check
                 );
-                let (proof, time_in_ns) = generate_proof(
+
+                // Get concealed dependency
+                let concealed_dep = if dep.contains('@') {
+                    let parts: Vec<&str> = dep.split('@').collect();
+                    if parts.len() >= 2 {
+                        format!("{}@{}", parts.first().unwrap(), parts.last().unwrap())
+                    } else {
+                        error!("Problem parsing dependency: {}", dep);
+                        dep.to_string() // fallback to original
+                    }
+                } else {
+                    error!("Problem parsing dependency: {}", dep);
+                    dep.to_string() // fallback to original
+                };
+
+                let (proof, elapsed) = generate_proof(
                     commitment.to_string(),
                     dependencies,
-                    dep.to_string(),
+                    concealed_dep.clone(),
                     config,
                 );
-                message = print_proof(proof, dep.to_string(), false, config);
+                print_proof(proof, concealed_dep, false, config);
                 println!("{message}");
 
-                return time_in_ns;
+                return elapsed;
             }
         }
     }

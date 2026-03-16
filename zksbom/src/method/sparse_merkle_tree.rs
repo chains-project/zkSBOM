@@ -147,9 +147,24 @@ pub fn create_proof(commitment: &str, check: &str, config: &Config) -> String {
                     "Dependency: {} is vulnerable to/in the SBOM: {}",
                     dep, check
                 );
+
+                // Get concealed dependency
+                let concealed_dep = if dep.contains('@') {
+                    let parts: Vec<&str> = dep.split('@').collect();
+                    if parts.len() >= 2 {
+                        format!("{}@{}", parts.first().unwrap(), parts.last().unwrap())
+                    } else {
+                        error!("Problem parsing dependency: {}", dep);
+                        dep.to_string() // fallback to original
+                    }
+                } else {
+                    error!("Problem parsing dependency: {}", dep);
+                    dep.to_string() // fallback to original
+                };
+
                 let (proof, elapsed) =
-                    generate_proof(commitment, dependencies, dep.to_string(), config);
-                message = print_proof(proof, dep.to_string(), false, config);
+                    generate_proof(commitment, dependencies, concealed_dep.clone(), config);
+                print_proof(proof, concealed_dep, false, config);
                 println!("{message}");
 
                 return elapsed;

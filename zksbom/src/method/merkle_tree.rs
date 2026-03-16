@@ -77,10 +77,24 @@ pub fn create_proof(commitment: &str, check: &str, config: &Config) -> String {
                     dep, check
                 );
 
-                let (proof, elapsed) =
-                    generate_proof(commitment.to_string(), dep.to_string(), config);
+                // Get concealed dependency
+                let concealed_dep = if dep.contains('@') {
+                    let parts: Vec<&str> = dep.split('@').collect();
+                    if parts.len() >= 2 {
+                        format!("{}@{}", parts.first().unwrap(), parts.last().unwrap())
+                    } else {
+                        error!("Problem parsing dependency: {}", dep);
+                        dep.to_string() // fallback to original
+                    }
+                } else {
+                    error!("Problem parsing dependency: {}", dep);
+                    dep.to_string() // fallback to original
+                };
 
-                print_proof(proof, dep.to_string(), config);
+                let (proof, elapsed) =
+                    generate_proof(commitment.to_string(), concealed_dep.clone(), config);
+
+                print_proof(proof, concealed_dep, config);
 
                 return elapsed;
             }
