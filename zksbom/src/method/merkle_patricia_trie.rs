@@ -121,8 +121,6 @@ pub fn create_proof(commitment: &str, check: &str, config: &Config) -> String {
                     dep.to_string() // fallback to original
                 };
 
-                error!("{}", concealed_dep);
-
                 let (proof, elapsed) = generate_proof(
                     commitment.to_string(),
                     dependencies,

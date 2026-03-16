@@ -10,15 +10,15 @@ pub fn test_get_commitment() {
     let methods = [
         (
             "merkle-tree",
-            "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d",
+            "0x147371669a559c8f9daaccee3d98f37d8850377882d2fd6e4d94079c861e7ae4",
         ),
         (
             "sparse-merkle-tree",
-            "0xdb6bbe76d4b256a389baac6675c9650bfd9d097f9b4789437346b3aeb8864b51",
+            "0x949650e05725a7dd3415982d89315dcbc3f5bac994a97b4c1b60ac7c0695c4a7",
         ),
         (
             "merkle-patricia-trie",
-            "0x850ae2b766052239536e1a4e5de35947508ce88bc9c500f71d1940aa7404c633",
+            "0xf67ab4fdac9fa1a5db9c0c42d6b95517fbf24cc9108d7a8156e805841f9f6e1a",
         ),
         ("ozks", ""),
     ];

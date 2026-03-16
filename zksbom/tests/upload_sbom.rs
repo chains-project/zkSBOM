@@ -87,15 +87,15 @@ fn test_commitment_db_contents(db_path: &str) {
         assert_eq!(version, "0.1.0");
         assert_eq!(
             commitment_merkle_tree,
-            "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d"
+            "0x147371669a559c8f9daaccee3d98f37d8850377882d2fd6e4d94079c861e7ae4"
         );
         assert_eq!(
             commitment_sparse_merkle_tree,
-            "0xdb6bbe76d4b256a389baac6675c9650bfd9d097f9b4789437346b3aeb8864b51"
+            "0x949650e05725a7dd3415982d89315dcbc3f5bac994a97b4c1b60ac7c0695c4a7"
         );
         assert_eq!(
             commitment_merkle_patricia_trie,
-            "0x850ae2b766052239536e1a4e5de35947508ce88bc9c500f71d1940aa7404c633"
+            "0xf67ab4fdac9fa1a5db9c0c42d6b95517fbf24cc9108d7a8156e805841f9f6e1a"
         );
         assert!(
             commitment_ozks.chars().any(|c| c != '0'),
@@ -131,15 +131,15 @@ fn test_dependency_db_contents(db_path: &str) {
 
         assert_eq!(
             commitment_merkle_tree,
-            "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d"
+            "0x147371669a559c8f9daaccee3d98f37d8850377882d2fd6e4d94079c861e7ae4"
         );
         assert_eq!(
             commitment_sparse_merkle_tree,
-            "0xdb6bbe76d4b256a389baac6675c9650bfd9d097f9b4789437346b3aeb8864b51"
+            "0x949650e05725a7dd3415982d89315dcbc3f5bac994a97b4c1b60ac7c0695c4a7"
         );
         assert_eq!(
             commitment_merkle_patricia_trie,
-            "0x850ae2b766052239536e1a4e5de35947508ce88bc9c500f71d1940aa7404c633"
+            "0xf67ab4fdac9fa1a5db9c0c42d6b95517fbf24cc9108d7a8156e805841f9f6e1a"
         );
         assert!(
             commitment_ozks.chars().any(|c| c != '0'),
@@ -147,7 +147,8 @@ fn test_dependency_db_contents(db_path: &str) {
         );
         assert_eq!(
             dependencies,
-            "openssl@0.10.1@RUST,openssl@0.11.1@GO,openssl@0.12.1@MAVEN"
+            "openssl@0.10.1@RUST,openssl@0.11.1@GO,openssl@0.12.1@MAVEN,\
+            openssl@RUST,openssl@GO,openssl@MAVEN"
         );
     } else {
         panic!("No commitment row found in the database");
