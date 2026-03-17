@@ -2,6 +2,7 @@ use crate::config::Config;
 use crate::database::db_dependency::get_dependencies;
 use crate::hasher::hash_h256;
 use crate::map_dependencies_vulnerabilities::get_mapping_for_dependencies;
+use crate::method::method_handler::get_concealed_dependencies;
 use binary_merkle_tree::{merkle_proof, merkle_root, MerkleProof};
 use log::{debug, error};
 use sp_core::H256;
@@ -11,7 +12,6 @@ use std::io::Write;
 use std::path::Path;
 use std::str;
 use std::time::Instant;
-use crate::method::method_handler::get_concealed_dependencies;
 
 pub struct MerkleRootLeaves {
     pub root: String,

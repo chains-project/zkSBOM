@@ -3,6 +3,7 @@ use crate::database::db_dependency::get_dependencies;
 use crate::map_dependencies_vulnerabilities::{
     get_mapping_for_dependencies, get_vulnerable_packages_for_cve,
 };
+use crate::method::method_handler::get_concealed_dependencies;
 use blake2::{
     digest::{Update, VariableOutput},
     Blake2bVar,
@@ -19,7 +20,6 @@ use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
-use crate::method::method_handler::get_concealed_dependencies;
 
 // define SMT
 type SMT = SparseMerkleTree<Blake2bHasher, H256, DefaultStore<H256>>;

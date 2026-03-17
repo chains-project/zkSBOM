@@ -4,6 +4,7 @@ use crate::hasher::hash_h256_kv;
 use crate::map_dependencies_vulnerabilities::{
     get_mapping_for_dependencies, get_vulnerable_packages_for_cve,
 };
+use crate::method::method_handler::get_concealed_dependencies;
 use log::{debug, error, info};
 use reference_trie::NoExtensionLayout;
 use std::fs::{create_dir_all, File, OpenOptions};
@@ -14,7 +15,6 @@ use std::time::Instant;
 use trie_db::{
     proof::generate_proof as generate_proof_trie, DBValue, TrieDBMutBuilder, TrieLayout, TrieMut,
 };
-use crate::method::method_handler::get_concealed_dependencies;
 
 type MemoryDB<T> = memory_db::MemoryDB<
     <T as TrieLayout>::Hash,

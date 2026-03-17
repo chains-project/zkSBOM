@@ -5,12 +5,12 @@ use crate::hasher::hash_h256_kv;
 use crate::map_dependencies_vulnerabilities::{
     get_mapping_for_dependencies, get_vulnerable_packages_for_cve,
 };
+use crate::method::method_handler::get_concealed_dependencies;
 use log::{debug, error, info};
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
-use crate::method::method_handler::get_concealed_dependencies;
 
 pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, String) {
     info!("Creating oZKS commitment...");

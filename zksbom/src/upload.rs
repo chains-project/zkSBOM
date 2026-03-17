@@ -4,12 +4,12 @@ use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::github_advisory_database_mapping::MAPPINGS;
 use crate::method::method_handler::create_commitments;
+use chrono::Utc;
+use chrono_tz::Europe::Stockholm;
 use log::{debug, error, warn};
 use rand::distr::Alphanumeric;
 use rand::Rng;
 use serde_json::{from_str, Value};
-use chrono::Utc;
-use chrono_tz::Europe::Stockholm;
 
 #[derive(Debug, Default)]
 struct SbomParsed {
@@ -36,25 +36,20 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     let now_utc = Utc::now();
     let now_stockholm = now_utc.with_timezone(&Stockholm);
 
-    let metadata: String =
-        format!(
-            "{};{};v{};{}",
-            vendor.to_string(),
-            &product,
-            &version,
-            now_stockholm.format("%Y-%m-%d;%H:%M:%S;%Z%:z")
-        );
+    let metadata: String = format!(
+        "{};{};v{};{}",
+        vendor.to_string(),
+        &product,
+        &version,
+        now_stockholm.format("%Y-%m-%d;%H:%M:%S;%Z%:z")
+    );
 
     // Add metadata to the list of leaves
     let mut leaves: Vec<String> = vec![];
     leaves.push(metadata.clone());
 
     // Add dependencies to the list of leaves
-    leaves.extend(parsed_sbom
-        .dependencies
-        .iter()
-        .map(|s| s.to_string())
-    );
+    leaves.extend(parsed_sbom.dependencies.iter().map(|s| s.to_string()));
 
     debug!(
         "Vendor: {}, Product: {}, Version: {}, leaves: {:?}",
@@ -66,8 +61,7 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     for dependency in &leaves {
         if dependency == &metadata {
             debug!("Skipping metadata leave: {}", dependency);
-        }
-        else {
+        } else {
             let parts: Vec<&str> = dependency.split('@').collect();
 
             // Keep first and last parts, join with '@'
@@ -83,17 +77,11 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     // Append the new prefixes to the original list
     leaves.extend(concealed_dependency);
 
-    debug!(
-        "Leaves with concealed dependencies: {:?}",
-        leaves
-    );
+    debug!("Leaves with concealed dependencies: {:?}", leaves);
 
     // Generate Commitments
     let commitments = create_commitments(
-        leaves
-            .iter()
-            .map(|s| s.as_str())
-            .collect::<Vec<&str>>(),
+        leaves.iter().map(|s| s.as_str()).collect::<Vec<&str>>(),
         config,
     );
     let commitment_merkle_tree = commitments[0].clone();
