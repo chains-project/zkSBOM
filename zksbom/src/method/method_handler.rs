@@ -269,6 +269,22 @@ pub fn create_proof_no_commitment(
     create_proof(_api_key, method, &commitment, check, config);
 }
 
+pub fn get_concealed_dependencies(dependency: &str) -> String {
+    let concealed_dep = if dependency.contains('@') {
+        let parts: Vec<&str> = dependency.split('@').collect();
+        if parts.len() >= 2 {
+            format!("{}@{}", parts.first().unwrap(), parts.last().unwrap())
+        } else {
+            error!("Problem parsing dependency: {}", dependency);
+            dependency.to_string() // fallback to original
+        }
+    } else {
+        error!("Problem parsing dependency: {}", dependency);
+        dependency.to_string() // fallback to original
+    };
+    return concealed_dep;
+}
+
 fn print_timing(elapsed: Duration, method: &str, config: &Config) {
     let filename = &config.app.timing_analysis_output;
     let path = Path::new(&filename);

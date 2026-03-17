@@ -87,15 +87,15 @@ fn test_commitment_db_contents(db_path: &str) {
         assert_eq!(version, "0.1.0");
         assert_eq!(
             commitment_merkle_tree,
-            "0x147371669a559c8f9daaccee3d98f37d8850377882d2fd6e4d94079c861e7ae4"
+            "0x15af5558988487e65fac03e11ec63fa2d974c8b695c33e47c9512038d001e71c"
         );
         assert_eq!(
             commitment_sparse_merkle_tree,
-            "0x949650e05725a7dd3415982d89315dcbc3f5bac994a97b4c1b60ac7c0695c4a7"
+            "0xf4c7554842505a0b5cddfcb8ad593c88be9c4406875d1a5ffbc1f0d96d7e7dfe"
         );
         assert_eq!(
             commitment_merkle_patricia_trie,
-            "0xf67ab4fdac9fa1a5db9c0c42d6b95517fbf24cc9108d7a8156e805841f9f6e1a"
+            "0xe7dee588968d250fbae2e1dbff5462e828ae69a35f02b72997da2c076989280d"
         );
         assert!(
             commitment_ozks.chars().any(|c| c != '0'),
@@ -131,15 +131,15 @@ fn test_dependency_db_contents(db_path: &str) {
 
         assert_eq!(
             commitment_merkle_tree,
-            "0x147371669a559c8f9daaccee3d98f37d8850377882d2fd6e4d94079c861e7ae4"
+            "0x15af5558988487e65fac03e11ec63fa2d974c8b695c33e47c9512038d001e71c"
         );
         assert_eq!(
             commitment_sparse_merkle_tree,
-            "0x949650e05725a7dd3415982d89315dcbc3f5bac994a97b4c1b60ac7c0695c4a7"
+            "0xf4c7554842505a0b5cddfcb8ad593c88be9c4406875d1a5ffbc1f0d96d7e7dfe"
         );
         assert_eq!(
             commitment_merkle_patricia_trie,
-            "0xf67ab4fdac9fa1a5db9c0c42d6b95517fbf24cc9108d7a8156e805841f9f6e1a"
+            "0xe7dee588968d250fbae2e1dbff5462e828ae69a35f02b72997da2c076989280d"
         );
         assert!(
             commitment_ozks.chars().any(|c| c != '0'),

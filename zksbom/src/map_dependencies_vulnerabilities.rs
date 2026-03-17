@@ -77,7 +77,7 @@ fn mapping(dependencies: Vec<&str>, config: &Config) -> HashMap<String, Vec<Stri
     for dependency in dependencies {
         let parts: Vec<&str> = dependency.split("@").collect();
         if parts.len() < 3 {
-            debug!("Skipping malformed dependency: {}", dependency);
+            debug!("Skipping concealed/malformed dependency: {}", dependency);
             continue;
         }
         let name = parts[0];

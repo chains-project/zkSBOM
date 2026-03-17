@@ -8,6 +8,8 @@ use log::{debug, error, warn};
 use rand::distr::Alphanumeric;
 use rand::Rng;
 use serde_json::{from_str, Value};
+use chrono::Utc;
+use chrono_tz::Europe::Stockholm;
 
 #[derive(Debug, Default)]
 struct SbomParsed {
@@ -30,41 +32,65 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     let vendor = parsed_sbom.vendor;
     let product = parsed_sbom.product;
     let version = parsed_sbom.version;
-    let mut dependencies: Vec<String> = parsed_sbom
+
+    let now_utc = Utc::now();
+    let now_stockholm = now_utc.with_timezone(&Stockholm);
+
+    let metadata: String =
+        format!(
+            "{};{};v{};{}",
+            vendor.to_string(),
+            &product,
+            &version,
+            now_stockholm.format("%Y-%m-%d;%H:%M:%S;%Z%:z")
+        );
+
+    // Add metadata to the list of leaves
+    let mut leaves: Vec<String> = vec![];
+    leaves.push(metadata.clone());
+
+    // Add dependencies to the list of leaves
+    leaves.extend(parsed_sbom
         .dependencies
         .iter()
         .map(|s| s.to_string())
-        .collect();
-    error!(
-        "Vendor: {}, Product: {}, Version: {}, dependencies: {:?}",
-        vendor, product, version, dependencies
+    );
+
+    debug!(
+        "Vendor: {}, Product: {}, Version: {}, leaves: {:?}",
+        vendor, product, version, leaves
     );
 
     // Add concealed dependency to list of leaves
     let mut concealed_dependency = Vec::new();
-    for dependency in &dependencies {
-        let parts: Vec<&str> = dependency.split('@').collect();
+    for dependency in &leaves {
+        if dependency == &metadata {
+            debug!("Skipping metadata leave: {}", dependency);
+        }
+        else {
+            let parts: Vec<&str> = dependency.split('@').collect();
 
-        // Keep first and last parts, join with '@'
-        if parts.len() >= 2 {
-            let result = format!("{}@{}", parts.first().unwrap(), parts.last().unwrap());
-            concealed_dependency.push(result);
-        } else {
-            error!("Problem parsing dependency: {}", dependency);
+            // Keep first and last parts, join with '@'
+            if parts.len() >= 2 {
+                let result = format!("{}@{}", parts.first().unwrap(), parts.last().unwrap());
+                concealed_dependency.push(result);
+            } else {
+                error!("Problem parsing dependency: {}", dependency);
+            }
         }
     }
 
     // Append the new prefixes to the original list
-    dependencies.extend(concealed_dependency);
+    leaves.extend(concealed_dependency);
 
     debug!(
-        "Dependencies with concealed dependencies: {:?}",
-        dependencies
+        "Leaves with concealed dependencies: {:?}",
+        leaves
     );
 
     // Generate Commitments
     let commitments = create_commitments(
-        dependencies
+        leaves
             .iter()
             .map(|s| s.as_str())
             .collect::<Vec<&str>>(),
@@ -87,13 +113,13 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     };
     insert_commitment(commitment_entry, config);
 
-    // Save dependencies to database
+    // Save leaves to database
     let dependency_entry = DependencyDbEntry {
         commitment_merkle_tree,
         commitment_sparse_merkle_tree,
         commitment_merkle_patricia_trie,
         commitment_ozks,
-        dependencies: dependencies.join(","),
+        dependencies: leaves.join(","),
     };
     insert_dependency(dependency_entry, config);
 

@@ -14,6 +14,7 @@ use std::time::Instant;
 use trie_db::{
     proof::generate_proof as generate_proof_trie, DBValue, TrieDBMutBuilder, TrieLayout, TrieMut,
 };
+use crate::method::method_handler::get_concealed_dependencies;
 
 type MemoryDB<T> = memory_db::MemoryDB<
     <T as TrieLayout>::Hash,
@@ -108,18 +109,7 @@ pub fn create_proof(commitment: &str, check: &str, config: &Config) -> String {
                 );
 
                 // Get concealed dependency
-                let concealed_dep = if dep.contains('@') {
-                    let parts: Vec<&str> = dep.split('@').collect();
-                    if parts.len() >= 2 {
-                        format!("{}@{}", parts.first().unwrap(), parts.last().unwrap())
-                    } else {
-                        error!("Problem parsing dependency: {}", dep);
-                        dep.to_string() // fallback to original
-                    }
-                } else {
-                    error!("Problem parsing dependency: {}", dep);
-                    dep.to_string() // fallback to original
-                };
+                let concealed_dep = get_concealed_dependencies(dep);
 
                 let (proof, elapsed) = generate_proof(
                     commitment.to_string(),

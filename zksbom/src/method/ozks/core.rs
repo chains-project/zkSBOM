@@ -10,6 +10,7 @@ use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
+use crate::method::method_handler::get_concealed_dependencies;
 
 pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, String) {
     info!("Creating oZKS commitment...");
@@ -228,18 +229,7 @@ pub fn create_proof(commitment: &str, check: &str, config: &Config) -> String {
                 );
 
                 // Get concealed dependency
-                let concealed_dep = if dep.contains('@') {
-                    let parts: Vec<&str> = dep.split('@').collect();
-                    if parts.len() >= 2 {
-                        format!("{}@{}", parts.first().unwrap(), parts.last().unwrap())
-                    } else {
-                        error!("Problem parsing dependency: {}", dep);
-                        dep.to_string() // fallback to original
-                    }
-                } else {
-                    error!("Problem parsing dependency: {}", dep);
-                    dep.to_string() // fallback to original
-                };
+                let concealed_dep = get_concealed_dependencies(dep);
 
                 let (proof, elapsed) = generate_proof(
                     commitment.to_string(),
