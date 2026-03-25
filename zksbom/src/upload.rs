@@ -74,6 +74,10 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         }
     }
 
+    // Remove duplicates in concealed dependencies, for that we must sort first.
+    concealed_dependency.sort();
+    concealed_dependency.dedup();
+
     // Append the new prefixes to the original list
     leaves.extend(concealed_dependency);
 
