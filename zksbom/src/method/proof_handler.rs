@@ -35,7 +35,7 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
     // Check for Inclusion
     for dep in &dependencies {
         let stripped_dep = dep.split(';').next().unwrap_or(*dep);
-        error!("stripped_dep: {:?}", stripped_dep);
+        debug!("stripped_dep: {:?}", stripped_dep);
 
         if deps_to_proof.contains(&stripped_dep.to_string()) {
             for dep_to_proof in &deps_to_proof {
