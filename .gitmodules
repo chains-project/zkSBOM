@@ -6,3 +6,9 @@
 	path = zksbom-verifier/third_party/oZKS
 	url = git@github.com:chains-project/oZKS.git
 	branch = zkSBOM
+[submodule "rq1/druid"]
+	path = rq1/druid
+	url = git@github.com:apache/druid.git
+[submodule "rq1/rogue-jndi-server"]
+	path = rq1/rogue-jndi-server
+	url = git@github.com:veracode-research/rogue-jndi.git
