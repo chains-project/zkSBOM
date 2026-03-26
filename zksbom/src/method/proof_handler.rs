@@ -1,8 +1,5 @@
 use crate::config::Config;
 use crate::database::db_dependency::get_dependencies;
-use crate::map_dependencies_vulnerabilities::{
-    get_mapping_for_dependencies, get_vulnerable_packages_for_cve,
-};
 use crate::method::merkle_patricia_trie::generate_formatted_proof as mpt_generate;
 use crate::method::merkle_tree::generate_formatted_proof as mt_generate;
 use crate::method::ozks::core::generate_formatted_proof as ozks_generate;
@@ -11,39 +8,59 @@ use log::{debug, error, info};
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
+use crate::map_dependencies_vulnerabilities::get_vulnerable_packages_for_cve;
 
 pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &Config) -> String {
     let dependency_entry = get_dependencies(commitment.to_string(), method, config);
     let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
-    let dep_vul_map = get_mapping_for_dependencies(dependencies.clone(), config);
 
-    // 1. Check for Inclusion
+    let deps_to_proof: Vec<String>;
+
+    if check.to_lowercase().starts_with("cve") {
+        // check is cve
+        deps_to_proof = get_vulnerable_packages_for_cve(check, config);
+    }
+    else {
+        // check is dependency
+        if is_valid_dep(check) {
+            deps_to_proof = vec![check.to_string()];
+        }
+        else {
+            panic!("Wrong format for `check`: `{}`; expected CVE or package in the format of `package@version@ecosystem`", check);
+        }
+    }
+
+    debug!("deps_to_proof: {:?}\n\n", deps_to_proof);
+
+    // Check for Inclusion
     for dep in &dependencies {
         let stripped_dep = dep.split(';').next().unwrap_or(*dep);
-        if dep_vul_map.contains_key(stripped_dep) || stripped_dep == check {
-            if dep_vul_map
-                .get(stripped_dep)
-                .map_or(false, |vulns| vulns.contains(&check.to_string()))
-                || stripped_dep == check
-            {
-                debug!(
-                    "Dependency: {} is vulnerable to/in the SBOM: {}",
-                    dep, check
-                );
-                let concealed_dep = get_concealed_dependencies(dep);
+        error!("stripped_dep: {:?}", stripped_dep);
 
+        if deps_to_proof.contains(&stripped_dep.to_string()) {
+            for dep_to_proof in &deps_to_proof {
+                debug!("Creating inclusion proof for dep_to_proof: {}", dep_to_proof);
+                let concealed_dep = get_concealed_dependencies(dep_to_proof);
                 return inclusion_proof(method, commitment, dependencies, concealed_dep, config);
             }
         }
     }
 
-    // 2. If no inclusion found, fallback to Non-Inclusion
+    // If no inclusion, fallback to non-inclusion
     if method == "merkle-tree" {
-        println!("Merkle Tree doesn't support non-inclusion proofs.");
+        error!("Merkle Tree doesn't support non-inclusion proofs.");
         return "".to_string();
     }
 
-    non_inclusion_proof(method, commitment, dependencies, check, config)
+    debug!("Creating non inclusion proof for deps_to_proof: {}", deps_to_proof.join(", "));
+    non_inclusion_proof(method, commitment, dependencies, &deps_to_proof.join(", "), config)
+}
+
+
+fn is_valid_dep(s: &str) -> bool {
+    let parts: Vec<&str> = s.split('@').collect();
+    // Ensures 3 parts exist and none of them are empty strings
+    parts.len() == 3 && parts.iter().all(|p| !p.is_empty())
 }
 
 fn inclusion_proof(
@@ -84,7 +101,7 @@ fn non_inclusion_proof(
             call_crypto_method(method, commitment, dependencies.clone(), &dep, config);
 
         write_to_file(proof_payload, true, config);
-        total_elapsed = elapsed; // Note: returns the last elapsed time or you can accumulate
+        total_elapsed = elapsed;
     }
 
     println!("Proof written to: {}", output_path);

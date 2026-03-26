@@ -5,7 +5,6 @@ use std::path::Path;
 use zksbom::config::load_config_from_file;
 use zksbom::database::db_commitment::init_db_commitment;
 use zksbom::database::db_dependency::init_db_dependency;
-use zksbom::database::db_vulnerabilities::init_db_vulnerabilities;
 use zksbom::upload::upload;
 
 pub fn test_upload_sbom(config_path: &str) {
@@ -24,7 +23,6 @@ pub fn test_upload_sbom(config_path: &str) {
     let db_paths = [
         &config.db_commitment.path,
         &config.db_dependency.path,
-        &config.db_vulnerabilities.path,
         &config.db_ozks.path,
     ];
 
@@ -39,7 +37,6 @@ pub fn test_upload_sbom(config_path: &str) {
     // Initialize the databases with their schemas
     init_db_commitment(&config);
     init_db_dependency(&config);
-    init_db_vulnerabilities(&config);
 
     // Upload SBOM
     upload(api_key, &sbom_path, &config);
@@ -53,7 +50,6 @@ pub fn test_upload_sbom(config_path: &str) {
     // Make sure the content of the DBs is accurate
     test_commitment_db_contents(&config.db_commitment.path);
     test_dependency_db_contents(&config.db_dependency.path);
-    test_vulnerability_db_contents(&config.db_vulnerabilities.path);
     test_ozks_db_contents(&config.db_ozks.path);
 }
 
@@ -145,25 +141,6 @@ fn test_dependency_db_contents(db_path: &str) {
     } else {
         panic!("No commitment row found in the database");
     }
-}
-
-fn test_vulnerability_db_contents(db_path: &str) {
-    assert!(
-        Path::new(db_path).exists(),
-        "Vulnerability DB does not exist!"
-    );
-
-    let conn = Connection::open(db_path).expect("Failed to open vulnerability DB");
-
-    let count: i64 = conn
-        .query_row("SELECT COUNT(*) FROM vulnerabilities", [], |row| row.get(0))
-        .expect("Failed to execute count query");
-
-    assert_eq!(
-        count, 0,
-        "Expected vulnerabilities table to be empty, but found {} row(s)",
-        count
-    );
 }
 
 fn test_ozks_db_contents(db_path: &str) {

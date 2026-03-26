@@ -217,7 +217,4 @@ pub fn build_cli() -> Command {
                         .required(true),
                 ),
         )
-        .subcommand(
-            Command::new("map_vulnerabilities").about("Map vulnerabilities to dependencies"),
-        )
 }

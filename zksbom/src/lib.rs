@@ -8,7 +8,6 @@ pub mod map_dependencies_vulnerabilities;
 pub mod database {
     pub mod db_commitment;
     pub mod db_dependency;
-    pub mod db_vulnerabilities;
 }
 
 pub mod method {

@@ -91,7 +91,7 @@ pub fn test_create_inclusion_proof_dependency() {
     let vendor = "Tom Sorger <sorger@kth.se>";
     let product = "test_openssl";
     let version = "0.1.0";
-    let check = "openssl@0.10.1@RUST";
+    let check = "openssl@0.10.0@RUST";
     let config = load_config_from_file(config_path).unwrap();
 
     for method in methods {

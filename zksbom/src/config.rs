@@ -7,7 +7,6 @@ pub struct Config {
     pub app: AppConfig,
     pub db_commitment: DatabaseConfig,
     pub db_dependency: DatabaseConfig,
-    pub db_vulnerabilities: DatabaseConfig,
     pub db_ozks: DatabaseConfig,
 }
 
@@ -61,9 +60,6 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
     }
     if let Some(db_dependency_path) = matches.get_one::<String>("db_dependency_path") {
         config.db_dependency.path = db_dependency_path.clone();
-    }
-    if let Some(db_vulnerabilities_path) = matches.get_one::<String>("db_vulnerabilities_path") {
-        config.db_vulnerabilities.path = db_vulnerabilities_path.clone();
     }
     if let Some(db_ozks_path) = matches.get_one::<String>("db_ozks_path") {
         config.db_ozks.path = db_ozks_path.clone();
