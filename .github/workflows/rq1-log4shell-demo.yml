@@ -10,8 +10,6 @@ name: RQ1 — Log4Shell End-to-End Demo with zkSBOM
 #   3. zkSBOM   — Upload BOM, map CVEs, generate & verify ZK proof
 
 on:
-  push:
-    branches: [master]
   workflow_dispatch:
 
 jobs:
