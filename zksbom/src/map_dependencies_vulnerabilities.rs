@@ -339,6 +339,8 @@ pub fn get_dependencies_for_vulnerability(cve: &str, limit: usize) -> Vec<String
     vulnerable_packages
 }
 
+// until here
+
 pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<String> {
     debug!("Getting vulnerable packages for CVE: {}", cve_id);
     // Prepare the GraphQL query as a Rust raw string WITHOUT extra backslashes!
@@ -423,6 +425,7 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
     result
 }
 
+// TODO: Get all vulnerable versions
 fn extract_lower_version(vuln_range: &str) -> Option<&str> {
     // Find a substring like ">= " and grab what's after.
     for part in vuln_range.split(',') {
