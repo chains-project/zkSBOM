@@ -232,6 +232,14 @@ jobs:
           CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
             cargo build --release
 
+      - name: Reuse zksbom oZKS build for verifier
+        # Both submodules pin the same oZKS commit, so symlinking the already-built
+        # vcpkg headers and compiled libs avoids a redundant second CMake build.
+        run: |
+          mkdir -p zksbom-verifier/third_party/oZKS
+          ln -sfn "${GITHUB_WORKSPACE}/zksbom/third_party/oZKS/build" \
+            zksbom-verifier/third_party/oZKS/build
+
       - name: Build zksbom-verifier
         run: |
           cd zksbom-verifier
