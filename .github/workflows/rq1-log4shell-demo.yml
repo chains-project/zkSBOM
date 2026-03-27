@@ -99,33 +99,24 @@ jobs:
           mvn package -q -DskipTests --no-transfer-progress
 
       # ──────────────────────────────────────────────────────────────────────
-      # Phase 1b — Build Druid distribution + generate CycloneDX SBOM
-      # Building from source (rather than downloading a binary) means Maven
-      # resolves every dependency into the local cache, so the CycloneDX
-      # plugin run immediately after is instant and complete.
+      # Phase 1b — Download Druid binary + generate CycloneDX SBOM
+      # Downloading the pre-built Apache release is much faster than building
+      # from source. We extract it to the same path used locally so that the
+      # Druid JVM working directory matches $DRUID_HOME throughout the workflow.
       # ──────────────────────────────────────────────────────────────────────
-      - name: Patch Druid build scripts for PyYAML 6+ compatibility
+      - name: Download Druid ${{ env.DRUID_VERSION }} binary into $DRUID_HOME
         run: |
-          sed -i \
-            's/yaml\.load_all(registry_file)/yaml.load_all(registry_file, Loader=yaml.SafeLoader)/g' \
-            rq1/druid/distribution/bin/generate-binary-license.py \
-            rq1/druid/distribution/bin/generate-binary-notice.py
+          wget -q \
+            "https://archive.apache.org/dist/druid/${DRUID_VERSION}/apache-druid-${DRUID_VERSION}-bin.tar.gz"
+          mkdir -p rq1/druid/distribution/target
+          tar xzf "apache-druid-${DRUID_VERSION}-bin.tar.gz" \
+            -C rq1/druid/distribution/target
 
-      - name: Build Druid distribution and generate CycloneDX SBOM
+      - name: Generate CycloneDX SBOM from Druid source
+        # Dependency resolution only — no compilation needed. The pom.xml in
+        # the submodule declares all deps including log4j-core 2.8.2.
         run: |
           cd rq1/druid
-          # 1. Build the binary distribution tarball.
-          mvn package \
-            -Pdist \
-            -DskipTests \
-            -Dremoteresources.skip=true \
-            '-Ddruid.distribution.pulldeps.opts=' \
-            -pl distribution \
-            --no-transfer-progress
-          # 2. Extract the tarball so $DRUID_HOME exists for subsequent steps.
-          tar xzf "distribution/target/apache-druid-${DRUID_VERSION}-bin.tar.gz" \
-            -C distribution/target
-          # 3. Generate the CycloneDX SBOM (deps already in local Maven cache).
           mvn org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom \
             --no-transfer-progress \
             -q
