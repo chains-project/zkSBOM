@@ -129,17 +129,12 @@ jobs:
           CONF="${DRUID_HOME}/conf/druid/single-server/nano-quickstart"
 
           # Re-enable remote JNDI class loading (disabled by default since Java 8u191).
-          # This is intentionally set to demonstrate the vulnerability in a controlled env.
+          # Route all query logs through log4j (NoopRequestLogger is the default).
+          # Both are set as JVM system properties so they apply to every service.
           for jvm_cfg in "${CONF}"/*/jvm.config; do
             echo "-Dcom.sun.jndi.ldap.object.trustURLCodebase=true" >> "${jvm_cfg}"
+            echo "-Ddruid.request.logging.type=slf4j" >> "${jvm_cfg}"
           done
-
-          # Route all query logs through log4j (default is NoopRequestLogger).
-          # LoggingRequestLogger calls LOG.info("%s", line) where `line` includes
-          # the full query JSON — the ${jndi:...} payload in that string is what
-          # triggers log4j's JNDI message lookup.
-          echo "druid.request.logging.type=slf4j" \
-            >> "${CONF}/_common/common.runtime.properties"
 
       - name: Start Druid (nano-quickstart, background)
         run: |
