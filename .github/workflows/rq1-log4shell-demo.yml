@@ -172,7 +172,7 @@ jobs:
         run: python3 rq1/trigger_log4shell.py --host http://localhost:8888
 
       - name: Wait for JNDI class to load and execute
-        run: sleep 5
+        run: sleep 10
 
       - name: Confirm RCE — check sentinel file
         run: |
