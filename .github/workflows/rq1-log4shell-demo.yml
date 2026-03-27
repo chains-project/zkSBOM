@@ -244,10 +244,12 @@ jobs:
       # Phase 3b — Upload SBOM → Map CVEs → Generate proof → Verify
       # ──────────────────────────────────────────────────────────────────────
       - name: Configure zksbom
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p zksbom/tmp/output zksbom/tmp/database
           sed \
-            -e 's|YOUR_TOKEN||g' \
+            -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
             zksbom/config/config_template.toml \
             > zksbom/config/config.toml
 
