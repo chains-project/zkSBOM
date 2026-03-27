@@ -299,13 +299,35 @@ jobs:
             --check "${CVE}"
           echo "✓ ZK proof written to zksbom/tmp/output/proof.txt"
 
-      - name: Verify ZK proof (zero-knowledge verification)
+      - name: Verify ZK inclusion proof (CVE-2021-44228)
         working-directory: zksbom-verifier
         run: |
           ./target/release/zksbom-verifier verify \
             --method "${ZK_METHOD}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
             --proof_path "../zksbom/tmp/output/proof.txt"
+
+      - name: Generate ZK non-inclusion proof that Druid SBOM does NOT contain CVE-2014-0160
+        # CVE-2014-0160 (Heartbleed) affects OpenSSL — a C library absent from
+        # any Java/Maven SBOM. This proves the dependency is not present without
+        # revealing the full dependency list.
+        working-directory: zksbom
+        run: |
+          ./target/release/zksbom create_proof \
+            --api-key 123 \
+            --method "${ZK_METHOD}" \
+            --commitment "${{ steps.commitment.outputs.value }}" \
+            --output "./tmp/output/proof-cve-2014-0160.txt" \
+            --check "CVE-2014-0160"
+          echo "✓ Non-inclusion proof written to zksbom/tmp/output/proof-cve-2014-0160.txt"
+
+      - name: Verify ZK non-inclusion proof (CVE-2014-0160)
+        working-directory: zksbom-verifier
+        run: |
+          ./target/release/zksbom-verifier verify \
+            --method "${ZK_METHOD}" \
+            --commitment "${{ steps.commitment.outputs.value }}" \
+            --proof_path "../zksbom/tmp/output/proof-cve-2014-0160.txt"
 
       # ──────────────────────────────────────────────────────────────────────
       # Summary
@@ -332,12 +354,16 @@ jobs:
           echo ""
           echo "  Phase 3 — zkSBOM Verification"
           [ -f "zksbom/tmp/output/proof.txt" ] \
-            && echo "    ✓ ZK proof generated and verified for ${CVE}" \
-            || echo "    ✗ ZK proof missing"
+            && echo "    ✓ Inclusion proof generated and verified for ${CVE}" \
+            || echo "    ✗ Inclusion proof missing"
+          [ -f "zksbom/tmp/output/proof-cve-2014-0160.txt" ] \
+            && echo "    ✓ Non-inclusion proof generated and verified for CVE-2014-0160" \
+            || echo "    ✗ Non-inclusion proof missing"
           echo ""
-          echo "  Conclusion: a zkSBOM commitment cryptographically proves"
-          echo "  that Druid 0.22.0 carries a dependency vulnerable to"
-          echo "  Log4Shell — without revealing the full dependency list."
+          echo "  Conclusion: zkSBOM commitments cryptographically prove"
+          echo "  that Druid 0.22.0 contains a dep vulnerable to Log4Shell"
+          echo "  AND does not contain Heartbleed — without revealing the"
+          echo "  full dependency list."
           echo "════════════════════════════════════════════════════════"
 
       # ──────────────────────────────────────────────────────────────────────
@@ -351,3 +377,4 @@ jobs:
           path: |
             sboms/druid-${{ env.DRUID_VERSION }}.cdx.json
             zksbom/tmp/output/proof.txt
+            zksbom/tmp/output/proof-cve-2014-0160.txt
