@@ -21,6 +21,7 @@ jobs:
 
     env:
       DRUID_VERSION: "0.22.0"
+      DRUID_HOME: "rq1/druid/distribution/target/apache-druid-0.22.0"
       # RogueJNDI defaults
       JNDI_LDAP_PORT: "1389"
       JNDI_HTTP_PORT: "8000"
@@ -98,18 +99,36 @@ jobs:
           mvn package -q -DskipTests --no-transfer-progress
 
       # ──────────────────────────────────────────────────────────────────────
-      # Phase 1b — Download & configure Druid binary
+      # Phase 1b — Build Druid distribution + generate CycloneDX SBOM
+      # Building from source (rather than downloading a binary) means Maven
+      # resolves every dependency into the local cache, so the CycloneDX
+      # plugin run immediately after is instant and complete.
       # ──────────────────────────────────────────────────────────────────────
-      - name: Download Apache Druid ${{ env.DRUID_VERSION }} binary
+      - name: Build Druid distribution and generate CycloneDX SBOM
         run: |
-          wget -q \
-            "https://archive.apache.org/dist/druid/${DRUID_VERSION}/apache-druid-${DRUID_VERSION}-bin.tar.gz"
-          tar xzf "apache-druid-${DRUID_VERSION}-bin.tar.gz"
+          cd rq1/druid
+          # 1. Build the binary distribution tarball.
+          mvn package \
+            -Pdist \
+            -DskipTests \
+            -Dremoteresources.skip=true \
+            '-Ddruid.distribution.pulldeps.opts=' \
+            -pl distribution \
+            --no-transfer-progress
+          # 2. Extract the tarball so $DRUID_HOME exists for subsequent steps.
+          tar xzf "distribution/target/apache-druid-${DRUID_VERSION}-bin.tar.gz" \
+            -C distribution/target
+          # 3. Generate the CycloneDX SBOM (deps already in local Maven cache).
+          mvn org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom \
+            --no-transfer-progress \
+            -q
+          mkdir -p ../../sboms
+          cp target/bom.json "../../sboms/druid-${DRUID_VERSION}.cdx.json"
+          echo "✓ SBOM written to sboms/druid-${DRUID_VERSION}.cdx.json"
 
       - name: Configure Druid — enable trustURLCodebase + slf4j request logging
         run: |
-          DRUID="apache-druid-${DRUID_VERSION}"
-          CONF="${DRUID}/conf/druid/single-server/nano-quickstart"
+          CONF="${DRUID_HOME}/conf/druid/single-server/nano-quickstart"
 
           # Re-enable remote JNDI class loading (disabled by default since Java 8u191).
           # This is intentionally set to demonstrate the vulnerability in a controlled env.
@@ -126,7 +145,7 @@ jobs:
 
       - name: Start Druid (nano-quickstart, background)
         run: |
-          cd "apache-druid-${DRUID_VERSION}"
+          cd "${DRUID_HOME}"
           bin/supervise -c conf/supervise/single-server/nano-quickstart.conf > /tmp/druid.log 2>&1 &
           echo "Waiting for Druid router to be ready …"
           for i in $(seq 1 90); do
@@ -159,33 +178,17 @@ jobs:
 
       - name: Confirm RCE — check sentinel file
         run: |
-          if [ -f log4shell_pwned ]; then
-            ls -l .
-            echo "✓ RCE CONFIRMED: log4shell_pwned exists"
+          # The Druid JVM's working directory is $DRUID_HOME (set by supervise),
+          # so "touch log4shell_pwned" in the RogueJNDI command creates the file there.
+          SENTINEL="${DRUID_HOME}/log4shell_pwned"
+          ls -l "${DRUID_HOME}/"
+          if [ -f "${SENTINEL}" ]; then
+            echo "✓ RCE CONFIRMED: ${SENTINEL} exists"
             echo "  Druid 0.22.0 with log4j-core 2.8.2 is fully exploitable via CVE-2021-44228"
           else
-            ls -l .
-            echo "✗ log4shell_pwned not found — exploitation did not complete"
+            echo "✗ ${SENTINEL} not found — exploitation did not complete"
             exit 1
           fi
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Phase 2 — Generate CycloneDX SBOM
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Generate CycloneDX SBOM for Druid (Maven plugin)
-        run: |
-          cd rq1/druid
-          # Fix generate-binary-license.py (PyYAML 5.4.1 used, but the fix is in code too)
-          mvn org.cyclonedx:cyclonedx-maven-plugin:2.7.9:makeAggregateBom \
-            -DincludeBomSerialNumber=true \
-            -DoutputFormat=json \
-            -DschemaVersion=1.4 \
-            -DskipTests \
-            --no-transfer-progress \
-            -q
-          mkdir -p ../../sboms
-          cp target/bom.json "../../sboms/druid-${DRUID_VERSION}.cdx.json"
-          echo "✓ SBOM written to sboms/druid-${DRUID_VERSION}.cdx.json"
 
       - name: Show log4j-core entry in SBOM
         run: |
@@ -313,8 +316,8 @@ jobs:
           echo "  Vuln dep : log4j-core 2.8.2 (CVE-2021-44228)"
           echo ""
           echo "  Phase 1 — Exploitation"
-          [ -f /tmp/log4shell_pwned ] \
-            && echo "    ✓ RCE confirmed (/tmp/log4shell_pwned created)" \
+          [ -f "${DRUID_HOME}/log4shell_pwned" ] \
+            && echo "    ✓ RCE confirmed (${DRUID_HOME}/log4shell_pwned created)" \
             || echo "    ✗ RCE not confirmed"
           echo ""
           echo "  Phase 2 — SBOM Generation"
