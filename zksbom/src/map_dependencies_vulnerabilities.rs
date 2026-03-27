@@ -1,5 +1,5 @@
 use crate::config::Config;
-use log::debug;
+use log::{debug, error};
 use serde_json::Value;
 use std::process::Command;
 use std::str;
@@ -86,12 +86,19 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
         }
     }
 
-    debug!("Found vulnerable packages for {}: {}", cve_id, result.join(", "));
+    debug!(
+        "Found vulnerable packages for {}: {}",
+        cve_id,
+        result.join(", ")
+    );
     result
 }
 
 // TODO: Get all vulnerable versions
 fn extract_lower_version(vuln_range: &str) -> Option<&str> {
+    debug!("vuln_range: {}", vuln_range);
+    // vuln_range: >= 0.10.0, < 0.10.70
+
     // Find a substring like ">= " and grab what's after.
     for part in vuln_range.split(',') {
         let part = part.trim();

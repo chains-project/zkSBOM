@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::database::db_dependency::get_dependencies;
+use crate::map_dependencies_vulnerabilities::get_vulnerable_packages_for_cve;
 use crate::method::merkle_patricia_trie::generate_formatted_proof as mpt_generate;
 use crate::method::merkle_tree::generate_formatted_proof as mt_generate;
 use crate::method::ozks::core::generate_formatted_proof as ozks_generate;
@@ -8,7 +9,6 @@ use log::{debug, error, info};
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
-use crate::map_dependencies_vulnerabilities::get_vulnerable_packages_for_cve;
 
 pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &Config) -> String {
     let dependency_entry = get_dependencies(commitment.to_string(), method, config);
@@ -19,13 +19,11 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
     if check.to_lowercase().starts_with("cve") {
         // check is cve
         deps_to_proof = get_vulnerable_packages_for_cve(check, config);
-    }
-    else {
+    } else {
         // check is dependency
         if is_valid_dep(check) {
             deps_to_proof = vec![check.to_string()];
-        }
-        else {
+        } else {
             panic!("Wrong format for `check`: `{}`; expected CVE or package in the format of `package@version@ecosystem`", check);
         }
     }
@@ -39,7 +37,10 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
 
         if deps_to_proof.contains(&stripped_dep.to_string()) {
             for dep_to_proof in &deps_to_proof {
-                debug!("Creating inclusion proof for dep_to_proof: {}", dep_to_proof);
+                debug!(
+                    "Creating inclusion proof for dep_to_proof: {}",
+                    dep_to_proof
+                );
                 let concealed_dep = get_concealed_dependencies(dep_to_proof);
                 return inclusion_proof(method, commitment, dependencies, concealed_dep, config);
             }
@@ -52,10 +53,18 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
         return "".to_string();
     }
 
-    debug!("Creating non inclusion proof for deps_to_proof: {}", deps_to_proof.join(", "));
-    non_inclusion_proof(method, commitment, dependencies, &deps_to_proof.join(", "), config)
+    debug!(
+        "Creating non inclusion proof for deps_to_proof: {}",
+        deps_to_proof.join(", ")
+    );
+    non_inclusion_proof(
+        method,
+        commitment,
+        dependencies,
+        &deps_to_proof.join(", "),
+        config,
+    )
 }
-
 
 fn is_valid_dep(s: &str) -> bool {
     let parts: Vec<&str> = s.split('@').collect();
