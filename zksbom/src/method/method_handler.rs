@@ -11,18 +11,28 @@ use std::io::Write;
 use std::path::Path;
 use std::time::{Duration, Instant};
 
-pub fn create_commitments(dependencies: Vec<&str>, config: &Config) -> Vec<String> {
+pub fn create_commitments(
+    dependencies: Vec<&str>,
+    metadata_leaf: String,
+    config: &Config,
+) -> Vec<String> {
     let is_timing_analysis = config.app.timing_analysis;
+
+    let dependencies_with_metadata = {
+        let mut d = dependencies.clone();
+        d.push(metadata_leaf.as_str());
+        d
+    };
 
     // Merkle Tree
     debug!("Create Merkle Tree commitment");
     let merkle_tree_commitment = if is_timing_analysis {
         let now = Instant::now();
-        let c = create_merkle_commitment(dependencies.clone());
+        let c = create_merkle_commitment(dependencies_with_metadata.clone());
         print_timing(now.elapsed(), "merkle-tree", config);
         c
     } else {
-        create_merkle_commitment(dependencies.clone())
+        create_merkle_commitment(dependencies_with_metadata.clone())
     };
     debug!("Merkle Tree Commitment: {}", merkle_tree_commitment);
 
@@ -30,11 +40,11 @@ pub fn create_commitments(dependencies: Vec<&str>, config: &Config) -> Vec<Strin
     debug!("Create Sparse Merkle Tree commitment");
     let sparse_merkle_tree_commitment = if is_timing_analysis {
         let now = Instant::now();
-        let c = create_sparse_merkle_commitment(dependencies.clone());
+        let c = create_sparse_merkle_commitment(dependencies_with_metadata.clone());
         print_timing(now.elapsed(), "sparse-merkle-tree", config);
         c
     } else {
-        create_sparse_merkle_commitment(dependencies.clone())
+        create_sparse_merkle_commitment(dependencies_with_metadata.clone())
     };
     debug!(
         "Sparse Merkle Tree Commitment: {}",
@@ -45,11 +55,11 @@ pub fn create_commitments(dependencies: Vec<&str>, config: &Config) -> Vec<Strin
     debug!("Create Merkle Patricia Trie commitment");
     let merkle_patricia_trie_commitment = if is_timing_analysis {
         let now = Instant::now();
-        let c = create_merkle_patricia_trie_commitment(dependencies.clone());
+        let c = create_merkle_patricia_trie_commitment(dependencies_with_metadata.clone());
         print_timing(now.elapsed(), "merkle-patricia-trie", config);
         c
     } else {
-        create_merkle_patricia_trie_commitment(dependencies.clone())
+        create_merkle_patricia_trie_commitment(dependencies_with_metadata.clone())
     };
     debug!(
         "Merkle Patricia Trie Commitment: {}",

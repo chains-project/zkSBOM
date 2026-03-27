@@ -12,7 +12,11 @@ use std::path::Path;
 
 pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &Config) -> String {
     let dependency_entry = get_dependencies(commitment.to_string(), method, config);
-    let dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
+    let mut dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
+
+    if method.to_lowercase() != "ozks" {
+        dependencies.push(dependency_entry.metadata.as_str());
+    }
 
     let deps_to_proof: Vec<String>;
 

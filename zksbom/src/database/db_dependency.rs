@@ -12,6 +12,7 @@ pub struct DependencyDbEntry {
     pub commitment_merkle_patricia_trie: String,
     pub commitment_ozks: String,
     pub dependencies: String,
+    pub metadata: String,
 }
 
 pub fn init_db_dependency(config: &Config) {
@@ -40,6 +41,7 @@ pub fn init_db_dependency(config: &Config) {
                     commitment_merkle_patricia_trie TEXT NOT NULL UNIQUE,
                     commitment_ozks TEXT NOT NULL UNIQUE,
                     dependencies TEXT NOT NULL,
+                    metadata TEXT NOT NULL,
                     PRIMARY KEY (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks)
                 )",
                 [],
@@ -75,8 +77,8 @@ pub fn insert_dependency(dependency: DependencyDbEntry, config: &Config) {
     let conn = get_db_dependency_conneciton(config);
 
     match conn.execute(
-        "INSERT INTO dependency (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies) VALUES (?1, ?2, ?3, ?4, ?5)",
-        params![dependency.commitment_merkle_tree, dependency.commitment_sparse_merkle_tree, dependency.commitment_merkle_patricia_trie, dependency.commitment_ozks, dependency.dependencies],
+        "INSERT INTO dependency (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies, metadata) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        params![dependency.commitment_merkle_tree, dependency.commitment_sparse_merkle_tree, dependency.commitment_merkle_patricia_trie, dependency.commitment_ozks, dependency.dependencies, dependency.metadata],
     ) {
         Ok(_) => {
             debug!("Dependency inserted into the database.");
@@ -95,16 +97,16 @@ pub fn get_dependencies(commitment: String, method: &str, config: &Config) -> De
     let sql_string: &str;
     match method {
         "merkle-tree" => {
-            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies FROM dependency WHERE commitment_merkle_tree = ?1";
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies, metadata FROM dependency WHERE commitment_merkle_tree = ?1";
         }
         "sparse-merkle-tree" => {
-            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies FROM dependency WHERE commitment_sparse_merkle_tree =?1";
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies, metadata FROM dependency WHERE commitment_sparse_merkle_tree =?1";
         }
         "merkle-patricia-trie" => {
-            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies FROM dependency WHERE commitment_merkle_patricia_trie =?1";
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies, metadata FROM dependency WHERE commitment_merkle_patricia_trie =?1";
         }
         "ozks" => {
-            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies FROM dependency WHERE commitment_ozks =?1";
+            sql_string = "SELECT commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies, metadata FROM dependency WHERE commitment_ozks =?1";
         }
         _ => {
             panic!("Unknown method: {}", method);
@@ -118,6 +120,7 @@ pub fn get_dependencies(commitment: String, method: &str, config: &Config) -> De
             commitment_merkle_patricia_trie: row.get(2)?,
             commitment_ozks: row.get(3)?,
             dependencies: row.get(4)?,
+            metadata: row.get(5)?,
         })
     }) {
         Ok(dependency) => dependency,
@@ -129,6 +132,7 @@ pub fn get_dependencies(commitment: String, method: &str, config: &Config) -> De
                 commitment_merkle_patricia_trie: "".to_string(),
                 commitment_ozks: "".to_string(),
                 dependencies: "".to_string(),
+                metadata: "".to_string(),
             }
         }
     };

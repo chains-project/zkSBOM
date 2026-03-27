@@ -3,6 +3,7 @@ use blake2::{
     Blake2bVar,
 };
 use blake2b_rs::{Blake2b, Blake2bBuilder};
+use log::debug;
 use sparse_merkle_tree::{
     blake2b::Blake2bHasher, default_store::DefaultStore, traits::Value, SparseMerkleTree, H256,
 };
@@ -54,6 +55,7 @@ fn get_kv(leaf: &str) -> (H256, H256) {
 }
 
 pub fn create_commitment(dependencies: Vec<&str>) -> String {
+    debug!("create commitment; dependencies: {:?}", dependencies);
     let mut tree = SMT::default();
     for dependency in dependencies {
         let (key, leaf) = get_kv(&dependency);

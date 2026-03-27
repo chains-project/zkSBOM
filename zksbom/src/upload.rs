@@ -4,8 +4,6 @@ use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::github_advisory_database_mapping::MAPPINGS;
 use crate::method::method_handler::create_commitments;
-use chrono::Utc;
-use chrono_tz::Europe::Stockholm;
 use log::{debug, error, warn};
 use rand::distr::Alphanumeric;
 use rand::Rng;
@@ -33,20 +31,7 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     let product = parsed_sbom.product;
     let version = parsed_sbom.version;
 
-    let now_utc = Utc::now();
-    let now_stockholm = now_utc.with_timezone(&Stockholm);
-
-    let metadata: String = format!(
-        "{};{};v{};{}",
-        vendor.to_string(),
-        &product,
-        &version,
-        now_stockholm.format("%Y-%m-%d;%H:%M:%S;%Z%:z")
-    );
-
-    // Add metadata to the list of leaves
     let mut leaves: Vec<String> = vec![];
-    leaves.push(metadata.clone());
 
     // Add dependencies to the list of leaves
     leaves.extend(parsed_sbom.dependencies.iter().map(|s| s.to_string()));
@@ -59,18 +44,14 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     // Add concealed dependency to list of leaves
     let mut concealed_dependency = Vec::new();
     for dependency in &leaves {
-        if dependency == &metadata {
-            debug!("Skipping metadata leave: {}", dependency);
-        } else {
-            let parts: Vec<&str> = dependency.split('@').collect();
+        let parts: Vec<&str> = dependency.split('@').collect();
 
-            // Keep first and last parts, join with '@'
-            if parts.len() >= 2 {
-                let result = format!("{}@{}", parts.first().unwrap(), parts.last().unwrap());
-                concealed_dependency.push(result);
-            } else {
-                error!("Problem parsing dependency: {}", dependency);
-            }
+        // Keep first and last parts, join with '@'
+        if parts.len() >= 2 {
+            let result = format!("{}@{}", parts.first().unwrap(), parts.last().unwrap());
+            concealed_dependency.push(result);
+        } else {
+            error!("Problem parsing dependency: {}", dependency);
         }
     }
 
@@ -80,12 +61,15 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
 
     // Append the new prefixes to the original list
     leaves.extend(concealed_dependency);
-
     debug!("Leaves with concealed dependencies: {:?}", leaves);
+
+    // Metadata leaf, only used for MT, SMT, MPT
+    let metadata_leaf: String = format!("{};{};v{}", vendor.to_string(), &product, &version);
 
     // Generate Commitments
     let commitments = create_commitments(
         leaves.iter().map(|s| s.as_str()).collect::<Vec<&str>>(),
+        metadata_leaf.clone(),
         config,
     );
     let commitment_merkle_tree = commitments[0].clone();
@@ -112,6 +96,7 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         commitment_merkle_patricia_trie,
         commitment_ozks,
         dependencies: leaves.join(","),
+        metadata: metadata_leaf,
     };
     insert_dependency(dependency_entry, config);
 

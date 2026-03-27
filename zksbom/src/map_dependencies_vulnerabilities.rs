@@ -1,5 +1,5 @@
 use crate::config::Config;
-use log::{debug, error};
+use log::debug;
 use serde_json::Value;
 use std::process::Command;
 use std::str;
