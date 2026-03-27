@@ -104,6 +104,13 @@ jobs:
       # resolves every dependency into the local cache, so the CycloneDX
       # plugin run immediately after is instant and complete.
       # ──────────────────────────────────────────────────────────────────────
+      - name: Patch Druid build scripts for PyYAML 6+ compatibility
+        run: |
+          sed -i \
+            's/yaml\.load_all(registry_file)/yaml.load_all(registry_file, Loader=yaml.SafeLoader)/g' \
+            rq1/druid/distribution/bin/generate-binary-license.py \
+            rq1/druid/distribution/bin/generate-binary-notice.py
+
       - name: Build Druid distribution and generate CycloneDX SBOM
         run: |
           cd rq1/druid
