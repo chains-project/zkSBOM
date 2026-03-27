@@ -107,6 +107,14 @@ jobs:
       - name: Build Druid distribution and generate CycloneDX SBOM
         working-directory: rq1/druid
         run: |
+          # PyYAML 6+ requires an explicit Loader argument; patch before Maven
+          # invokes these scripts during the distribution assembly.
+          sed -i \
+            's/yaml\.load_all(registry_file)/yaml.load_all(registry_file, Loader=yaml.SafeLoader)/g' \
+            distribution/bin/generate-binary-license.py
+          sed -i \
+            's/yaml\.load_all(registry_file)/yaml.load_all(registry_file, Loader=yaml.SafeLoader)/g' \
+            distribution/bin/generate-binary-notice.py
           mvn package \
             -Pdist \
             -DskipTests \
