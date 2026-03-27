@@ -253,6 +253,9 @@ jobs:
             zksbom/config/config_template.toml \
             > zksbom/config/config.toml
 
+      - name: Configure zksbom-verifier
+        run: cp zksbom-verifier/config/config_template.toml zksbom-verifier/config/config.toml
+
       - name: Upload Druid SBOM to zksbom
         working-directory: zksbom
         run: |
