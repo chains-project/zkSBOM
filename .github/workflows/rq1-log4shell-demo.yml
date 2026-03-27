@@ -27,7 +27,7 @@ jobs:
       JNDI_HTTP_PORT: "8000"
       # Proof target
       CVE: "CVE-2021-44228"
-      ZK_METHOD: "merkle-tree"
+      ZK_METHOD: "sparse-merkle-tree"
 
     steps:
       # ──────────────────────────────────────────────────────────────────────
