@@ -333,39 +333,46 @@ jobs:
       # ──────────────────────────────────────────────────────────────────────
       # Summary
       # ──────────────────────────────────────────────────────────────────────
-      - name: Print end-to-end summary
+      - name: Write end-to-end summary
         if: always()
         run: |
-          echo "════════════════════════════════════════════════════════"
-          echo "  RQ1 — Log4Shell End-to-End Summary"
-          echo "════════════════════════════════════════════════════════"
-          echo ""
-          echo "  Target   : Apache Druid ${DRUID_VERSION}"
-          echo "  Vuln dep : log4j-core 2.8.2 (CVE-2021-44228)"
-          echo ""
-          echo "  Phase 1 — Exploitation"
-          [ -f "${DRUID_HOME}/log4shell_pwned" ] \
-            && echo "    ✓ RCE confirmed (${DRUID_HOME}/log4shell_pwned created)" \
-            || echo "    ✗ RCE not confirmed"
-          echo ""
-          echo "  Phase 2 — SBOM Generation"
-          [ -f "sboms/druid-${DRUID_VERSION}.cdx.json" ] \
-            && echo "    ✓ CycloneDX SBOM generated" \
-            || echo "    ✗ SBOM missing"
-          echo ""
-          echo "  Phase 3 — zkSBOM Verification"
-          [ -f "zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt" ] \
-            && echo "    ✓ Inclusion proof generated and verified for ${CVE}" \
-            || echo "    ✗ Inclusion proof missing"
-          [ -f "zksbom/tmp/output/proof-non-inclusion-CVE-2014-0160.txt" ] \
-            && echo "    ✓ Non-inclusion proof generated and verified for CVE-2014-0160" \
-            || echo "    ✗ Non-inclusion proof missing"
-          echo ""
-          echo "  Conclusion: zkSBOM commitments cryptographically prove"
-          echo "  that Druid 0.22.0 contains a dep vulnerable to Log4Shell"
-          echo "  AND does not contain Heartbleed — without revealing the"
-          echo "  full dependency list."
-          echo "════════════════════════════════════════════════════════"
+          RCE_STATUS=$([ -f "${DRUID_HOME}/log4shell_pwned" ] \
+            && echo "✅ RCE confirmed — \`${DRUID_HOME}/log4shell_pwned\` created" \
+            || echo "❌ RCE not confirmed")
+          SBOM_STATUS=$([ -f "sboms/druid-${DRUID_VERSION}.cdx.json" ] \
+            && echo "✅ CycloneDX SBOM generated" \
+            || echo "❌ SBOM missing")
+          INCL_STATUS=$([ -f "zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt" ] \
+            && echo "✅ Inclusion proof generated and verified" \
+            || echo "❌ Inclusion proof missing")
+          NONINC_STATUS=$([ -f "zksbom/tmp/output/proof-non-inclusion-CVE-2014-0160.txt" ] \
+            && echo "✅ Non-inclusion proof generated and verified" \
+            || echo "❌ Non-inclusion proof missing")
+
+          cat >> "${GITHUB_STEP_SUMMARY}" <<EOF
+          ## RQ1 — Log4Shell End-to-End Summary
+
+          | | |
+          |---|---|
+          | **Target** | Apache Druid ${DRUID_VERSION} |
+          | **Vulnerable dependency** | \`log4j-core 2.8.2\` |
+
+          ### Phase 1 — Exploitation
+          ${RCE_STATUS}
+
+          ### Phase 2 — SBOM Generation
+          ${SBOM_STATUS}
+
+          ### Phase 3 — zkSBOM Verification
+          | CVE | Type | Status |
+          |---|---|---|
+          | CVE-2021-44228 (Log4Shell) | Inclusion | ${INCL_STATUS} |
+          | CVE-2014-0160 (Heartbleed) | Non-inclusion | ${NONINC_STATUS} |
+
+          > zkSBOM commitments cryptographically prove that Druid ${DRUID_VERSION} contains
+          > a dependency vulnerable to Log4Shell **and** does not contain Heartbleed —
+          > without revealing the full dependency list.
+          EOF
 
       # ──────────────────────────────────────────────────────────────────────
       # Artifacts
