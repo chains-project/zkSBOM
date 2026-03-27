@@ -254,23 +254,23 @@ jobs:
             > zksbom/config/config.toml
 
       - name: Upload Druid SBOM to zksbom
+        working-directory: zksbom
         run: |
-          cd zksbom
           ./target/release/zksbom upload_sbom \
             --api-key 123 \
             --sbom "../sboms/druid-${DRUID_VERSION}.cdx.json"
           echo "✓ SBOM uploaded"
 
       - name: Map dependencies to vulnerabilities (includes CVE-2021-44228)
+        working-directory: zksbom
         run: |
-          cd zksbom
           ./target/release/zksbom map_vulnerabilities
           echo "✓ Vulnerability mapping complete"
 
       - name: Get zkSBOM commitment for Druid
         id: commitment
+        working-directory: zksbom
         run: |
-          cd zksbom
           OUTPUT=$(./target/release/zksbom get_commitment \
             --vendor "unknown" \
             --product "druid" \
@@ -282,8 +282,8 @@ jobs:
           echo "✓ Commitment: ${COMMITMENT}"
 
       - name: Generate ZK proof that Druid SBOM contains CVE-2021-44228
+        working-directory: zksbom
         run: |
-          cd zksbom
           ./target/release/zksbom create_proof \
             --api-key 123 \
             --method "${ZK_METHOD}" \
@@ -292,8 +292,8 @@ jobs:
           echo "✓ ZK proof written to zksbom/tmp/output/proof.txt"
 
       - name: Verify ZK proof (zero-knowledge verification)
+        working-directory: zksbom-verifier
         run: |
-          cd zksbom-verifier
           ./target/release/zksbom-verifier verify \
             --method "${ZK_METHOD}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
