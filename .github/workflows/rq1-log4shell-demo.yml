@@ -99,30 +99,29 @@ jobs:
           mvn package -q -DskipTests --no-transfer-progress
 
       # ──────────────────────────────────────────────────────────────────────
-      # Phase 1b — Download Druid binary + generate CycloneDX SBOM
-      # Downloading the pre-built Apache release is much faster than building
-      # from source. We extract it to the same path used locally so that the
-      # Druid JVM working directory matches $DRUID_HOME throughout the workflow.
+      # Phase 1b — Build Druid distribution + generate CycloneDX SBOM
+      # Building from source produces the same tarball as the Apache release
+      # and lets us run the CycloneDX plugin in the same Maven invocation,
+      # ensuring the SBOM reflects exactly what was built.
       # ──────────────────────────────────────────────────────────────────────
-      - name: Download Druid ${{ env.DRUID_VERSION }} binary into $DRUID_HOME
+      - name: Build Druid distribution and generate CycloneDX SBOM
+        working-directory: rq1/druid
         run: |
-          wget -q \
-            "https://archive.apache.org/dist/druid/${DRUID_VERSION}/apache-druid-${DRUID_VERSION}-bin.tar.gz"
-          mkdir -p rq1/druid/distribution/target
-          tar xzf "apache-druid-${DRUID_VERSION}-bin.tar.gz" \
-            -C rq1/druid/distribution/target
-
-      - name: Generate CycloneDX SBOM from Druid source
-        # Dependency resolution only — no compilation needed. The pom.xml in
-        # the submodule declares all deps including log4j-core 2.8.2.
-        run: |
-          cd rq1/druid
+          mvn package \
+            -Pdist \
+            -DskipTests \
+            -Dremoteresources.skip=true \
+            '-Ddruid.distribution.pulldeps.opts=' \
+            --no-transfer-progress \
+            -pl distribution
+          tar xzf distribution/target/apache-druid-${DRUID_VERSION}-bin.tar.gz \
+            -C distribution/target
           mvn org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom \
             --no-transfer-progress \
             -q
           mkdir -p ../../sboms
           cp target/bom.json "../../sboms/druid-${DRUID_VERSION}.cdx.json"
-          echo "✓ SBOM written to sboms/druid-${DRUID_VERSION}.cdx.json"
+          echo "✓ Distribution built and SBOM written to sboms/druid-${DRUID_VERSION}.cdx.json"
 
       - name: Configure Druid — enable trustURLCodebase + slf4j request logging
         run: |
