@@ -168,6 +168,17 @@ jobs:
             --hostname 127.0.0.1 &
           sleep 3
 
+      - name: Diagnose Druid config and log4j version
+        run: |
+          echo "=== common.runtime.properties (last 5 lines) ==="
+          tail -5 "${DRUID_HOME}/conf/druid/single-server/nano-quickstart/_common/common.runtime.properties"
+          echo "=== broker jvm.config (last 3 lines) ==="
+          tail -3 "${DRUID_HOME}/conf/druid/single-server/nano-quickstart/broker/jvm.config"
+          echo "=== log4j jars in lib ==="
+          ls "${DRUID_HOME}/lib/" | grep log4j
+          echo "=== Druid broker log (last 20 lines) ==="
+          tail -20 "${DRUID_HOME}/var/sv/broker.log" 2>/dev/null || echo "(no broker log yet)"
+
       - name: Send Log4Shell payload to Druid
         run: python3 rq1/trigger_log4shell.py --host http://localhost:8888
 
