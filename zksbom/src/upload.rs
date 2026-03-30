@@ -1,3 +1,4 @@
+use chrono::format::parse;
 use crate::check_dependencies_crates_io::check_dependencies;
 use crate::config::Config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
@@ -5,8 +6,10 @@ use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::github_advisory_database_mapping::MAPPINGS;
 use crate::method::method_handler::create_commitments;
 use log::{debug, error, warn};
+use once_cell::sync::Lazy;
 use rand::distr::Alphanumeric;
 use rand::Rng;
+use regex::Regex;
 use serde_json::{from_str, Value};
 
 #[derive(Debug, Default)]
@@ -169,26 +172,13 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
 
         for component in components {
             debug!("Component: {:?}", component);
-            if let (Some(name), Some(version)) =
-                (component["name"].as_str(), component["version"].as_str())
-            {
-                let ecosystem = map_dependency_ecosystem(component["purl"].as_str().unwrap_or(""));
+            let parsed_purl = parse_purl(component["purl"].as_str().unwrap_or("")).unwrap();
 
-                if config.app.salt {
-                    debug!(
-                        "Adding salt to dependency: {}@{}@{}",
-                        name, version, ecosystem
-                    );
-                    let salt = create_salt();
-                    all_dependencies.push(format!("{}@{}@{};{}", name, version, ecosystem, salt));
-                } else {
-                    debug!(
-                        "No salt added for dependency: {}@{}@{}",
-                        name, version, ecosystem
-                    );
-                    all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
-                }
+            let mut name = parsed_purl.name;
+            if !parsed_purl.namespace.is_none() {
+                name = format!("{}/{}", parsed_purl.namespace.unwrap(), name);
             }
+            all_dependencies.push(format!("{}@{}@{}", name, parsed_purl.version.unwrap(), parsed_purl.pkg_type));
         }
 
         if all_dependencies.is_empty() {
@@ -216,32 +206,41 @@ fn create_salt() -> String {
     return salt;
 }
 
-fn map_dependency_ecosystem(purl: &str) -> String {
-    let mut ecosystem = "unknown".to_string();
-    // Try to extract the ecosystem from the purl
-    if let Some(purl_ecosystem) = extract_ecosystem(purl) {
-        debug!("Extracted ecosystem: {}", purl_ecosystem);
-        for (key, value) in MAPPINGS.iter() {
-            if purl_ecosystem.contains(key) {
-                ecosystem = value.to_string(); // Update the ecosystem if a match is found
-                break;
-            }
-        }
-        debug!("Ecosystem: {}", ecosystem);
-        return ecosystem; // Return the found ecosystem
-    }
-
-    // If no ecosystem is found, return "unknown"
-    warn!("Could not extract ecosystem '{}'.", purl);
-    return "unknown".to_string();
+#[allow(dead_code)]
+/// Parsed representation of a Package URL (pURL).
+///
+/// pURL format: `pkg:type/[namespace/]name[@version][?qualifiers][#subpath]`
+///
+/// Examples:
+/// - `pkg:maven/com.example/my-artifact@1.2.3`  → type=maven, namespace=com.example, name=my-artifact
+/// - `pkg:cargo/my-crate@0.5.0`                 → type=cargo, namespace=None, name=my-crate
+#[derive(Debug)]
+struct ParsedPurl {
+    pkg_type: String,
+    namespace: Option<String>,
+    name: String,
+    version: Option<String>,
 }
 
-fn extract_ecosystem(purl: &str) -> Option<String> {
-    if let Some(pkg_index) = purl.find("pkg:") {
-        let start_index = pkg_index + "pkg:".len();
-        if let Some(slash_index) = purl[start_index..].find('/') {
-            return Some(purl[start_index..start_index + slash_index].to_string());
-        }
-    }
-    None
+/// Parses a pURL string using a single regex that handles both namespaced
+/// (e.g. Maven `group/artifact`) and non-namespaced (e.g. Cargo `package`) formats.
+///
+/// Regex breakdown:
+///   `^pkg:([^/]+)/`          – mandatory "pkg:" prefix + type + first slash
+///   `(?:([^/]+)/)?`          – optional namespace segment (present only when a second `/` exists before `@`)
+///   `([^@?#]+)`              – package name (everything up to `@`, `?`, `#`, or end)
+///   `(?:@([^?#]+))?`         – optional version after `@`
+fn parse_purl(purl: &str) -> Option<ParsedPurl> {
+    static PURL_RE: Lazy<Regex> = Lazy::new(|| {
+        Regex::new(r"^pkg:([^/]+)/(?:([^/]+)/)?([^@?#]+)(?:@([^?#]+))?").unwrap()
+    });
+
+    let caps = PURL_RE.captures(purl)?;
+    Some(ParsedPurl {
+        pkg_type: caps[1].to_string(),
+        namespace: caps.get(2).map(|m| m.as_str().to_string()),
+        name: caps[3].to_string(),
+        version: caps.get(4).map(|m| m.as_str().to_string()),
+    })
 }
+
