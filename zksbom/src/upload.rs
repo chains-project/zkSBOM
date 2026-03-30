@@ -1,3 +1,4 @@
+use chrono::format::parse;
 use crate::check_dependencies_crates_io::check_dependencies;
 use crate::config::Config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
@@ -171,26 +172,13 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
 
         for component in components {
             debug!("Component: {:?}", component);
-            if let (Some(name), Some(version)) =
-                (component["name"].as_str(), component["version"].as_str())
-            {
-                let ecosystem = map_dependency_ecosystem(component["purl"].as_str().unwrap_or(""));
+            let parsed_purl = parse_purl(component["purl"].as_str().unwrap_or("")).unwrap();
 
-                if config.app.salt {
-                    debug!(
-                        "Adding salt to dependency: {}@{}@{}",
-                        name, version, ecosystem
-                    );
-                    let salt = create_salt();
-                    all_dependencies.push(format!("{}@{}@{};{}", name, version, ecosystem, salt));
-                } else {
-                    debug!(
-                        "No salt added for dependency: {}@{}@{}",
-                        name, version, ecosystem
-                    );
-                    all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
-                }
+            let mut name = parsed_purl.name;
+            if !parsed_purl.namespace.is_none() {
+                name = format!("{}/{}", parsed_purl.namespace.unwrap(), name);
             }
+            all_dependencies.push(format!("{}@{}@{}", name, parsed_purl.version.unwrap(), parsed_purl.pkg_type));
         }
 
         if all_dependencies.is_empty() {
@@ -216,26 +204,6 @@ fn create_salt() -> String {
         .map(char::from)
         .collect();
     return salt;
-}
-
-fn map_dependency_ecosystem(purl: &str) -> String {
-    let mut ecosystem = "unknown".to_string();
-    // Try to extract the ecosystem from the purl
-    if let Some(purl_ecosystem) = extract_ecosystem(purl) {
-        debug!("Extracted ecosystem: {}", purl_ecosystem);
-        for (key, value) in MAPPINGS.iter() {
-            if purl_ecosystem.contains(key) {
-                ecosystem = value.to_string(); // Update the ecosystem if a match is found
-                break;
-            }
-        }
-        debug!("Ecosystem: {}", ecosystem);
-        return ecosystem; // Return the found ecosystem
-    }
-
-    // If no ecosystem is found, return "unknown"
-    warn!("Could not extract ecosystem '{}'.", purl);
-    return "unknown".to_string();
 }
 
 #[allow(dead_code)]
@@ -276,6 +244,3 @@ fn parse_purl(purl: &str) -> Option<ParsedPurl> {
     })
 }
 
-fn extract_ecosystem(purl: &str) -> Option<String> {
-    parse_purl(purl).map(|p| p.pkg_type)
-}
