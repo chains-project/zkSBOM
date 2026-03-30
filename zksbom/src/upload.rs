@@ -206,6 +206,10 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
         if all_dependencies.is_empty() {
             warn!("No components with name and version found in the SBOM.");
         }
+
+        all_dependencies.sort();
+        all_dependencies.dedup();
+
         sbom_parsed.dependencies = all_dependencies.clone();
 
         // Check dependencies
