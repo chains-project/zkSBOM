@@ -6,7 +6,6 @@ use crate::create_non_inclusion_proof::{
 };
 use crate::get_commitment::test_get_commitment;
 use crate::upload_sbom::test_upload_sbom;
-use crate::vulnerability_mapping::test_vulnerability_mapping;
 use log::{debug, error};
 use std::fs;
 use std::path::Path;
@@ -16,13 +15,11 @@ mod create_inclusion_proof;
 mod create_non_inclusion_proof;
 mod get_commitment;
 mod upload_sbom;
-mod vulnerability_mapping;
 
 #[test]
 pub fn test_zksbom_workflow_cve() {
     let config_path = "./tests/config/config.toml";
     test_upload_sbom(config_path);
-    test_vulnerability_mapping();
     test_get_commitment();
     test_create_inclusion_proof();
     test_create_non_inclusion_proof();
@@ -33,7 +30,6 @@ pub fn test_zksbom_workflow_cve() {
 pub fn test_zksbom_workflow_dependency() {
     let config_path = "./tests/config/config.toml";
     test_upload_sbom(config_path);
-    test_vulnerability_mapping();
     test_get_commitment();
     test_create_inclusion_proof_dependency();
     test_create_non_inclusion_proof_dependency();
@@ -54,7 +50,6 @@ fn clean_up(config_path: &str) {
     let db_paths = [
         &config.db_commitment.path,
         &config.db_dependency.path,
-        &config.db_vulnerabilities.path,
         &config.db_ozks.path,
     ];
 

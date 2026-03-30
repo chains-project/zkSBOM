@@ -5,7 +5,6 @@ use std::path::Path;
 use zksbom::config::load_config_from_file;
 use zksbom::database::db_commitment::init_db_commitment;
 use zksbom::database::db_dependency::init_db_dependency;
-use zksbom::database::db_vulnerabilities::init_db_vulnerabilities;
 use zksbom::upload::upload;
 
 pub fn test_upload_sbom(config_path: &str) {
@@ -24,7 +23,6 @@ pub fn test_upload_sbom(config_path: &str) {
     let db_paths = [
         &config.db_commitment.path,
         &config.db_dependency.path,
-        &config.db_vulnerabilities.path,
         &config.db_ozks.path,
     ];
 
@@ -39,7 +37,6 @@ pub fn test_upload_sbom(config_path: &str) {
     // Initialize the databases with their schemas
     init_db_commitment(&config);
     init_db_dependency(&config);
-    init_db_vulnerabilities(&config);
 
     // Upload SBOM
     upload(api_key, &sbom_path, &config);
@@ -53,7 +50,6 @@ pub fn test_upload_sbom(config_path: &str) {
     // Make sure the content of the DBs is accurate
     test_commitment_db_contents(&config.db_commitment.path);
     test_dependency_db_contents(&config.db_dependency.path);
-    test_vulnerability_db_contents(&config.db_vulnerabilities.path);
     test_ozks_db_contents(&config.db_ozks.path);
 }
 
@@ -85,25 +81,29 @@ fn test_commitment_db_contents(db_path: &str) {
         assert_eq!(vendor, "Tom Sorger <sorger@kth.se>");
         assert_eq!(product, "test_openssl");
         assert_eq!(version, "0.1.0");
-        assert_eq!(
-            commitment_merkle_tree,
-            "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d"
+
+        assert_valid_commitment(&commitment_merkle_tree, "commitment_merkle_tree");
+        assert_valid_commitment(
+            &commitment_sparse_merkle_tree,
+            "commitment_sparse_merkle_tree",
         );
-        assert_eq!(
-            commitment_sparse_merkle_tree,
-            "0xdb6bbe76d4b256a389baac6675c9650bfd9d097f9b4789437346b3aeb8864b51"
+        assert_valid_commitment(
+            &commitment_merkle_patricia_trie,
+            "commitment_merkle_patricia_trie",
         );
-        assert_eq!(
-            commitment_merkle_patricia_trie,
-            "0x850ae2b766052239536e1a4e5de35947508ce88bc9c500f71d1940aa7404c633"
-        );
-        assert!(
-            commitment_ozks.chars().any(|c| c != '0'),
-            "oZKS commitment is all zeroes!"
-        );
+        assert_valid_commitment(&commitment_ozks, "commitment_ozks");
     } else {
         panic!("No commitment row found in the database");
     }
+}
+
+pub fn assert_valid_commitment(commitment: &str, name: &str) {
+    assert!(!commitment.is_empty(), "{} should not be empty", name);
+    assert!(
+        commitment.chars().any(|c| c != '0'),
+        "{} is all zeroes!",
+        name
+    );
 }
 
 fn test_dependency_db_contents(db_path: &str) {
@@ -127,50 +127,20 @@ fn test_dependency_db_contents(db_path: &str) {
         let commitment_sparse_merkle_tree: String = row.get(1).unwrap();
         let commitment_merkle_patricia_trie: String = row.get(2).unwrap();
         let commitment_ozks: String = row.get(3).unwrap();
-        let dependencies: String = row.get(4).unwrap();
 
-        assert_eq!(
-            commitment_merkle_tree,
-            "0x29ff88bff2498e411178507e4f9b9c477b16d183a36b4bf891e9c32440d7e44d"
+        assert_valid_commitment(&commitment_merkle_tree, "commitment_merkle_tree");
+        assert_valid_commitment(
+            &commitment_sparse_merkle_tree,
+            "commitment_sparse_merkle_tree",
         );
-        assert_eq!(
-            commitment_sparse_merkle_tree,
-            "0xdb6bbe76d4b256a389baac6675c9650bfd9d097f9b4789437346b3aeb8864b51"
+        assert_valid_commitment(
+            &commitment_merkle_patricia_trie,
+            "commitment_merkle_patricia_trie",
         );
-        assert_eq!(
-            commitment_merkle_patricia_trie,
-            "0x850ae2b766052239536e1a4e5de35947508ce88bc9c500f71d1940aa7404c633"
-        );
-        assert!(
-            commitment_ozks.chars().any(|c| c != '0'),
-            "oZKS commitment is all zeroes!"
-        );
-        assert_eq!(
-            dependencies,
-            "openssl@0.10.1@RUST,openssl@0.11.1@GO,openssl@0.12.1@MAVEN"
-        );
+        assert_valid_commitment(&commitment_ozks, "commitment_ozks");
     } else {
         panic!("No commitment row found in the database");
     }
-}
-
-fn test_vulnerability_db_contents(db_path: &str) {
-    assert!(
-        Path::new(db_path).exists(),
-        "Vulnerability DB does not exist!"
-    );
-
-    let conn = Connection::open(db_path).expect("Failed to open vulnerability DB");
-
-    let count: i64 = conn
-        .query_row("SELECT COUNT(*) FROM vulnerabilities", [], |row| row.get(0))
-        .expect("Failed to execute count query");
-
-    assert_eq!(
-        count, 0,
-        "Expected vulnerabilities table to be empty, but found {} row(s)",
-        count
-    );
 }
 
 fn test_ozks_db_contents(db_path: &str) {

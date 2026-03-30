@@ -5,9 +5,7 @@ use zksbom::config::load_config;
 use zksbom::database::{
     db_commitment::{delete_db_commitment, init_db_commitment},
     db_dependency::{delete_db_dependency, init_db_dependency},
-    db_vulnerabilities::{delete_db_vulnerabilities, init_db_vulnerabilities},
 };
-use zksbom::map_dependencies_vulnerabilities::map_dependencies_vulnerabilities;
 use zksbom::method::method_handler::{create_proof, create_proof_no_commitment, get_commitment};
 use zksbom::upload::upload;
 
@@ -43,14 +41,12 @@ fn init_dbs(config: &zksbom::config::Config) {
     debug!("Initializing the databases...");
     init_db_commitment(config);
     init_db_dependency(config);
-    init_db_vulnerabilities(config);
 }
 
 fn delete_dbs(is_clean_init: bool, config: &zksbom::config::Config) {
     if is_clean_init {
         delete_db_commitment(config);
         delete_db_dependency(config);
-        delete_db_vulnerabilities(config);
         // Also delete the oZKS SQLite database
         let ozks_db_path = &config.db_ozks.path;
         if std::path::Path::new(ozks_db_path).exists() {
@@ -112,14 +108,6 @@ fn parse_cli(config: &zksbom::config::Config) {
             create_proof_no_commitment(
                 &api_key, &method, &vendor, &product, &version, &check, config,
             );
-        }
-        Some(("map_vulnerabilities", _)) => {
-            let is_successful = map_dependencies_vulnerabilities(config);
-            if is_successful {
-                info!("Vulnerabilities mapping completed successfully.");
-            } else {
-                error!("Vulnerabilities mapping failed.");
-            }
         }
         _ => {
             error!("No valid subcommand provided.");

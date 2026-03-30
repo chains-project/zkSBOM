@@ -6,10 +6,6 @@ target/release/zksbom upload_sbom \
 --api-key 123 \
 --sbom "../sboms/other/test_sbom_openssl.cdx.json"
 # > Uploading SBOM completed.
-
-# Trigger Dependency-Vulnerability Mapping
-target/release/zksbom map_vulnerabilities
-# > Mapping dependencies and vulnerabilities completed.
 ```
 
 ## Merkle Trees (MT)

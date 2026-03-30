@@ -17,8 +17,5 @@ path = "./tests/tmp/database/commitment.db"
 [db_dependency]
 path = "./tests/tmp/database/dependency.db"
 
-[db_vulnerabilities]
-path = "./tests/tmp/database/vulnerabilities.db"
-
 [db_ozks]
 path = "./tests/tmp/database/ozks.db"

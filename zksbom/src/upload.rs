@@ -30,18 +30,48 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     let vendor = parsed_sbom.vendor;
     let product = parsed_sbom.product;
     let version = parsed_sbom.version;
-    let dependencies: Vec<&str> = parsed_sbom
-        .dependencies
-        .iter()
-        .map(|s| s.as_str())
-        .collect();
+
+    let mut leaves: Vec<String> = vec![];
+
+    // Add dependencies to the list of leaves
+    leaves.extend(parsed_sbom.dependencies.iter().map(|s| s.to_string()));
+
     debug!(
-        "Vendor: {}, Product: {}, Version: {}, dependencies: {:?}",
-        vendor, product, version, dependencies
+        "Vendor: {}, Product: {}, Version: {}, leaves: {:?}",
+        vendor, product, version, leaves
     );
 
+    // Add concealed dependency to list of leaves
+    let mut concealed_dependency = Vec::new();
+    for dependency in &leaves {
+        let parts: Vec<&str> = dependency.split('@').collect();
+
+        // Keep first and last parts, join with '@'
+        if parts.len() >= 2 {
+            let result = format!("{}@{}", parts.first().unwrap(), parts.last().unwrap());
+            concealed_dependency.push(result);
+        } else {
+            error!("Problem parsing dependency: {}", dependency);
+        }
+    }
+
+    // Remove duplicates in concealed dependencies, for that we must sort first.
+    concealed_dependency.sort();
+    concealed_dependency.dedup();
+
+    // Append the new prefixes to the original list
+    leaves.extend(concealed_dependency);
+    debug!("Leaves with concealed dependencies: {:?}", leaves);
+
+    // Metadata leaf, only used for MT, SMT, MPT
+    let metadata_leaf: String = format!("{};{};v{}", vendor.to_string(), &product, &version);
+
     // Generate Commitments
-    let commitments = create_commitments(dependencies.clone(), config);
+    let commitments = create_commitments(
+        leaves.iter().map(|s| s.as_str()).collect::<Vec<&str>>(),
+        metadata_leaf.clone(),
+        config,
+    );
     let commitment_merkle_tree = commitments[0].clone();
     let commitment_sparse_merkle_tree = commitments[1].clone();
     let commitment_merkle_patricia_trie = commitments[2].clone();
@@ -59,13 +89,14 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     };
     insert_commitment(commitment_entry, config);
 
-    // Save dependencies to database
+    // Save leaves to database
     let dependency_entry = DependencyDbEntry {
         commitment_merkle_tree,
         commitment_sparse_merkle_tree,
         commitment_merkle_patricia_trie,
         commitment_ozks,
-        dependencies: dependencies.join(","),
+        dependencies: leaves.join(","),
+        metadata: metadata_leaf,
     };
     insert_dependency(dependency_entry, config);
 
