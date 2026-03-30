@@ -333,27 +333,26 @@ jobs:
             --commitment "${{ steps.commitment.outputs.value }}" \
             --proof_path "../zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt"
 
-      - name: Generate ZK non-inclusion proof that Druid SBOM does NOT contain CVE-2014-0160
-        # CVE-2014-0160 (Heartbleed) affects OpenSSL — a C library absent from
-        # any Java/Maven SBOM. This proves the dependency is not present without
-        # revealing the full dependency list.
+      - name: Generate ZK non-inclusion proof that Druid SBOM does NOT contain CVE-2025-55182
+        # CVE-2025-55182 is absent from Druid 0.22.0's dependency tree.
+        # This proves the dependency is not present without revealing the full dependency list.
         working-directory: zksbom
         run: |
           ./target/release/zksbom create_proof \
             --api-key 123 \
             --method "${ZK_METHOD}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
-            --output "./tmp/output/proof-non-inclusion-CVE-2014-0160.txt" \
-            --check "CVE-2014-0160"
-          echo "✓ Non-inclusion proof written to zksbom/tmp/output/proof-non-inclusion-CVE-2014-0160.txt"
+            --output "./tmp/output/proof-non-inclusion-CVE-2025-55182.txt" \
+            --check "CVE-2025-55182"
+          echo "✓ Non-inclusion proof written to zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt"
 
-      - name: Verify ZK non-inclusion proof (CVE-2014-0160)
+      - name: Verify ZK non-inclusion proof (CVE-2025-55182)
         working-directory: zksbom-verifier
         run: |
           ./target/release/zksbom-verifier verify \
             --method "${ZK_METHOD}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
-            --proof_path "../zksbom/tmp/output/proof-non-inclusion-CVE-2014-0160.txt"
+            --proof_path "../zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt"
 
       # ──────────────────────────────────────────────────────────────────────
       # Summary
@@ -370,7 +369,7 @@ jobs:
           INCL_STATUS=$([ -f "zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt" ] \
             && echo "✅ Inclusion proof generated and verified" \
             || echo "❌ Inclusion proof missing")
-          NONINC_STATUS=$([ -f "zksbom/tmp/output/proof-non-inclusion-CVE-2014-0160.txt" ] \
+          NONINC_STATUS=$([ -f "zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt" ] \
             && echo "✅ Non-inclusion proof generated and verified" \
             || echo "❌ Non-inclusion proof missing")
 
@@ -392,10 +391,10 @@ jobs:
           | CVE | Type | Status |
           |---|---|---|
           | CVE-2021-44228 (Log4Shell) | Inclusion | ${INCL_STATUS} |
-          | CVE-2014-0160 (Heartbleed) | Non-inclusion | ${NONINC_STATUS} |
+          | CVE-2025-55182 | Non-inclusion | ${NONINC_STATUS} |
 
           > zkSBOM commitments cryptographically prove that Druid ${DRUID_VERSION} contains
-          > a dependency vulnerable to Log4Shell **and** does not contain Heartbleed —
+          > a dependency vulnerable to Log4Shell **and** does not contain CVE-2025-55182 —
           > without revealing the full dependency list.
           EOF
 
@@ -410,4 +409,4 @@ jobs:
           path: |
             sboms/druid-${{ env.DRUID_VERSION }}.cdx.json
             zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt
-            zksbom/tmp/output/proof-non-inclusion-CVE-2014-0160.txt
+            zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt
