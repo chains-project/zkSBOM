@@ -5,8 +5,10 @@ use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::github_advisory_database_mapping::MAPPINGS;
 use crate::method::method_handler::create_commitments;
 use log::{debug, error, warn};
+use once_cell::sync::Lazy;
 use rand::distr::Alphanumeric;
 use rand::Rng;
+use regex::Regex;
 use serde_json::{from_str, Value};
 
 #[derive(Debug, Default)]
@@ -236,12 +238,44 @@ fn map_dependency_ecosystem(purl: &str) -> String {
     return "unknown".to_string();
 }
 
+#[allow(dead_code)]
+/// Parsed representation of a Package URL (pURL).
+///
+/// pURL format: `pkg:type/[namespace/]name[@version][?qualifiers][#subpath]`
+///
+/// Examples:
+/// - `pkg:maven/com.example/my-artifact@1.2.3`  → type=maven, namespace=com.example, name=my-artifact
+/// - `pkg:cargo/my-crate@0.5.0`                 → type=cargo, namespace=None, name=my-crate
+#[derive(Debug)]
+struct ParsedPurl {
+    pkg_type: String,
+    namespace: Option<String>,
+    name: String,
+    version: Option<String>,
+}
+
+/// Parses a pURL string using a single regex that handles both namespaced
+/// (e.g. Maven `group/artifact`) and non-namespaced (e.g. Cargo `package`) formats.
+///
+/// Regex breakdown:
+///   `^pkg:([^/]+)/`          – mandatory "pkg:" prefix + type + first slash
+///   `(?:([^/]+)/)?`          – optional namespace segment (present only when a second `/` exists before `@`)
+///   `([^@?#]+)`              – package name (everything up to `@`, `?`, `#`, or end)
+///   `(?:@([^?#]+))?`         – optional version after `@`
+fn parse_purl(purl: &str) -> Option<ParsedPurl> {
+    static PURL_RE: Lazy<Regex> = Lazy::new(|| {
+        Regex::new(r"^pkg:([^/]+)/(?:([^/]+)/)?([^@?#]+)(?:@([^?#]+))?").unwrap()
+    });
+
+    let caps = PURL_RE.captures(purl)?;
+    Some(ParsedPurl {
+        pkg_type: caps[1].to_string(),
+        namespace: caps.get(2).map(|m| m.as_str().to_string()),
+        name: caps[3].to_string(),
+        version: caps.get(4).map(|m| m.as_str().to_string()),
+    })
+}
+
 fn extract_ecosystem(purl: &str) -> Option<String> {
-    if let Some(pkg_index) = purl.find("pkg:") {
-        let start_index = pkg_index + "pkg:".len();
-        if let Some(slash_index) = purl[start_index..].find('/') {
-            return Some(purl[start_index..start_index + slash_index].to_string());
-        }
-    }
-    None
+    parse_purl(purl).map(|p| p.pkg_type)
 }
