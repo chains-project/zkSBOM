@@ -99,6 +99,18 @@ jobs:
           mvn package -q -DskipTests --no-transfer-progress
 
       # ──────────────────────────────────────────────────────────────────────
+      # Phase 1b — Patch log4j version in Druid pom.xml
+      # ──────────────────────────────────────────────────────────────────────
+      # We do this because `extract_lower_version` only gets the lowest
+      # version in the range
+      - name: Set log4j version to 2.4 in Druid pom.xml
+        run: |
+          sed -i 's|<log4j.version>2\.8\.2</log4j.version>|<log4j.version>2.4</log4j.version>|' \
+            rq1/druid/pom.xml
+          grep -m1 "log4j.version" rq1/druid/pom.xml
+          echo "✓ log4j.version changed to 2.4"
+
+      # ──────────────────────────────────────────────────────────────────────
       # Phase 1b — Build Druid distribution + generate CycloneDX SBOM
       # Building from source produces the same tarball as the Apache release
       # and lets us run the CycloneDX plugin in the same Maven invocation,
@@ -184,7 +196,7 @@ jobs:
           ls -l "${DRUID_HOME}/"
           if [ -f "${SENTINEL}" ]; then
             echo "✓ RCE CONFIRMED: ${SENTINEL} exists"
-            echo "  Druid 0.22.0 with log4j-core 2.8.2 is fully exploitable via CVE-2021-44228"
+            echo "  Druid 0.22.0 is fully exploitable via CVE-2021-44228"
           else
             echo "✗ ${SENTINEL} not found — exploitation did not complete"
             exit 1
@@ -363,7 +375,7 @@ jobs:
           | | |
           |---|---|
           | **Target** | Apache Druid ${DRUID_VERSION} |
-          | **Vulnerable dependency** | \`log4j-core 2.8.2\` |
+          | **Vulnerable dependency** | \`log4j-core 2.4\` |
 
           ### Phase 1 — Exploitation
           ${RCE_STATUS}
