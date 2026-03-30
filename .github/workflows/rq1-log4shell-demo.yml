@@ -13,6 +13,17 @@ on:
   pull_request:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      zk_method:
+        description: "ZK commitment algorithm"
+        required: false
+        default: "ozks"
+        type: choice
+        options:
+          - ozks
+          - merkle-tree
+          - sparse-merkle-tree
+          - merkle-patricia-trie
 
 jobs:
   log4shell-zksbom:
@@ -27,7 +38,7 @@ jobs:
       JNDI_HTTP_PORT: "8000"
       # Proof target
       CVE: "CVE-2021-44228"
-      ZK_METHOD: "ozks"
+      ZK_METHOD: ${{ github.event.inputs.zk_method || 'ozks' }}
 
     steps:
       # ──────────────────────────────────────────────────────────────────────
