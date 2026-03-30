@@ -199,9 +199,9 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
                 );
                 all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
             }
-
-            all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
         }
+
+        debug!("All dependencies: {:?}", all_dependencies);
 
         if all_dependencies.is_empty() {
             warn!("No components with name and version found in the SBOM.");
