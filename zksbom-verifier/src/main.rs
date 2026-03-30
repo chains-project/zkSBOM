@@ -68,18 +68,12 @@ fn parse_cli(app_config: &zksbom_verifier::config::AppConfig) {
                         } else {
                             "No (not in trie)"
                         };
-                        let proof_status = if detail.is_proof_valid { "✓" } else { "✗" };
-                        println!(
-                            "  [{}] {} Dependency: {}",
-                            idx + 1,
-                            proof_status,
-                            detail.dependency
-                        );
+                        println!("  [{}] Dependency: {}", idx + 1, detail.dependency);
                         println!("      In trie: {}", member_status);
                     }
                 } else if result.details.len() == 1 {
                     let detail = &result.details[0];
-                    println!("  Dependency: {}", detail.dependency);
+                    println!("Dependency: {}", detail.dependency);
                     let member_status = if detail.is_member {
                         "Yes (member)"
                     } else {

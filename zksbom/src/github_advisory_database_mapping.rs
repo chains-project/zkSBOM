@@ -1,19 +1,16 @@
-use once_cell::sync::Lazy;
-use std::collections::HashMap;
-
-// Define a static HashMap that initializes once
-pub static MAPPINGS: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
-    let mut map = HashMap::new();
-    map.insert("composer", "COMPOSER");
-    map.insert("github", "GITHUB ACTIONS");
-    map.insert("golang", "GO");
-    map.insert("maven", "MAVEN");
-    map.insert("npm", "NPM");
-    map.insert("nuget", "NUGET");
-    map.insert("pypi", "PIP");
-    map.insert("pub", "PUB");
-    map.insert("gem", "RUBYGEMS");
-    map.insert("cargo", "RUST");
-    map.insert("swift", "SWIFT");
-    map
-});
+pub fn get_github_ecosystem_name(purl: &str) -> Option<&'static str> {
+    match purl {
+        "composer" => Some("COMPOSER"),
+        "github" => Some("GITHUB ACTIONS"),
+        "golang" => Some("GO"),
+        "maven" => Some("MAVEN"),
+        "npm" => Some("NPM"),
+        "nuget" => Some("NUGET"),
+        "pypi" => Some("PIP"),
+        "pub" => Some("PUB"),
+        "gem" => Some("RUBYGEMS"),
+        "cargo" => Some("RUST"),
+        "swift" => Some("SWIFT"),
+        _ => None,
+    }
+}

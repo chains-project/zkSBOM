@@ -32,22 +32,17 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
         }
     }
 
-    debug!("deps_to_proof: {:?}\n\n", deps_to_proof);
-
     // Check for Inclusion
     for dep in &dependencies {
         let stripped_dep = dep.split(';').next().unwrap_or(*dep);
-        debug!("stripped_dep: {:?}", stripped_dep);
 
         if deps_to_proof.contains(&stripped_dep.to_string()) {
-            for dep_to_proof in &deps_to_proof {
-                debug!(
-                    "Creating inclusion proof for dep_to_proof: {}",
-                    dep_to_proof
-                );
-                let concealed_dep = get_concealed_dependencies(dep_to_proof);
-                return inclusion_proof(method, commitment, dependencies, concealed_dep, config);
-            }
+            debug!(
+                "Creating inclusion proof for dep_to_proof: {}",
+                stripped_dep
+            );
+            let concealed_dep = get_concealed_dependencies(stripped_dep);
+            return inclusion_proof(method, commitment, dependencies, concealed_dep, config);
         }
     }
 
@@ -61,13 +56,7 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
         "Creating non inclusion proof for deps_to_proof: {}",
         deps_to_proof.join(", ")
     );
-    non_inclusion_proof(
-        method,
-        commitment,
-        dependencies,
-        &deps_to_proof.join(", "),
-        config,
-    )
+    non_inclusion_proof(method, commitment, dependencies, deps_to_proof, config)
 }
 
 fn is_valid_dep(s: &str) -> bool {
@@ -93,13 +82,15 @@ fn non_inclusion_proof(
     method: &str,
     commitment: &str,
     dependencies: Vec<&str>,
-    check: &str,
+    deps_to_proof: Vec<String>,
     config: &Config,
 ) -> String {
-    let dep_list = if check.to_lowercase().starts_with("cve") {
-        get_vulnerable_packages_for_cve(check, config)
+    let dep_list = if deps_to_proof.len() == 1 && deps_to_proof[0].to_lowercase().starts_with("cve")
+    {
+        error!("deps_to_proof[0].as_str(): {:?}", deps_to_proof[0].as_str());
+        get_vulnerable_packages_for_cve(deps_to_proof[0].as_str(), config)
     } else {
-        vec![check.to_string()]
+        deps_to_proof.clone()
     };
 
     // Clear the output file before appending non-inclusion proofs
@@ -109,7 +100,10 @@ fn non_inclusion_proof(
     let mut total_elapsed = "".to_string();
 
     for dep in dep_list {
-        info!("Dependency: {} is vulnerable/in the SBOM: {}", dep, check);
+        info!(
+            "Dependency: {} is vulnerable/in the SBOM: {:?}",
+            dep, deps_to_proof
+        );
         let (proof_payload, elapsed) =
             call_crypto_method(method, commitment, dependencies.clone(), &dep, config);
 

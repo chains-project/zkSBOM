@@ -1,9 +1,8 @@
-use chrono::format::parse;
 use crate::check_dependencies_crates_io::check_dependencies;
 use crate::config::Config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
-use crate::github_advisory_database_mapping::MAPPINGS;
+use crate::github_advisory_database_mapping::get_github_ecosystem_name;
 use crate::method::method_handler::create_commitments;
 use log::{debug, error, warn};
 use once_cell::sync::Lazy;
@@ -176,9 +175,32 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
 
             let mut name = parsed_purl.name;
             if !parsed_purl.namespace.is_none() {
-                name = format!("{}/{}", parsed_purl.namespace.unwrap(), name);
+                name = format!("{}:{}", parsed_purl.namespace.unwrap(), name);
             }
-            all_dependencies.push(format!("{}@{}@{}", name, parsed_purl.version.unwrap(), parsed_purl.pkg_type));
+
+            let ecosystem = get_github_ecosystem_name(parsed_purl.pkg_type.as_str());
+            if ecosystem.is_none() {
+                panic!("Ecosystem not found in metadata JSON");
+            }
+            let ecosystem = ecosystem.unwrap();
+
+            let version = parsed_purl.version.unwrap_or("unknow".to_string());
+            if config.app.salt {
+                debug!(
+                    "Adding salt to dependency: {}@{}@{}",
+                    name, version, ecosystem
+                );
+                let salt = create_salt();
+                all_dependencies.push(format!("{}@{}@{};{}", name, version, ecosystem, salt));
+            } else {
+                debug!(
+                    "No salt added for dependency: {}@{}@{}",
+                    name, version, ecosystem
+                );
+                all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
+            }
+
+            all_dependencies.push(format!("{}@{}@{}", name, version, ecosystem));
         }
 
         if all_dependencies.is_empty() {
@@ -231,9 +253,8 @@ struct ParsedPurl {
 ///   `([^@?#]+)`              – package name (everything up to `@`, `?`, `#`, or end)
 ///   `(?:@([^?#]+))?`         – optional version after `@`
 fn parse_purl(purl: &str) -> Option<ParsedPurl> {
-    static PURL_RE: Lazy<Regex> = Lazy::new(|| {
-        Regex::new(r"^pkg:([^/]+)/(?:([^/]+)/)?([^@?#]+)(?:@([^?#]+))?").unwrap()
-    });
+    static PURL_RE: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r"^pkg:([^/]+)/(?:([^/]+)/)?([^@?#]+)(?:@([^?#]+))?").unwrap());
 
     let caps = PURL_RE.captures(purl)?;
     Some(ParsedPurl {
@@ -243,4 +264,3 @@ fn parse_purl(purl: &str) -> Option<ParsedPurl> {
         version: caps.get(4).map(|m| m.as_str().to_string()),
     })
 }
-

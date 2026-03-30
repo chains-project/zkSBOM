@@ -120,7 +120,7 @@ pub fn verify(commitment: &str, proof_path: &str) -> VerificationResult {
                 debug!("Key binding verified: proof key matches expected dependency key.");
             }
         } else {
-            warn!("No dependency specified in proof file — skipping key binding check.");
+            warn!("No dependency specified in proof file - skipping key binding check.");
         }
 
         let (is_member, is_proof_valid) = match result {
