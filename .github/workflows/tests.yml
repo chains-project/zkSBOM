@@ -11,92 +11,23 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-        with:
-          submodules: true
-
       # ──────────────────────────────────────────────────────────────────────
       # Phase 1 — Build oZKS (C++) + zkSBOM (Rust)
       # ──────────────────────────────────────────────────────────────────────
-      - name: Set up Rust stable
-        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
-        with:
-          cache: "false"
-
-      - name: Cache Cargo registry
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            zksbom/target
-            zksbom-verifier/target
-          key: cargo-${{ hashFiles('zksbom/Cargo.lock', 'zksbom-verifier/Cargo.lock') }}
-          restore-keys: cargo-
-
-      - name: Cache vcpkg
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
-        with:
-          path: vcpkg
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('zksbom/third_party/oZKS/CMakeLists.txt') }}
-          restore-keys: vcpkg-${{ runner.os }}-
-
-      - name: Install system build dependencies for oZKS
-        run: |
-          sudo apt-get update -q
-          sudo apt-get install -y --no-install-recommends \
-            cmake ninja-build pkg-config \
-            libssl-dev libgmp-dev \
-            nasm
-
-      - name: Bootstrap vcpkg
-        run: |
-          if [ ! -f "vcpkg/bootstrap-vcpkg.sh" ]; then
-            git clone https://github.com/microsoft/vcpkg.git vcpkg --depth=1
-          fi
-          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
-
-      - name: Build oZKS via CMake + vcpkg
-        run: |
-          cd zksbom/third_party/oZKS
-          cmake -B build \
-            -G Ninja \
-            -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            -DOZKS_BUILD_EXAMPLES=ON \
-            -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --parallel
-
-      - name: Build zksbom
-        run: |
-          cd zksbom
-          CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            cargo build --release
-
-      - name: Reuse zksbom oZKS build for verifier
-        run: |
-          mkdir -p zksbom-verifier/third_party/oZKS
-          ln -sfn "${GITHUB_WORKSPACE}/zksbom/third_party/oZKS/build" \
-            zksbom-verifier/third_party/oZKS/build
-
-      - name: Build zksbom-verifier
-        run: |
-          cd zksbom-verifier
-          CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            cargo build --release
+      - name: Setup common zkSBOM build environment
+        uses: ./.github/workflows/templates/build-ozks-library.yml
 
       # ──────────────────────────────────────────────────────────────────────
       # Phase 2 — Test zkSBOM
       # ──────────────────────────────────────────────────────────────────────
-      - name: Configure zksbom
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p zksbom/tmp/output zksbom/tmp/database
-          sed \
-            -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
-            zksbom/tests/config/config_template.toml \
-            > zksbom/tests/config/config.toml
+      - name: Configure zkSBOM tools
+        uses: ./.github/workflows/templates/configure-zksbom.yml
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          zksbom_template: zksbom/tests/config/config_template.toml
+          zksbom_output: zksbom/tests/config/config.toml
+          verifier_template: zksbom-verifier/tests/config/config_template.toml
+          verifier_output: zksbom-verifier/tests/config/config.toml
 
       - name: Configure zksbom-verifier
         run: |
