@@ -1,0 +1,37 @@
+name: Configure zkSBOM tools
+description: Generate config files for zksbom and zksbom-verifier from templates.
+
+inputs:
+  github_token:
+    description: GitHub token used by zksbom.
+    required: true
+  zksbom_template:
+    description: Template path for zksbom config file.
+    required: true
+  zksbom_output:
+    description: Output path for zksbom config file.
+    required: true
+  verifier_template:
+    description: Template path for zksbom-verifier config file.
+    required: true
+  verifier_output:
+    description: Output path for zksbom-verifier config file.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure zksbom
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        mkdir -p zksbom/tmp/output zksbom/tmp/database
+        sed \
+          -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
+          "${{ inputs.zksbom_template }}" \
+          > "${{ inputs.zksbom_output }}"
+
+    - name: Configure zksbom-verifier
+      shell: bash
+      run: cp "${{ inputs.verifier_template }}" "${{ inputs.verifier_output }}"

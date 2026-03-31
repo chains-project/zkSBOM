@@ -1,0 +1,109 @@
+name: Run zkSBOM proofs
+description: Upload SBOM, compute commitment, generate and verify inclusion/non-inclusion proofs.
+
+inputs:
+  zk_method:
+    description: Commitment/proof method.
+    required: true
+  sbom_path:
+    description: Path to SBOM file relative to zksbom working dir.
+    required: true
+  vendor:
+    description: Vendor value for commitment lookup.
+    required: true
+  product:
+    description: Product value for commitment lookup.
+    required: true
+  version:
+    description: Version value for commitment lookup.
+    required: true
+  inclusion_check:
+    description: CVE/dependency ID expected to be included.
+    required: true
+  inclusion_output:
+    description: Proof output path relative to zksbom working dir.
+    required: true
+  non_inclusion_check:
+    description: CVE/dependency ID expected to be excluded.
+    required: true
+  non_inclusion_output:
+    description: Non-inclusion proof output path relative to zksbom working dir.
+    required: true
+  api_key:
+    description: API key passed to zksbom.
+    required: false
+    default: "123"
+
+outputs:
+  commitment:
+    description: Computed commitment value.
+    value: ${{ steps.commitment.outputs.value }}
+
+runs:
+  using: composite
+  steps:
+    - name: Upload SBOM to zksbom
+      shell: bash
+      working-directory: zksbom
+      run: |
+        ./target/release/zksbom upload_sbom \
+          --api-key "${{ inputs.api_key }}" \
+          --sbom "${{ inputs.sbom_path }}"
+        echo "✓ SBOM uploaded"
+
+    - name: Get zkSBOM commitment
+      id: commitment
+      shell: bash
+      working-directory: zksbom
+      run: |
+        OUTPUT=$(./target/release/zksbom get_commitment \
+          --vendor "${{ inputs.vendor }}" \
+          --product "${{ inputs.product }}" \
+          --version "${{ inputs.version }}" \
+          --method "${{ inputs.zk_method }}")
+        echo "$OUTPUT"
+        COMMITMENT=$(echo "$OUTPUT" | grep -oP 'Commitment:\s*\K\S+')
+        echo "value=${COMMITMENT}" >> "$GITHUB_OUTPUT"
+        echo "✓ Commitment: ${COMMITMENT}"
+
+    - name: Generate inclusion proof
+      shell: bash
+      working-directory: zksbom
+      run: |
+        ./target/release/zksbom create_proof \
+          --api-key "${{ inputs.api_key }}" \
+          --method "${{ inputs.zk_method }}" \
+          --commitment "${{ steps.commitment.outputs.value }}" \
+          --output "${{ inputs.inclusion_output }}" \
+          --check "${{ inputs.inclusion_check }}"
+        echo "✓ Inclusion proof written to zksbom/${{ inputs.inclusion_output }}"
+
+    - name: Verify inclusion proof
+      shell: bash
+      working-directory: zksbom-verifier
+      run: |
+        ./target/release/zksbom-verifier verify \
+          --method "${{ inputs.zk_method }}" \
+          --commitment "${{ steps.commitment.outputs.value }}" \
+          --proof_path "../zksbom/${{ inputs.inclusion_output }}"
+
+    - name: Generate non-inclusion proof
+      shell: bash
+      working-directory: zksbom
+      run: |
+        ./target/release/zksbom create_proof \
+          --api-key "${{ inputs.api_key }}" \
+          --method "${{ inputs.zk_method }}" \
+          --commitment "${{ steps.commitment.outputs.value }}" \
+          --output "${{ inputs.non_inclusion_output }}" \
+          --check "${{ inputs.non_inclusion_check }}"
+        echo "✓ Non-inclusion proof written to zksbom/${{ inputs.non_inclusion_output }}"
+
+    - name: Verify non-inclusion proof
+      shell: bash
+      working-directory: zksbom-verifier
+      run: |
+        ./target/release/zksbom-verifier verify \
+          --method "${{ inputs.zk_method }}" \
+          --commitment "${{ steps.commitment.outputs.value }}" \
+          --proof_path "../zksbom/${{ inputs.non_inclusion_output }}"
