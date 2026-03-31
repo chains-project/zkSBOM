@@ -210,7 +210,7 @@ jobs:
     with:
       zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
       sbom_artifact_name: druid-sbom
-      sbom_path: ../sboms/druid-0.22.0.cdx.json
+      sbom_path: ../druid-0.22.0.cdx.json
       vendor: unknown
       product: druid
       version: "0.22.0"

@@ -72,7 +72,7 @@ jobs:
     with:
       zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
       sbom_artifact_name: uv-sbom
-      sbom_path: ../rq1/uv/crates/uv/uv.cdx.json
+      sbom_path: ../uv.cdx.json
       vendor: uv
       product: uv
       version: "0.9.4"
