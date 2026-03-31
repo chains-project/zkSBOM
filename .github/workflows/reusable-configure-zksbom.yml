@@ -16,7 +16,7 @@ on:
         required: true
         type: string
     secrets:
-      github_token:
+      gh_token:
         required: true
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Configure zksbom
         env:
-          GH_TOKEN: ${{ secrets.github_token }}
+          GH_TOKEN: ${{ secrets.gh_token }}
         run: |
           mkdir -p zksbom/tmp/output zksbom/tmp/database
           sed \
