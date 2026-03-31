@@ -41,6 +41,8 @@ jobs:
       - name: Set up Rust stable
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
 
+      - name: Install cargo-cyclonedx
+        run: cargo install --locked cargo-cyclonedx
       # ──────────────────────────────────────────────────────────────────────
       # Caches
       # ──────────────────────────────────────────────────────────────────────
@@ -67,11 +69,14 @@ jobs:
       # ──────────────────────────────────────────────────────────────────────
       - name: Checkout uv@0-9-4
         working-directory: rq1/uv
-        run: git checkout 0.9.4
+        run: |
+          git fetch --force --tags origin
+          git checkout "tags/0.9.4"
 
       - name: Generate SBOM using `cyclonedx`
-        working-directory: rq1/uv
-        run: cargo cyclonedx --format json
+        working-directory: rq1/uv/crates/uv
+        run: |
+          cargo cyclonedx --format json
 
       - name: Verify SBOM is created
         working-directory: rq1/uv/crates/uv
