@@ -78,6 +78,7 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
                         .get("vulnerableVersionRange")
                         .and_then(|r| r.as_str())
                         .unwrap_or("");
+                    debug!("{} vulnerable vulnerability range: {}", name, range);
                     if let Some(min_ver) = extract_lower_version(range) {
                         result.push(format!("{name}@{min_ver}@{ecosystem}"));
                     }
@@ -113,5 +114,12 @@ fn extract_lower_version(vuln_range: &str) -> Option<&str> {
             return Some(ver);
         }
     }
+    if vuln_range.starts_with("<=") {
+        return vuln_range.strip_prefix("<= ");
+    }
+    if vuln_range.starts_with(">=") {
+        return vuln_range.strip_prefix(">= ");
+    }
+
     None
 }
