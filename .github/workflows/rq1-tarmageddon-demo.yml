@@ -81,8 +81,8 @@ jobs:
       verifier_template: zksbom-verifier/config/config_template.toml
       verifier_output: zksbom-verifier/config/config.toml
       inclusion_check: CVE-2025-62518
-      inclusion_output: ./tmp/output/uv-proof-inclusion-CVE-2025-62518.txt
+      inclusion_output: tmp/output/uv-proof-inclusion-CVE-2025-62518.txt
       non_inclusion_check: CVE-2025-55182
-      non_inclusion_output: ./tmp/output/uv-proof-non-inclusion-CVE-2025-55182.txt
+      non_inclusion_output: tmp/output/uv-proof-non-inclusion-CVE-2025-55182.txt
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
