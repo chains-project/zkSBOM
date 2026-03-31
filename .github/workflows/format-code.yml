@@ -1,0 +1,37 @@
+name: Check Code Format
+
+on: push
+
+jobs:
+  check_code_format:
+    runs-on: ubuntu-latest
+    steps:
+      # ──────────────────────────────────────────────────────────────────────
+      # Checkout
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          submodules: true
+      
+      # ──────────────────────────────────────────────────────────────────────
+      # Tool-chain setup
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Set up Rust stable
+        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
+        with:
+          components: rustfmt
+      
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 1 — Test zkSBOM
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Check zkSBOM Format
+        working-directory: zksbom
+        run: cargo fmt --check
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 2 — Test zkSBOM Verifier
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Check zkSBOM Verifier Format
+        working-directory: zksbom-verifier
+        run: cargo fmt --check
