@@ -10,7 +10,11 @@
 #include <vector>
 #include <cstdint>
 
-// oZKS includes
+// oZKS includes — complete-type headers must come before memory_storage_batch_inserter.h
+// because GCC 11 requires CTNodeStored and CompressedTrie to be fully defined when
+// the unordered_map<StorageNodeKey, CTNodeStored> members are instantiated.
+#include "oZKS/ct_node_stored.h"
+#include "oZKS/compressed_trie.h"
 #include "oZKS/ozks_config.h"
 #include "oZKS/defines.h"
 #include "oZKS/storage/memory_storage_batch_inserter.h"
