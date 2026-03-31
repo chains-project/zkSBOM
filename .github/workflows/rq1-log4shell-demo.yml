@@ -197,86 +197,7 @@ jobs:
               print(f"✓ Found in SBOM: {c.get('group','')}:{c['name']}:{c.get('version','')}")
           EOF
 
-      # ──────────────────────────────────────────────────────────────────────
-      # Phase 3a — Build oZKS (C++) + zkSBOM (Rust)
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Setup common zkSBOM build environment
-        uses: ./.github/workflows/templates/build-ozks-library.yml
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Phase 3b — Upload SBOM → Generate proof → Verify
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Configure zkSBOM tools
-        uses: ./.github/workflows/templates/configure-zksbom.yml
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          zksbom_template: zksbom/config/config_template.toml
-          zksbom_output: zksbom/config/config.toml
-          verifier_template: zksbom-verifier/config/config_template.toml
-          verifier_output: zksbom-verifier/config/config.toml
-
-      - name: Run upload + proof generation + verification
-        uses: ./.github/workflows/templates/run-zksbom.yml
-        with:
-          zk_method: ${{ env.ZK_METHOD }}
-          sbom_path: ../sboms/druid-${{ env.DRUID_VERSION }}.cdx.json
-          vendor: unknown
-          product: druid
-          version: ${{ env.DRUID_VERSION }}
-          inclusion_check: ${{ env.CVE }}
-          inclusion_output: ./tmp/output/proof-inclusion-CVE-2021-44228.txt
-          non_inclusion_check: CVE-2025-55182
-          non_inclusion_output: ./tmp/output/proof-non-inclusion-CVE-2025-55182.txt
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Summary
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Write end-to-end summary
-        if: always()
-        run: |
-          RCE_STATUS=$([ -f "${DRUID_HOME}/log4shell_pwned" ] \
-            && echo "✅ RCE confirmed — \`${DRUID_HOME}/log4shell_pwned\` created" \
-            || echo "❌ RCE not confirmed")
-          SBOM_STATUS=$([ -f "sboms/druid-${DRUID_VERSION}.cdx.json" ] \
-            && echo "✅ CycloneDX SBOM generated" \
-            || echo "❌ SBOM missing")
-          INCL_STATUS=$([ -f "zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt" ] \
-            && echo "✅ Inclusion proof generated and verified" \
-            || echo "❌ Inclusion proof missing")
-          NONINC_STATUS=$([ -f "zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt" ] \
-            && echo "✅ Non-inclusion proof generated and verified" \
-            || echo "❌ Non-inclusion proof missing")
-
-          cat >> "${GITHUB_STEP_SUMMARY}" <<EOF
-          ## RQ1 — Log4Shell End-to-End Summary
-
-          | | |
-          |---|---|
-          | **Target** | Apache Druid ${DRUID_VERSION} |
-          | **Vulnerable dependency** | \`log4j-core 2.4\` |
-
-          ### Phase 1 — Exploitation
-          ${RCE_STATUS}
-
-          ### Phase 2 — SBOM Generation
-          ${SBOM_STATUS}
-
-          ### Phase 3 — zkSBOM Verification
-          | CVE | Type | Status |
-          |---|---|---|
-          | CVE-2021-44228 (Log4Shell) | Inclusion | ${INCL_STATUS} |
-          | CVE-2025-55182 | Non-inclusion | ${NONINC_STATUS} |
-
-          > zkSBOM commitments cryptographically prove that Druid ${DRUID_VERSION} contains
-          > a dependency vulnerable to Log4Shell **and** does not contain CVE-2025-55182 —
-          > without revealing the full dependency list.
-          EOF
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Artifacts
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Upload SBOM and proof as artifacts
-        if: always()
+      - name: Upload generated SBOM artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: druid-sbom
@@ -285,11 +206,11 @@ jobs:
   log4shell-zksbom:
     name: Log4Shell zkSBOM proof generation
     needs: log4shell-sbom
-    uses: ./.github/workflows/reusable-run-zksbom.yml
+    uses: ./.github/workflows/templates/run-zksbom.yml
     with:
       zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
       sbom_artifact_name: druid-sbom
-      sbom_path: ../druid-0.22.0.cdx.json
+      sbom_path: sboms/druid-0.22.0.cdx.json
       vendor: unknown
       product: druid
       version: "0.22.0"
