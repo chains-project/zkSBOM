@@ -106,8 +106,8 @@ jobs:
           mkdir -p zksbom/tmp/output zksbom/tmp/database
           sed \
             -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
-            zksbom/config/config_template.toml \
-            > zksbom/config/config.toml
+            zksbom/tests/config/config_template.toml \
+            > zksbom/tests/config/config.toml
 
       - name: Test CVE Flow
         working-directory: zksbom
@@ -121,7 +121,7 @@ jobs:
       # Phase 3 — Test zkSBOM Verifier
       # ──────────────────────────────────────────────────────────────────────
       - name: Configure zksbom-verifier
-        run: cp zksbom-verifier/config/config_template.toml zksbom-verifier/config/config.toml
+        run: cp zksbom-verifier/tests/config/config_template.toml zksbom-verifier/tests/config/config.toml
 
       - name: Test zkSBOM Verifier Inclusion Proof
         working-directory: zksbom-verifier
