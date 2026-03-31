@@ -7,9 +7,8 @@ use zksbom::database::db_commitment::init_db_commitment;
 use zksbom::database::db_dependency::init_db_dependency;
 use zksbom::upload::upload;
 
-pub fn test_upload_sbom(config_path: &str) {
+pub fn test_upload_sbom(sbom_path: &str, config_path: &str) {
     let api_key = "";
-    let sbom_path = "../sboms/other/test_sbom_openssl.cdx.json";
 
     // Check if SBOM file exists
     assert!(
@@ -78,19 +77,34 @@ fn test_commitment_db_contents(db_path: &str) {
         let commitment_merkle_patricia_trie: String = row.get(5).unwrap();
         let commitment_ozks: String = row.get(6).unwrap();
 
-        assert_eq!(vendor, "Tom Sorger <sorger@kth.se>");
-        assert_eq!(product, "test_openssl");
-        assert_eq!(version, "0.1.0");
+        // Product information
+        assert_eq!(vendor, "unknown");
+        assert_eq!(product, "druid");
+        assert_eq!(version, "0.22.0");
 
-        assert_valid_commitment(&commitment_merkle_tree, "commitment_merkle_tree");
-        assert_valid_commitment(
-            &commitment_sparse_merkle_tree,
-            "commitment_sparse_merkle_tree",
-        );
-        assert_valid_commitment(
+        let file_prefix = "./tests/proof_data/druid-0.22.0.cdx.json";
+        // Merkle Tree
+        let mut commitment_file = format!("{}/mt-commitment.txt", file_prefix);
+        let mut expected_commitment =
+            fs::read_to_string(commitment_file).expect("Should have been able to read the file");
+        assert_eq!(&commitment_merkle_tree, expected_commitment.as_str());
+
+        // Sparse Merkle Tree
+        commitment_file = format!("{}/smt-commitment.txt", file_prefix);
+        expected_commitment =
+            fs::read_to_string(commitment_file).expect("Should have been able to read the file");
+        assert_eq!(&commitment_sparse_merkle_tree, expected_commitment.as_str());
+
+        // Merkle Patricia Trie
+        commitment_file = format!("{}/mpt-commitment.txt", file_prefix);
+        expected_commitment =
+            fs::read_to_string(commitment_file).expect("Should have been able to read the file");
+        assert_eq!(
             &commitment_merkle_patricia_trie,
-            "commitment_merkle_patricia_trie",
+            expected_commitment.as_str()
         );
+
+        // oZKS
         assert_valid_commitment(&commitment_ozks, "commitment_ozks");
     } else {
         panic!("No commitment row found in the database");
