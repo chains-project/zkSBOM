@@ -17,8 +17,8 @@ on:
           - merkle-patricia-trie
 
 jobs:
-  tarmageddon-zksbom:
-    name: TARmageddon Demo
+  tarmageddon-sbom:
+    name: TARmageddon SBOM generation
     runs-on: ubuntu-22.04
 
     env:
@@ -27,6 +27,11 @@ jobs:
       ZK_METHOD: ${{ github.event.inputs.zk_method || 'ozks' }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          submodules: true
+
       - name: Install cargo-cyclonedx
         run: cargo install --locked cargo-cyclonedx
 
@@ -54,46 +59,30 @@ jobs:
             exit 1
           fi
 
-      # ──────────────────────────────────────────────────────────────────────
-      # Phase 2a: Build oZKS (C++) + zkSBOM (Rust)
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Setup common zkSBOM build environment
-        uses: ./.github/workflows/templates/build-ozks-library.yml
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Phase 2b: Upload SBOM → Generate proof → Verify
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Configure zkSBOM tools
-        uses: ./.github/workflows/templates/configure-zksbom.yml
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          zksbom_template: zksbom/config/config_template.toml
-          zksbom_output: zksbom/config/config.toml
-          verifier_template: zksbom-verifier/config/config_template.toml
-          verifier_output: zksbom-verifier/config/config.toml
-
-      - name: Run upload + proof generation + verification
-        uses: ./.github/workflows/templates/run-zksbom.yml
-        with:
-          zk_method: ${{ env.ZK_METHOD }}
-          sbom_path: ../rq1/uv/crates/uv/uv.cdx.json
-          vendor: uv
-          product: uv
-          version: 0.9.4
-          inclusion_check: ${{ env.CVE }}
-          inclusion_output: ./tmp/output/uv-proof-inclusion-CVE-2025-62518.txt
-          non_inclusion_check: CVE-2025-55182
-          non_inclusion_output: ./tmp/output/uv-proof-non-inclusion-CVE-2025-55182.txt
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Artifacts
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Upload SBOM and proof as artifacts
-        if: always()
+      - name: Upload generated SBOM artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
-          name: rq1-outputs
-          path: |
-            rq1/uv/crates/uv/uv.cdx.json
-            zksbom/tmp/output/uv-proof-inclusion-CVE-2025-62518.txt
-            zksbom/tmp/output/uv-proof-non-inclusion-CVE-2025-55182.txt
+          name: uv-sbom
+          path: rq1/uv/crates/uv/uv.cdx.json
+
+  tarmageddon-zksbom:
+    name: TARmageddon zkSBOM proof generation
+    needs: tarmageddon-sbom
+    uses: ./.github/workflows/templates/run-zksbom.yml
+    with:
+      zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
+      sbom_artifact_name: uv-sbom
+      sbom_path: rq1/uv/crates/uv/uv.cdx.json
+      vendor: uv
+      product: uv
+      version: "0.9.4"
+      zksbom_template: zksbom/config/config_template.toml
+      zksbom_output: zksbom/config/config.toml
+      verifier_template: zksbom-verifier/config/config_template.toml
+      verifier_output: zksbom-verifier/config/config.toml
+      inclusion_check: CVE-2025-62518
+      inclusion_output: ./tmp/output/uv-proof-inclusion-CVE-2025-62518.txt
+      non_inclusion_check: CVE-2025-55182
+      non_inclusion_output: ./tmp/output/uv-proof-non-inclusion-CVE-2025-55182.txt
+    secrets:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
