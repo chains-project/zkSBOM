@@ -56,7 +56,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/templates/build-ozks-library.yml
+    uses: ./.github/workflows/reusable-build-ozks-library.yml
 
   run:
     needs: build

@@ -68,7 +68,7 @@ jobs:
   tarmageddon-zksbom:
     name: TARmageddon zkSBOM proof generation
     needs: tarmageddon-sbom
-    uses: ./.github/workflows/templates/run-zksbom.yml
+    uses: ./.github/workflows/reusable-run-zksbom.yml
     with:
       zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
       sbom_artifact_name: uv-sbom
