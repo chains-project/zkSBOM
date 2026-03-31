@@ -123,10 +123,18 @@ jobs:
       - name: Configure zksbom-verifier
         run: cp zksbom-verifier/tests/config/config_template.toml zksbom-verifier/tests/config/config.toml
 
-      - name: Test zkSBOM Verifier Inclusion Proof
+      - name: Test zkSBOM Verifier Inclusion Proof CVE
         working-directory: zksbom-verifier
         run: cargo test --package zksbom-verifier --test inclusion_proof test_inclusion_proof
 
-      - name: Test zkSBOM Verifier Non-Inclusion Proof
+      - name: Test zkSBOM Verifier Inclusion Proof Dependency
         working-directory: zksbom-verifier
-        run: cargo test --package zksbom-verifier --test non_inclusion_proof test_non_inclusion_proof
+        run: cargo test --package zksbom-verifier --test inclusion_proof test_inclusion_proof_dependency
+
+      - name: Test zkSBOM Verifier Non-Inclusion Proof CVE
+        working-directory: zksbom-verifier
+        run: cargo test --package zksbom-verifier --test non-inclusion_proof test_non_inclusion_proof
+
+      - name: Test zkSBOM Verifier Non-Inclusion Proof Dependency
+        working-directory: zksbom-verifier
+        run: cargo test --package zksbom-verifier --test non-inclusion_proof test_non_inclusion_proof_dependency
