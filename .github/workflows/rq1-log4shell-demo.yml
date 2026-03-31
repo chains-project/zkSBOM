@@ -10,8 +10,6 @@ name: RQ1 — Log4Shell End-to-End Demo with zkSBOM
 #   3. zkSBOM   — Upload BOM, generate & verify ZK proof (CVE lookup via GitHub Advisory DB)
 
 on:
-  pull_request:
-    branches: [master]
   workflow_dispatch:
     inputs:
       zk_method:
