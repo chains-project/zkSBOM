@@ -85,4 +85,4 @@ jobs:
       non_inclusion_check: CVE-2025-55182
       non_inclusion_output: ./tmp/output/uv-proof-non-inclusion-CVE-2025-55182.txt
     secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
