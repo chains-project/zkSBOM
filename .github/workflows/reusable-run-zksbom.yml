@@ -51,11 +51,23 @@ on:
         default: ""
         type: string
     secrets:
+<<<<<<< HEAD
       gh_token:
         required: true
 
 jobs:
   run:
+=======
+      github_token:
+        required: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-build-ozks-library.yml
+
+  run:
+    needs: build
+>>>>>>> dfc53c6 (moving reusable workflows into workflows folder)
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -63,6 +75,7 @@ jobs:
         with:
           submodules: true
 
+<<<<<<< HEAD
       - name: Set up Rust stable
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
         with:
@@ -129,6 +142,8 @@ jobs:
           CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
             cargo build --release
 
+=======
+>>>>>>> dfc53c6 (moving reusable workflows into workflows folder)
       - name: Download SBOM artifact
         if: inputs.sbom_artifact_name != ''
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v5

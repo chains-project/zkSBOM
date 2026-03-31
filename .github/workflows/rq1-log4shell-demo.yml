@@ -206,7 +206,7 @@ jobs:
   log4shell-zksbom:
     name: Log4Shell zkSBOM proof generation
     needs: log4shell-sbom
-    uses: ./.github/workflows/templates/run-zksbom.yml
+    uses: ./.github/workflows/reusable-run-zksbom.yml
     with:
       zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
       sbom_artifact_name: druid-sbom
