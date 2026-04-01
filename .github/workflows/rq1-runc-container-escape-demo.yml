@@ -1,0 +1,85 @@
+name: RQ1 - runc Container Escape Demo
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      zk_method:
+        description: "ZK commitment algorithm"
+        required: false
+        default: "ozks"
+        type: choice
+        options:
+          - ozks
+          - merkle-tree
+          - sparse-merkle-tree
+          - merkle-patricia-trie
+
+jobs:
+  runc-container-escape-sbom:
+    name: runc Container Escape SBOM generation
+    runs-on: ubuntu-latest
+
+    env:
+      # Proof target
+      CVE: "CVE-2024-21626"
+      ZK_METHOD: ${{ github.event.inputs.zk_method || 'ozks' }}
+
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          submodules: true
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 1: Checkout correct `kubernetes` version (tag: v1.29.0) and
+      # create SBOM.
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Ensure tags/versions are fetched
+        run: |
+          git fetch --force --tags origin
+          git tag -l "v1.29.0" | grep -q "^v1.29.0$"
+
+      - name: Checkout Kubernetes v1.29.0
+        run: git checkout v1.29.0
+
+      - name: Set up Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v5
+        with:
+          go-version-file: .go-version
+          cache: true
+
+      - name: Install cyclonedx-gomod
+        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@latest
+
+      - name: Generate SBOM
+        run: GOWORK=off ~/go/bin/cyclonedx-gomod mod -json=true -output "$GITHUB_WORKSPACE/kubernetes.cdx.json"
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: kubernetes-cdx-json
+          path: kubernetes.cdx.json
+
+  runc-container-escape-zksbom:
+    name: runc container escape zkSBOM proof generation
+    needs: runc-container-escape-sbom
+    uses: ./.github/workflows/reusable-run-zksbom.yml
+    with:
+      zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
+      sbom_artifact_name: kubernetes-cdx-json
+      sbom_path: ../kubernetes.cdx.json
+      vendor: unknown
+      product: k8s.io/kubernetes
+      version: "v1.29.0"
+      zksbom_template: zksbom/config/config_template.toml
+      zksbom_output: zksbom/config/config.toml
+      verifier_template: zksbom-verifier/config/config_template.toml
+      verifier_output: zksbom-verifier/config/config.toml
+      inclusion_check: CVE-2024-21626
+      inclusion_output: tmp/output/kubernetes-proof-inclusion-CVE-2024-21626.txt
+      non_inclusion_check: CVE-2025-55182
+      non_inclusion_output: tmp/output/kubernetes-proof-non-inclusion-CVE-2025-55182.txt
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
