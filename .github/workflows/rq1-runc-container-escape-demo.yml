@@ -36,24 +36,24 @@ jobs:
       # Phase 1: Checkout correct `kubernetes` version (tag: v1.29.0) and
       # create SBOM.
       # ──────────────────────────────────────────────────────────────────────
-      - name: Ensure tags/versions are fetched
+      - name: Checkout kubernetes@v1.29.0
+        working-directory: rq1/kubernetes
         run: |
           git fetch --force --tags origin
-          git tag -l "v1.29.0" | grep -q "^v1.29.0$"
-
-      - name: Checkout Kubernetes v1.29.0
-        run: git checkout v1.29.0
+          git checkout "tags/v1.29.0"
 
       - name: Set up Go
         uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v5
         with:
-          go-version-file: .go-version
+          go-version-file: rq1/kubernetes/.go-version
           cache: true
 
       - name: Install cyclonedx-gomod
-        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@latest
+        # Keep this pinned: newer releases require Go >1.21, while kubernetes v1.29.0 uses Go 1.21.x.
+        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.7.0
 
       - name: Generate SBOM
+        working-directory: rq1/kubernetes
         run: GOWORK=off ~/go/bin/cyclonedx-gomod mod -json=true -output "$GITHUB_WORKSPACE/kubernetes.cdx.json"
 
       - name: Upload SBOM artifact
