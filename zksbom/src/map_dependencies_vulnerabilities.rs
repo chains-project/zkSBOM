@@ -3,9 +3,8 @@ use log::{debug, error};
 use roxmltree::Document;
 use semver::Version;
 use log::debug;
-use node_semver::{Range, Version};
-use regex::Regex;
 use serde_json::Value;
+use std::io::{BufRead, BufReader};
 use std::process::Command;
 use std::str;
 
@@ -88,6 +87,7 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
                     for vulnerable_version in vulnerable_versions {
                         result.push(format!("{name}@{vulnerable_version}@{ecosystem}"));
                     }
+                    get_all_versions(name, ecosystem, range);
                 }
             }
         }
