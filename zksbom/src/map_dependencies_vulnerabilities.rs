@@ -114,12 +114,5 @@ fn extract_lower_version(vuln_range: &str) -> Option<&str> {
             return Some(ver);
         }
     }
-    if vuln_range.starts_with("<=") {
-        return vuln_range.strip_prefix("<= ");
-    }
-    if vuln_range.starts_with(">=") {
-        return vuln_range.strip_prefix(">= ");
-    }
-
     None
 }
