@@ -1,5 +1,7 @@
 use crate::config::Config;
-use log::debug;
+use log::{debug, error};
+use node_semver::{Range, Version};
+use regex::Regex;
 use serde_json::Value;
 use std::process::Command;
 use std::str;
@@ -78,8 +80,8 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
                         .get("vulnerableVersionRange")
                         .and_then(|r| r.as_str())
                         .unwrap_or("");
-                    if let Some(min_ver) = extract_lower_version(range) {
-                        result.push(format!("{name}@{min_ver}@{ecosystem}"));
+                    for version in get_all_versions(range) {
+                        result.push(format!("{name}@{version}@{ecosystem}"));
                     }
                 }
             }
@@ -94,24 +96,113 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
     result
 }
 
-// TODO: Get all vulnerable versions
-fn extract_lower_version(vuln_range: &str) -> Option<&str> {
-    debug!("vuln_range: {}", vuln_range);
-    // vuln_range: >= 0.10.0, < 0.10.70
+// This ain't ideal, but should be sufficient for a prototype.
+fn get_all_versions(vuln_range: &str) -> Vec<String> {
+    let range: Range = vuln_range.parse().expect("Invalid range format");
+    let mut versions = Vec::new();
 
-    // Find a substring like ">= " and grab what's after.
-    for part in vuln_range.split(',') {
-        let part = part.trim();
-        if let Some(idx) = part.find(">=") {
-            // Get text after '>=' and trim
-            let ver = part[idx + 2..].trim();
-            return Some(ver);
+    // 1. Extract all version points mentioned in the string
+    let re = Regex::new(r"(\d+)\.(\d+)\.(\d+)").unwrap();
+    let captures: Vec<_> = re.captures_iter(vuln_range).collect();
+
+    if captures.is_empty() {
+        panic!("No base version found");
+    }
+
+    // 2. Branch based on how many versions are in the range string
+    if captures.len() == 1 {
+        // --- SINGLE BOUND LOGIC (<, <=, >, >=) ---
+        // Uses the +/- 10 window around the single target version
+        let start_maj: u64 = captures[0][1].parse().unwrap();
+        let start_min: u64 = captures[0][2].parse().unwrap();
+        let start_pat: u64 = captures[0][3].parse().unwrap();
+
+        let maj_start = start_maj.saturating_sub(10);
+        let maj_end = start_maj + 10;
+
+        for current_maj in maj_start..=maj_end {
+            let min_start = if current_maj == start_maj {
+                start_min.saturating_sub(10)
+            } else {
+                0
+            };
+            let min_end = if current_maj == start_maj {
+                start_min + 10
+            } else {
+                10
+            };
+
+            for current_min in min_start..=min_end {
+                let pat_start = if current_maj == start_maj && current_min == start_min {
+                    start_pat.saturating_sub(10)
+                } else {
+                    0
+                };
+                let pat_end = if current_maj == start_maj && current_min == start_min {
+                    start_pat + 10
+                } else {
+                    10
+                };
+
+                for current_pat in pat_start..=pat_end {
+                    let v = Version {
+                        major: current_maj,
+                        minor: current_min,
+                        patch: current_pat,
+                        build: vec![],
+                        pre_release: vec![],
+                    };
+
+                    if range.satisfies(&v) {
+                        let v_str = v.to_string();
+                        if versions.last() != Some(&v_str) {
+                            versions.push(v_str);
+                        }
+                    }
+                }
+            }
         }
-        // Some advisories might use ">" only
-        if let Some(idx) = part.find('>') {
-            let ver = part[idx + 1..].trim();
-            return Some(ver);
+    } else {
+        // --- DOUBLE BOUND LOGIC (>= 0.10.0, < 0.10.5) ---
+        let start_maj: u64 = captures[0][1].parse().unwrap();
+        let start_min: u64 = captures[0][2].parse().unwrap();
+        let start_pat: u64 = captures[0][3].parse().unwrap();
+
+        for maj_off in 0..11 {
+            let current_maj = start_maj + maj_off;
+
+            for min_off in 0..11 {
+                let current_min = if maj_off == 0 {
+                    start_min + min_off
+                } else {
+                    min_off
+                };
+
+                for pat_off in 0..11 {
+                    let current_pat = if maj_off == 0 && min_off == 0 {
+                        start_pat + pat_off
+                    } else {
+                        pat_off
+                    };
+
+                    let v = Version {
+                        major: current_maj,
+                        minor: current_min,
+                        patch: current_pat,
+                        build: vec![],
+                        pre_release: vec![],
+                    };
+
+                    if range.satisfies(&v) {
+                        let v_str = v.to_string();
+                        if versions.last() != Some(&v_str) {
+                            versions.push(v_str);
+                        }
+                    }
+                }
+            }
         }
     }
-    None
+
+    versions
 }
