@@ -12,6 +12,3 @@
 [submodule "rq1/rogue-jndi-server"]
 	path = rq1/rogue-jndi-server
 	url = https://github.com/veracode-research/rogue-jndi.git
-[submodule "rq1/uv"]
-	path = rq1/uv
-	url = https://github.com/astral-sh/uv.git
