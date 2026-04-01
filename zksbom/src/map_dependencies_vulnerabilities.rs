@@ -1,5 +1,5 @@
 use crate::config::Config;
-use log::{debug, error};
+use log::debug;
 use node_semver::{Range, Version};
 use regex::Regex;
 use serde_json::Value;
