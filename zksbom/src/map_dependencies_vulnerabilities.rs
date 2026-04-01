@@ -1,8 +1,7 @@
 use crate::config::Config;
 use log::debug;
-use node_semver::{Range, Version};
-use regex::Regex;
 use serde_json::Value;
+use std::io::{BufRead, BufReader};
 use std::process::Command;
 use std::str;
 
@@ -83,6 +82,7 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
                     for version in get_all_versions(range) {
                         result.push(format!("{name}@{version}@{ecosystem}"));
                     }
+                    get_all_versions(name, ecosystem, range);
                 }
             }
         }
@@ -203,6 +203,87 @@ fn get_all_versions(vuln_range: &str) -> Vec<String> {
             }
         }
     }
+
+    versions
+}
+
+fn get_all_versions(name: &str, ecosystem: &str, version_range: &str) -> Vec<String> {
+    debug!("Getting all vulnerable packages");
+    debug!(
+        "name: {}, version_range: {}, ecosystem: {}",
+        name, version_range, ecosystem
+    );
+
+    match ecosystem.to_lowercase().as_str() {
+        "go" => get_versions_go(name, version_range),
+        "maven" => get_versions_maven(name, version_range),
+        "npm" => get_versions_npm(name, version_range),
+        "rust" => get_versions_rust(name, version_range),
+        _ => panic!("Unsupported ecosystem: `{}`.", ecosystem),
+    }
+}
+
+fn get_versions_go(name: &str, version_range: &str) -> Vec<String> {
+    let url = format!("https://proxy.golang.org/{}/@v/list", name);
+    let text = reqwest::blocking::get(url).unwrap().text().unwrap();
+    let versions: Vec<String> = text.lines().map(String::from).collect();
+    debug!("versions: {:?}", versions);
+
+    versions
+}
+
+fn get_versions_maven(name: &str, version_range: &str) -> Vec<String> {
+    let url = format!(
+        "https://repo1.maven.org/maven2/{}/maven-metadata.xml",
+        name.replace(".", "/").replace(":", "/")
+    );
+    let xml_data = reqwest::blocking::get(url).unwrap().text().unwrap();
+
+    let doc = match Document::parse(&xml_data) {
+        Ok(d) => d,
+        Err(_) => return Vec::new(),
+    };
+
+    let versions: Vec<String> = doc
+        .descendants()
+        .filter(|n| n.has_tag_name("version"))
+        .filter_map(|n| n.text())
+        .map(String::from)
+        .collect();
+
+    debug!("versions: {:?}", versions);
+    versions
+}
+
+fn get_versions_npm(name: &str, version_range: &str) -> Vec<String> {
+    // https://registry.npmjs.org/react
+    panic!("Not yet implemented.");
+}
+
+fn get_versions_rust(name: &str, version_range: &str) -> Vec<String> {
+    let pairs: Vec<String> = name
+        .chars()
+        .collect::<Vec<char>>()
+        .chunks(2)
+        .take(2)
+        .map(|chunk| chunk.iter().collect::<String>())
+        .collect();
+    let dir = pairs.join("/");
+
+    let url = format!("https://index.crates.io/{}/{}", dir, name);
+    let response = reqwest::blocking::get(url).unwrap().text().unwrap();
+
+    // Process the response string
+    let versions: Vec<String> = response
+        .lines()
+        .filter(|line| !line.is_empty())
+        .filter_map(|line| {
+            let json: Value = serde_json::from_str(line).ok()?;
+            json.get("vers")?.as_str().map(|v| v.to_string())
+        })
+        .collect();
+
+    debug!("versions: {:?}", versions);
 
     versions
 }
