@@ -2,6 +2,7 @@ use std::fs;
 use zksbom::config::{load_config_from_file, Config};
 use zksbom::method::method_handler::create_proof_no_commitment;
 
+#[allow(dead_code)] // This is **no** dead code. Rust doesn't recognize this when splitting tests into multiple files
 pub fn test_create_inclusion_proof(config: Config) {
     let api_key = "";
     let methods = [
