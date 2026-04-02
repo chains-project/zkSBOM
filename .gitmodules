@@ -15,3 +15,6 @@
 [submodule "rq1/uv"]
 	path = rq1/uv
 	url = https://github.com/astral-sh/uv.git
+[submodule "rq1/strapi"]
+	path = rq1/strapi
+	url = https://github.com/strapi/strapi.git
