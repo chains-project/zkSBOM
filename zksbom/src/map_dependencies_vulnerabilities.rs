@@ -2,14 +2,12 @@ use crate::config::Config;
 use log::{debug, error};
 use roxmltree::Document;
 use semver::Version;
-use log::debug;
+use log::{debug, error};
+use roxmltree::Document;
+use semver::Version;
 use serde_json::Value;
-use std::io::{BufRead, BufReader};
 use std::process::Command;
 use std::str;
-use node_semver::{Range, Version};
-use regex::Regex;
-use roxmltree::Document;
 
 pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<String> {
     debug!("Getting vulnerable packages for CVE: {}", cve_id);
