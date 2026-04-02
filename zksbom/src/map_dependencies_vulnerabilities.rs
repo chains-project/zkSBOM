@@ -238,6 +238,6 @@ pub fn get_vulnerable_versions(all_versions: Vec<String>, version_range: &str) -
             }
         })
         .collect();
-    error!("vulnerable_versions: {:?}", vulnerable_versions);
+    debug!("vulnerable_versions: {:?}", vulnerable_versions);
     vulnerable_versions
 }
