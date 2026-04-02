@@ -1,10 +1,13 @@
 use std::fs;
-use zksbom::config::load_config_from_file;
+use zksbom::config::{load_config_from_file, Config};
 use zksbom::method::method_handler::create_proof_no_commitment;
 
-pub fn test_create_non_inclusion_proof() {
-    let config_path = "./tests/config/config.toml";
+fn assert_valid_proof(proof: &str, name: &str) {
+    assert!(!proof.is_empty(), "{} should not be empty", name);
+    assert!(proof.chars().any(|c| c != '0'), "{} is all zeroes!", name);
+}
 
+pub fn test_create_non_inclusion_proof(config: Config) {
     let api_key = "";
 
     let methods = ["sparse-merkle-tree", "merkle-patricia-trie", "ozks"];
@@ -13,7 +16,6 @@ pub fn test_create_non_inclusion_proof() {
     let product = "druid";
     let version = "0.22.0";
     let check = "CVE-2025-55182";
-    let config = load_config_from_file(config_path).unwrap();
 
     for method in methods {
         create_proof_no_commitment(api_key, method, vendor, product, version, check, &config);
@@ -24,36 +26,63 @@ pub fn test_create_non_inclusion_proof() {
 
         let expected_file_prefix = "./tests/proof_data/druid-0.22.0.cdx.json";
 
-        match method {
-            "sparse-merkle-tree" => {
-                let file_path = format!("{}/smt-non-inclusion-proof.txt", expected_file_prefix);
-                let expected_content =
-                    fs::read_to_string(file_path).expect("Should have been able to read the file");
+        if config.app.conceal {
+            match method {
+                "sparse-merkle-tree" => {
+                    let file_path = format!(
+                        "{}/smt-non-inclusion-proof-concealed.txt",
+                        expected_file_prefix
+                    );
+                    let expected_content = fs::read_to_string(file_path)
+                        .expect("Should have been able to read the file");
 
-                assert_eq!(proof_content, expected_content);
-            }
-            "merkle-patricia-trie" => {
-                let file_path = format!("{}/mpt-non-inclusion-proof.txt", expected_file_prefix);
-                let expected_content =
-                    fs::read_to_string(file_path).expect("Should have been able to read the file");
+                    assert_eq!(proof_content, expected_content);
+                }
+                "merkle-patricia-trie" => {
+                    let file_path = format!(
+                        "{}/mpt-non-inclusion-proof-concealed.txt",
+                        expected_file_prefix
+                    );
+                    let expected_content = fs::read_to_string(file_path)
+                        .expect("Should have been able to read the file");
 
-                assert_eq!(proof_content, expected_content);
+                    assert_eq!(proof_content, expected_content);
+                }
+                "ozks" => {
+                    assert_valid_proof(proof_content.as_str(), "ozks");
+                }
+                _ => panic!("Unknown method: {}", method),
             }
-            "ozks" => {
-                crate::create_inclusion_proof::assert_valid_proof(proof_content.as_str(), "ozks");
+        } else {
+            match method {
+                "sparse-merkle-tree" => {
+                    let file_path = format!("{}/smt-non-inclusion-proof.txt", expected_file_prefix);
+                    let expected_content = fs::read_to_string(file_path)
+                        .expect("Should have been able to read the file");
+
+                    assert_eq!(proof_content, expected_content);
+                }
+                "merkle-patricia-trie" => {
+                    let file_path = format!("{}/mpt-non-inclusion-proof.txt", expected_file_prefix);
+                    let expected_content = fs::read_to_string(file_path)
+                        .expect("Should have been able to read the file");
+
+                    assert_eq!(proof_content, expected_content);
+                }
+                "ozks" => {
+                    assert_valid_proof(proof_content.as_str(), "ozks");
+                }
+                _ => panic!("Unknown method: {}", method),
             }
-            _ => panic!("Unknown method: {}", method),
         }
     }
 }
 
+#[allow(dead_code)] // This is **no** dead code. Rust doesn't recognize this when splitting tests into multiple files
 pub fn test_create_non_inclusion_proof_dependency() {
     let config_path = "./tests/config/config.toml";
-
     let api_key = "";
-
     let methods = ["sparse-merkle-tree", "merkle-patricia-trie", "ozks"];
-
     let vendor = "unknown";
     let product = "druid";
     let version = "0.22.0";
@@ -85,7 +114,7 @@ pub fn test_create_non_inclusion_proof_dependency() {
                 assert_eq!(proof_content, expected_content);
             }
             "ozks" => {
-                crate::create_inclusion_proof::assert_valid_proof(proof_content.as_str(), "ozks");
+                assert_valid_proof(proof_content.as_str(), "ozks");
             }
             _ => panic!("Unknown method: {}", method),
         }

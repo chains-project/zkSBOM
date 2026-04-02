@@ -2,12 +2,12 @@ use rusqlite::Connection;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
-use zksbom::config::load_config_from_file;
+use zksbom::config::Config;
 use zksbom::database::db_commitment::init_db_commitment;
 use zksbom::database::db_dependency::init_db_dependency;
 use zksbom::upload::upload;
 
-pub fn test_upload_sbom(sbom_path: &str, config_path: &str) {
+pub fn test_upload_sbom(sbom_path: &str, config: Config) {
     let api_key = "";
 
     // Check if SBOM file exists
@@ -16,8 +16,6 @@ pub fn test_upload_sbom(sbom_path: &str, config_path: &str) {
         "SBOM file not found at: {}",
         sbom_path
     );
-
-    let config = load_config_from_file(config_path).unwrap();
 
     let db_paths = [
         &config.db_commitment.path,
@@ -47,12 +45,12 @@ pub fn test_upload_sbom(sbom_path: &str, config_path: &str) {
     }
 
     // Make sure the content of the DBs is accurate
-    test_commitment_db_contents(&config.db_commitment.path);
-    test_dependency_db_contents(&config.db_dependency.path);
+    test_commitment_db_contents(&config.db_commitment.path, config.app.conceal);
+    test_dependency_db_contents(&config.db_dependency.path, config.app.conceal);
     test_ozks_db_contents(&config.db_ozks.path);
 }
 
-fn test_commitment_db_contents(db_path: &str) {
+fn test_commitment_db_contents(db_path: &str, is_concealed: bool) {
     assert!(Path::new(db_path).exists(), "Commitment DB does not exist!");
 
     // Open SQLite connection
@@ -83,29 +81,56 @@ fn test_commitment_db_contents(db_path: &str) {
         assert_eq!(version, "0.22.0");
 
         let file_prefix = "./tests/proof_data/druid-0.22.0.cdx.json";
-        // Merkle Tree
-        let mut commitment_file = format!("{}/mt-commitment.txt", file_prefix);
-        let mut expected_commitment =
-            fs::read_to_string(commitment_file).expect("Should have been able to read the file");
-        assert_eq!(&commitment_merkle_tree, expected_commitment.as_str());
 
-        // Sparse Merkle Tree
-        commitment_file = format!("{}/smt-commitment.txt", file_prefix);
-        expected_commitment =
-            fs::read_to_string(commitment_file).expect("Should have been able to read the file");
-        assert_eq!(&commitment_sparse_merkle_tree, expected_commitment.as_str());
+        if is_concealed {
+            // Merkle Tree
+            let mut commitment_file = format!("{}/mt-commitment-concealed.txt", file_prefix);
+            let mut expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(&commitment_merkle_tree, expected_commitment.as_str());
 
-        // Merkle Patricia Trie
-        commitment_file = format!("{}/mpt-commitment.txt", file_prefix);
-        expected_commitment =
-            fs::read_to_string(commitment_file).expect("Should have been able to read the file");
-        assert_eq!(
-            &commitment_merkle_patricia_trie,
-            expected_commitment.as_str()
-        );
+            // Sparse Merkle Tree
+            commitment_file = format!("{}/smt-commitment-concealed.txt", file_prefix);
+            expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(&commitment_sparse_merkle_tree, expected_commitment.as_str());
 
-        // oZKS
-        assert_valid_commitment(&commitment_ozks, "commitment_ozks");
+            // Merkle Patricia Trie
+            commitment_file = format!("{}/mpt-commitment-concealed.txt", file_prefix);
+            expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(
+                &commitment_merkle_patricia_trie,
+                expected_commitment.as_str()
+            );
+
+            // oZKS
+            assert_valid_commitment(&commitment_ozks, "commitment_ozks");
+        } else {
+            // Merkle Tree
+            let mut commitment_file = format!("{}/mt-commitment.txt", file_prefix);
+            let mut expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(&commitment_merkle_tree, expected_commitment.as_str());
+
+            // Sparse Merkle Tree
+            commitment_file = format!("{}/smt-commitment.txt", file_prefix);
+            expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(&commitment_sparse_merkle_tree, expected_commitment.as_str());
+
+            // Merkle Patricia Trie
+            commitment_file = format!("{}/mpt-commitment.txt", file_prefix);
+            expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(
+                &commitment_merkle_patricia_trie,
+                expected_commitment.as_str()
+            );
+
+            // oZKS
+            assert_valid_commitment(&commitment_ozks, "commitment_ozks");
+        }
     } else {
         panic!("No commitment row found in the database");
     }
@@ -120,7 +145,7 @@ pub fn assert_valid_commitment(commitment: &str, name: &str) {
     );
 }
 
-fn test_dependency_db_contents(db_path: &str) {
+fn test_dependency_db_contents(db_path: &str, is_concealed: bool) {
     assert!(Path::new(db_path).exists(), "Dependency DB does not exist!");
 
     // Open SQLite connection
@@ -142,18 +167,57 @@ fn test_dependency_db_contents(db_path: &str) {
         let commitment_merkle_patricia_trie: String = row.get(2).unwrap();
         let commitment_ozks: String = row.get(3).unwrap();
 
-        assert_valid_commitment(&commitment_merkle_tree, "commitment_merkle_tree");
-        assert_valid_commitment(
-            &commitment_sparse_merkle_tree,
-            "commitment_sparse_merkle_tree",
-        );
-        assert_valid_commitment(
-            &commitment_merkle_patricia_trie,
-            "commitment_merkle_patricia_trie",
-        );
-        assert_valid_commitment(&commitment_ozks, "commitment_ozks");
-    } else {
-        panic!("No commitment row found in the database");
+        let file_prefix = "./tests/proof_data/druid-0.22.0.cdx.json";
+
+        if is_concealed {
+            // Merkle Tree
+            let mut commitment_file = format!("{}/mt-commitment-concealed.txt", file_prefix);
+            let mut expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(&commitment_merkle_tree, expected_commitment.as_str());
+
+            // Sparse Merkle Tree
+            commitment_file = format!("{}/smt-commitment-concealed.txt", file_prefix);
+            expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(&commitment_sparse_merkle_tree, expected_commitment.as_str());
+
+            // Merkle Patricia Trie
+            commitment_file = format!("{}/mpt-commitment-concealed.txt", file_prefix);
+            expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(
+                &commitment_merkle_patricia_trie,
+                expected_commitment.as_str()
+            );
+
+            // oZKS
+            assert_valid_commitment(&commitment_ozks, "commitment_ozks");
+        } else {
+            // Merkle Tree
+            let mut commitment_file = format!("{}/mt-commitment.txt", file_prefix);
+            let mut expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(&commitment_merkle_tree, expected_commitment.as_str());
+
+            // Sparse Merkle Tree
+            commitment_file = format!("{}/smt-commitment.txt", file_prefix);
+            expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(&commitment_sparse_merkle_tree, expected_commitment.as_str());
+
+            // Merkle Patricia Trie
+            commitment_file = format!("{}/mpt-commitment.txt", file_prefix);
+            expected_commitment = fs::read_to_string(commitment_file)
+                .expect("Should have been able to read the file");
+            assert_eq!(
+                &commitment_merkle_patricia_trie,
+                expected_commitment.as_str()
+            );
+
+            // oZKS
+            assert_valid_commitment(&commitment_ozks, "commitment_ozks");
+        }
     }
 }
 
