@@ -2,7 +2,6 @@ use crate::config::Config;
 use log::{debug, error};
 use roxmltree::Document;
 use semver::Version;
-use log::{debug, error};
 use serde_json::Value;
 use std::process::Command;
 use std::str;
@@ -86,7 +85,6 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
                     for vulnerable_version in vulnerable_versions {
                         result.push(format!("{name}@{vulnerable_version}@{ecosystem}"));
                     }
-                    new_get_all_versions(name, ecosystem, range);
                 }
             }
         }
