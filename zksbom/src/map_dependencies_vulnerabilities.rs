@@ -144,7 +144,6 @@ fn get_versions_maven(name: &str) -> Vec<String> {
 }
 
 fn get_versions_npm(name: &str) -> Vec<String> {
-    error!("name: {}", name);
     let url = format!("https://registry.npmjs.org/{}", name);
     let text = reqwest::blocking::get(url).unwrap().text().unwrap();
     let v: Value = serde_json::from_str(&text).unwrap();
