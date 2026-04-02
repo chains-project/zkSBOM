@@ -67,6 +67,23 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         debug!("Leaves with concealed dependencies: {:?}", leaves);
     }
 
+    // Remove duplicates in concealed dependencies, for that we must sort first.
+    concealed_dependency.sort();
+    concealed_dependency.dedup();
+
+    // Append the new prefixes to the original list
+    leaves.extend(concealed_dependency);
+
+    for leaf in &mut leaves {
+        // npm: check if it starts with "%40"
+        if let Some(suffix) = leaf.strip_prefix("%40") {
+            *leaf = format!("@{}", suffix);
+        }
+        *leaf = leaf.replace(':', "/");
+    }
+
+    debug!("Leaves with concealed dependencies: {:?}", leaves);
+
     // Metadata leaf, only used for MT, SMT, MPT
     let metadata_leaf: String = format!("{};{};v{}", vendor.to_string(), &product, &version);
 
