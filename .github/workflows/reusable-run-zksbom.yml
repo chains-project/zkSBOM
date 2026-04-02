@@ -182,10 +182,23 @@ jobs:
       - name: Verify inclusion proof
         working-directory: zksbom-verifier
         run: |
-          ./target/release/zksbom-verifier verify \
+          OUTPUT=$(./target/release/zksbom-verifier verify \
             --method "${{ inputs.zk_method }}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
-            --proof_path "../zksbom/${{ inputs.inclusion_output }}"
+            --proof_path "../zksbom/${{ inputs.inclusion_output }}")
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "Proof is valid."; then
+            echo "Success: Found 'Proof is valid.' in output."
+          else
+            echo "Error: 'Proof is valid.' not found in output!"
+            exit 1
+          fi
+          if ! echo "$OUTPUT" | grep -qi "non-inclusion"; then
+            echo "Success: Didn't find 'non-inclusion' (case-insensitive) in output."
+          else
+            echo "Error: 'non-inclusion' (case-insensitive) found in output! Expected inclusion-proof!"
+            exit 1
+          fi
 
       - name: Generate non-inclusion proof
         working-directory: zksbom
@@ -200,10 +213,23 @@ jobs:
       - name: Verify non-inclusion proof
         working-directory: zksbom-verifier
         run: |
-          ./target/release/zksbom-verifier verify \
+          OUTPUT=$(./target/release/zksbom-verifier verify \
             --method "${{ inputs.zk_method }}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
-            --proof_path "../zksbom/${{ inputs.non_inclusion_output }}"
+            --proof_path "../zksbom/${{ inputs.non_inclusion_output }}")
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "Proof is valid."; then
+            echo "Success: Found 'Proof is valid.' in output."
+          else
+            echo "Error: 'Proof is valid.' not found in output!"
+            exit 1
+          fi
+          if echo "$OUTPUT" | grep -qi "non-inclusion"; then
+            echo "Success: Found 'non-inclusion' (case-insensitive) in output."
+          else
+            echo "Error: 'non-inclusion' (case-insensitive) not found in output!"
+            exit 1
+          fi
 
       - name: Upload proof artifacts
         if: always()
