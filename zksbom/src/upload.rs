@@ -144,8 +144,9 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
                     "unknown".to_string()
                 }
             } else {
-                component["version"]
-                    .as_str()
+                component
+                    .get("version")
+                    .and_then(|v| v.as_str())
                     .unwrap_or("unknown")
                     .to_string()
             };
