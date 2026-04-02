@@ -1,4 +1,4 @@
-name: RQ1 — Log4Shell End-to-End Demo with zkSBOM
+name: RQ1 - Log4Shell End-to-End Demo with zkSBOM
 
 # Demonstrates that Apache Druid 0.22.0 is exploitable via CVE-2021-44228,
 # generates a CycloneDX SBOM, and proves the vulnerability is detectable
@@ -10,6 +10,8 @@ name: RQ1 — Log4Shell End-to-End Demo with zkSBOM
 #   3. zkSBOM   — Upload BOM, generate & verify ZK proof (CVE lookup via GitHub Advisory DB)
 
 on:
+  pull_request:
+    branches: [master]
   workflow_dispatch:
     inputs:
       zk_method:
@@ -24,8 +26,8 @@ on:
           - merkle-patricia-trie
 
 jobs:
-  log4shell-zksbom:
-    name: Log4Shell → SBOM → ZK Proof
+  log4shell-sbom:
+    name: Log4Shell exploit and SBOM generation
     runs-on: ubuntu-22.04
 
     env:
@@ -39,9 +41,6 @@ jobs:
       ZK_METHOD: ${{ github.event.inputs.zk_method || 'ozks' }}
 
     steps:
-      # ──────────────────────────────────────────────────────────────────────
-      # Checkout
-      # ──────────────────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
@@ -64,40 +63,12 @@ jobs:
       - name: Install Python dependencies
         run: pip install "PyYAML>=6.0" requests
 
-      - name: Set up Rust stable
-        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
-        with:
-          # Avoids dependency to Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
-          # Despite avoiding, GitHub still tries to pull it, so we need to allowlist it.
-          cache: 'false'
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Caches
-      # ──────────────────────────────────────────────────────────────────────
       - name: Cache Maven local repository
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: ~/.m2/repository
           key: maven-${{ hashFiles('rq1/druid/pom.xml') }}
           restore-keys: maven-
-
-      - name: Cache Cargo registry
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            zksbom/target
-            zksbom-verifier/target
-          key: cargo-${{ hashFiles('zksbom/Cargo.lock', 'zksbom-verifier/Cargo.lock') }}
-          restore-keys: cargo-
-
-      - name: Cache vcpkg
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
-        with:
-          path: vcpkg
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('zksbom/third_party/oZKS/CMakeLists.txt') }}
-          restore-keys: vcpkg-${{ runner.os }}-
 
       # ──────────────────────────────────────────────────────────────────────
       # Phase 1a — Build RogueJNDI
@@ -226,185 +197,30 @@ jobs:
               print(f"✓ Found in SBOM: {c.get('group','')}:{c['name']}:{c.get('version','')}")
           EOF
 
-      # ──────────────────────────────────────────────────────────────────────
-      # Phase 3a — Build oZKS (C++) + zkSBOM (Rust)
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Install system build dependencies for oZKS
-        run: |
-          sudo apt-get update -q
-          sudo apt-get install -y --no-install-recommends \
-            cmake ninja-build pkg-config \
-            libssl-dev libgmp-dev \
-            nasm
-
-      - name: Bootstrap vcpkg
-        run: |
-          if [ ! -f "vcpkg/bootstrap-vcpkg.sh" ]; then
-            git clone https://github.com/microsoft/vcpkg.git vcpkg --depth=1
-          fi
-          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
-
-      - name: Build oZKS via CMake + vcpkg
-        run: |
-          cd zksbom/third_party/oZKS
-          cmake -B build \
-            -G Ninja \
-            -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            -DOZKS_BUILD_EXAMPLES=ON \
-            -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --parallel
-
-      - name: Build zksbom
-        run: |
-          cd zksbom
-          CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            cargo build --release
-
-      - name: Reuse zksbom oZKS build for verifier
-        # Both submodules pin the same oZKS commit, so symlinking the already-built
-        # vcpkg headers and compiled libs avoids a redundant second CMake build.
-        run: |
-          mkdir -p zksbom-verifier/third_party/oZKS
-          ln -sfn "${GITHUB_WORKSPACE}/zksbom/third_party/oZKS/build" \
-            zksbom-verifier/third_party/oZKS/build
-
-      - name: Build zksbom-verifier
-        run: |
-          cd zksbom-verifier
-          CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            cargo build --release
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Phase 3b — Upload SBOM → Generate proof → Verify
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Configure zksbom
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p zksbom/tmp/output zksbom/tmp/database
-          sed \
-            -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
-            zksbom/config/config_template.toml \
-            > zksbom/config/config.toml
-
-      - name: Configure zksbom-verifier
-        run: cp zksbom-verifier/config/config_template.toml zksbom-verifier/config/config.toml
-
-      - name: Upload Druid SBOM to zksbom
-        working-directory: zksbom
-        run: |
-          ./target/release/zksbom upload_sbom \
-            --api-key 123 \
-            --sbom "../sboms/druid-${DRUID_VERSION}.cdx.json"
-          echo "✓ SBOM uploaded"
-
-      - name: Get zkSBOM commitment for Druid
-        id: commitment
-        working-directory: zksbom
-        run: |
-          OUTPUT=$(./target/release/zksbom get_commitment \
-            --vendor "unknown" \
-            --product "druid" \
-            --version "${DRUID_VERSION}" \
-            --method "${ZK_METHOD}")
-          echo "$OUTPUT"
-          COMMITMENT=$(echo "$OUTPUT" | grep -oP 'Commitment:\s*\K\S+')
-          echo "value=${COMMITMENT}" >> "$GITHUB_OUTPUT"
-          echo "✓ Commitment: ${COMMITMENT}"
-
-      - name: Generate ZK proof that Druid SBOM contains CVE-2021-44228
-        working-directory: zksbom
-        run: |
-          ./target/release/zksbom create_proof \
-            --api-key 123 \
-            --method "${ZK_METHOD}" \
-            --commitment "${{ steps.commitment.outputs.value }}" \
-            --output "./tmp/output/proof-inclusion-CVE-2021-44228.txt" \
-            --check "${CVE}"
-          echo "✓ ZK proof written to zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt"
-
-      - name: Verify ZK inclusion proof (CVE-2021-44228)
-        working-directory: zksbom-verifier
-        run: |
-          ./target/release/zksbom-verifier verify \
-            --method "${ZK_METHOD}" \
-            --commitment "${{ steps.commitment.outputs.value }}" \
-            --proof_path "../zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt"
-
-      - name: Generate ZK non-inclusion proof that Druid SBOM does NOT contain CVE-2025-55182
-        # CVE-2025-55182 is absent from Druid 0.22.0's dependency tree.
-        # This proves the dependency is not present without revealing the full dependency list.
-        working-directory: zksbom
-        run: |
-          ./target/release/zksbom create_proof \
-            --api-key 123 \
-            --method "${ZK_METHOD}" \
-            --commitment "${{ steps.commitment.outputs.value }}" \
-            --output "./tmp/output/proof-non-inclusion-CVE-2025-55182.txt" \
-            --check "CVE-2025-55182"
-          echo "✓ Non-inclusion proof written to zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt"
-
-      - name: Verify ZK non-inclusion proof (CVE-2025-55182)
-        working-directory: zksbom-verifier
-        run: |
-          ./target/release/zksbom-verifier verify \
-            --method "${ZK_METHOD}" \
-            --commitment "${{ steps.commitment.outputs.value }}" \
-            --proof_path "../zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt"
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Summary
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Write end-to-end summary
-        if: always()
-        run: |
-          RCE_STATUS=$([ -f "${DRUID_HOME}/log4shell_pwned" ] \
-            && echo "✅ RCE confirmed — \`${DRUID_HOME}/log4shell_pwned\` created" \
-            || echo "❌ RCE not confirmed")
-          SBOM_STATUS=$([ -f "sboms/druid-${DRUID_VERSION}.cdx.json" ] \
-            && echo "✅ CycloneDX SBOM generated" \
-            || echo "❌ SBOM missing")
-          INCL_STATUS=$([ -f "zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt" ] \
-            && echo "✅ Inclusion proof generated and verified" \
-            || echo "❌ Inclusion proof missing")
-          NONINC_STATUS=$([ -f "zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt" ] \
-            && echo "✅ Non-inclusion proof generated and verified" \
-            || echo "❌ Non-inclusion proof missing")
-
-          cat >> "${GITHUB_STEP_SUMMARY}" <<EOF
-          ## RQ1 — Log4Shell End-to-End Summary
-
-          | | |
-          |---|---|
-          | **Target** | Apache Druid ${DRUID_VERSION} |
-          | **Vulnerable dependency** | \`log4j-core 2.4\` |
-
-          ### Phase 1 — Exploitation
-          ${RCE_STATUS}
-
-          ### Phase 2 — SBOM Generation
-          ${SBOM_STATUS}
-
-          ### Phase 3 — zkSBOM Verification
-          | CVE | Type | Status |
-          |---|---|---|
-          | CVE-2021-44228 (Log4Shell) | Inclusion | ${INCL_STATUS} |
-          | CVE-2025-55182 | Non-inclusion | ${NONINC_STATUS} |
-
-          > zkSBOM commitments cryptographically prove that Druid ${DRUID_VERSION} contains
-          > a dependency vulnerable to Log4Shell **and** does not contain CVE-2025-55182 —
-          > without revealing the full dependency list.
-          EOF
-
-      # ──────────────────────────────────────────────────────────────────────
-      # Artifacts
-      # ──────────────────────────────────────────────────────────────────────
-      - name: Upload SBOM and proof as artifacts
-        if: always()
+      - name: Upload generated SBOM artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
-          name: rq1-outputs
-          path: |
-            sboms/druid-${{ env.DRUID_VERSION }}.cdx.json
-            zksbom/tmp/output/proof-inclusion-CVE-2021-44228.txt
-            zksbom/tmp/output/proof-non-inclusion-CVE-2025-55182.txt
+          name: druid-sbom
+          path: sboms/druid-${{ env.DRUID_VERSION }}.cdx.json
+
+  log4shell-zksbom:
+    name: Log4Shell zkSBOM proof generation
+    needs: log4shell-sbom
+    uses: ./.github/workflows/reusable-run-zksbom.yml
+    with:
+      zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
+      sbom_artifact_name: druid-sbom
+      sbom_path: ../druid-0.22.0.cdx.json
+      vendor: unknown
+      product: druid
+      version: "0.22.0"
+      zksbom_template: zksbom/config/config_template.toml
+      zksbom_output: zksbom/config/config.toml
+      verifier_template: zksbom-verifier/config/config_template.toml
+      verifier_output: zksbom-verifier/config/config.toml
+      inclusion_check: CVE-2021-44228
+      inclusion_output: zksbom/inclusion-CVE-2021-44228.txt
+      non_inclusion_check: CVE-2025-55182
+      non_inclusion_output: zksbom/non-inclusion-CVE-2025-55182.txt
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}

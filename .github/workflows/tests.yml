@@ -6,30 +6,25 @@ on:
     pull_request:
       branches: [ master ]
 
-
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-22.04
 
     steps:
-      # ──────────────────────────────────────────────────────────────────────
-      # Checkout
-      # ──────────────────────────────────────────────────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
           submodules: true
-      
+
       # ──────────────────────────────────────────────────────────────────────
-      # Tool-chain setup
+      # Phase 1 — Build oZKS (C++) + zkSBOM (Rust)
       # ──────────────────────────────────────────────────────────────────────
       - name: Set up Rust stable
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
+        with:
+          cache: "false"
 
-      # ──────────────────────────────────────────────────────────────────────
-      # Caches
-      # ──────────────────────────────────────────────────────────────────────
       - name: Cache Cargo registry
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
@@ -47,10 +42,7 @@ jobs:
           path: vcpkg
           key: vcpkg-${{ runner.os }}-${{ hashFiles('zksbom/third_party/oZKS/CMakeLists.txt') }}
           restore-keys: vcpkg-${{ runner.os }}-
-      
-      # ──────────────────────────────────────────────────────────────────────
-      # Phase 1 — Build oZKS (C++) + zkSBOM (Rust)
-      # ──────────────────────────────────────────────────────────────────────
+
       - name: Install system build dependencies for oZKS
         run: |
           sudo apt-get update -q
@@ -83,8 +75,6 @@ jobs:
             cargo build --release
 
       - name: Reuse zksbom oZKS build for verifier
-        # Both submodules pin the same oZKS commit, so symlinking the already-built
-        # vcpkg headers and compiled libs avoids a redundant second CMake build.
         run: |
           mkdir -p zksbom-verifier/third_party/oZKS
           ln -sfn "${GITHUB_WORKSPACE}/zksbom/third_party/oZKS/build" \
@@ -109,6 +99,11 @@ jobs:
             zksbom/tests/config/config_template.toml \
             > zksbom/tests/config/config.toml
 
+      - name: Configure zksbom-verifier
+        run: |
+          cp zksbom-verifier/tests/config/config_template.toml \
+             zksbom-verifier/tests/config/config.toml
+
       - name: Test CVE Flow
         working-directory: zksbom
         run: cargo test --package zksbom --test flow test_zksbom_workflow_cve
@@ -120,9 +115,6 @@ jobs:
       # ──────────────────────────────────────────────────────────────────────
       # Phase 3 — Test zkSBOM Verifier
       # ──────────────────────────────────────────────────────────────────────
-      - name: Configure zksbom-verifier
-        run: cp zksbom-verifier/tests/config/config_template.toml zksbom-verifier/tests/config/config.toml
-
       - name: Test zkSBOM Verifier Inclusion Proof CVE
         working-directory: zksbom-verifier
         run: cargo test --package zksbom-verifier --test inclusion_proof test_inclusion_proof
