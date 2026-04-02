@@ -80,7 +80,7 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
                         .get("vulnerableVersionRange")
                         .and_then(|r| r.as_str())
                         .unwrap_or("");
-                    let all_versions = new_get_all_versions(name, ecosystem);
+                    let all_versions = get_all_versions(name, ecosystem);
                     let vulnerable_versions = get_vulnerable_versions(all_versions, range);
                     for vulnerable_version in vulnerable_versions {
                         result.push(format!("{name}@{vulnerable_version}@{ecosystem}"));
@@ -98,7 +98,7 @@ pub fn get_vulnerable_packages_for_cve(cve_id: &str, config: &Config) -> Vec<Str
     result
 }
 
-fn new_get_all_versions(name: &str, ecosystem: &str) -> Vec<String> {
+fn get_all_versions(name: &str, ecosystem: &str) -> Vec<String> {
     debug!("Getting all vulnerable packages");
     debug!("name: {}, ecosystem: {}", name, ecosystem);
 
