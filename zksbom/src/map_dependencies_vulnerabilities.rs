@@ -125,6 +125,8 @@ fn get_versions_maven(name: &str) -> Vec<String> {
         "https://repo1.maven.org/maven2/{}/maven-metadata.xml",
         name.replace(".", "/").replace(":", "/")
     );
+    debug!("url: {}", url);
+
     let xml_data = reqwest::blocking::get(url).unwrap().text().unwrap();
 
     let doc = match Document::parse(&xml_data) {
@@ -139,7 +141,6 @@ fn get_versions_maven(name: &str) -> Vec<String> {
         .map(String::from)
         .collect();
 
-    debug!("versions: {:?}", versions);
     versions
 }
 
@@ -188,16 +189,35 @@ fn get_versions_rust(name: &str) -> Vec<String> {
     versions
 }
 
-pub fn get_vulnerable_versions(all_versions: Vec<String>, version_range: &str) -> Vec<String> {
-    debug!("All versions: {:?}", all_versions);
-    debug!("Version range: {:?}", version_range);
+// Normalizes "loose" versions (e.g., "2.4" -> "2.4.0") so the semver crate can parse them.
+fn loose_parse(v: &str) -> Option<Version> {
+    // 1. Separate the version numbers from any pre-release/metadata tags (e.g., -alpha)
+    let mut main_parts = v.splitn(2, |c| c == '-' || c == '+');
+    let ver_num = main_parts.next()?;
+    let metadata = v.get(ver_num.len()..); // Store the "-alpha", "+build", etc.
 
+    // 2. Pad the version numbers with ".0" until there are 3 parts
+    let mut parts: Vec<&str> = ver_num.split('.').collect();
+    while parts.len() < 3 {
+        parts.push("0");
+    }
+
+    let mut normalized = parts.join(".");
+
+    // 3. Re-attach the metadata tags
+    if let Some(m) = metadata {
+        normalized.push_str(m);
+    }
+
+    Version::parse(&normalized).ok()
+}
+
+pub fn get_vulnerable_versions(all_versions: Vec<String>, version_range: &str) -> Vec<String> {
     // Parse the version range into a list of (operator, Version) tuples
     let conditions: Vec<(&str, Version)> = version_range
         .split(',')
         .filter_map(|part| {
             let part = part.trim();
-            // Extract the operator and the version string safely
             let (op, val) = if let Some(stripped) = part.strip_prefix(">=") {
                 (">=", stripped.trim())
             } else if let Some(stripped) = part.strip_prefix("<=") {
@@ -209,21 +229,21 @@ pub fn get_vulnerable_versions(all_versions: Vec<String>, version_range: &str) -
             } else if let Some(stripped) = part.strip_prefix('=') {
                 ("=", stripped.trim())
             } else {
-                ("=", part.trim()) // Implicit exact match if no operator is provided
+                ("=", part.trim())
             };
 
-            // Only keep conditions where the target version parses successfully
-            Version::parse(val).ok().map(|v| (op, v))
+            // Use loose_parse to ensure "2.4" becomes a valid "2.4.0" Version object
+            loose_parse(val).map(|v| (op, v))
         })
         .collect();
 
     // Filter the incoming versions
-    let vulnerable_versions = all_versions
+    all_versions
         .into_iter()
         .filter(|v_str| {
-            // Attempt to parse the candidate version
-            if let Ok(version) = Version::parse(v_str) {
-                // A version is vulnerable if it matches ALL comma-separated conditions (AND logic)
+            // Also use loose_parse for the candidate versions (like "2.4")
+            if let Some(version) = loose_parse(v_str) {
+                // Check if the version satisfies ALL conditions
                 conditions.iter().all(|(op, target_version)| match *op {
                     ">=" => version >= *target_version,
                     "<=" => version <= *target_version,
@@ -233,11 +253,8 @@ pub fn get_vulnerable_versions(all_versions: Vec<String>, version_range: &str) -
                     _ => false,
                 })
             } else {
-                // If it's not a valid semantic version, we ignore it
-                false
+                false // Ignore versions that cannot be parsed at all
             }
         })
-        .collect();
-    debug!("vulnerable_versions: {:?}", vulnerable_versions);
-    vulnerable_versions
+        .collect()
 }
