@@ -4,7 +4,6 @@ on:
     push:
       branches: [ master ]
     pull_request:
-      branches: [ master ]
 
 jobs:
   test:
@@ -103,14 +102,29 @@ jobs:
         run: |
           cp zksbom-verifier/tests/config/config_template.toml \
              zksbom-verifier/tests/config/config.toml
+      
+      - name: Test Version Extractions
+        working-directory: zksbom
+        run: |
+          cargo test --package zksbom --test versions test_get_versions_go
+          cargo test --package zksbom --test versions test_get_versions_maven
+          cargo test --package zksbom --test versions test_get_versions_npm
+          cargo test --package zksbom --test versions test_get_versions_rust
+          cargo test --package zksbom --test versions test_vulnerable_range_less_than
+          cargo test --package zksbom --test versions test_compound_range
+          cargo test --package zksbom --test versions test_pre_release_versions
 
       - name: Test CVE Flow
         working-directory: zksbom
-        run: cargo test --package zksbom --test flow test_zksbom_workflow_cve
+        run: |
+          cargo test --package zksbom --test flow test_zksbom_workflow_cve -- --exact
+          cargo test --package zksbom --test flow test_zksbom_workflow_cve_concealed -- --exact
 
       - name: Test Dependency Flow
         working-directory: zksbom
-        run: cargo test --package zksbom --test flow test_zksbom_workflow_dependency
+        run: |
+          cargo test --package zksbom --test flow test_zksbom_workflow_dependency -- --exact
+          cargo test --package zksbom --test flow test_zksbom_workflow_dependency_concealed -- --exact
 
       # ──────────────────────────────────────────────────────────────────────
       # Phase 3 — Test zkSBOM Verifier
