@@ -1,0 +1,88 @@
+name: RQ1 - TARmageddon Demo
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      zk_method:
+        description: "ZK commitment algorithm"
+        required: false
+        default: "ozks"
+        type: choice
+        options:
+          - ozks
+          - merkle-tree
+          - sparse-merkle-tree
+          - merkle-patricia-trie
+
+jobs:
+  tarmageddon-sbom:
+    name: TARmageddon SBOM generation
+    runs-on: ubuntu-22.04
+
+    env:
+      # Proof target
+      CVE: "CVE-2025-62518"
+      ZK_METHOD: ${{ github.event.inputs.zk_method || 'ozks' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          submodules: true
+
+      - name: Install cargo-cyclonedx
+        run: cargo install --locked cargo-cyclonedx
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Phase 1: Checkout correct `uv` version (tag: 0.9.4) and create SBOM.
+      # ──────────────────────────────────────────────────────────────────────
+      - name: Checkout uv@0-9-4
+        working-directory: rq1/uv
+        run: |
+          git fetch --force --tags origin
+          git checkout "tags/0.9.4"
+
+      - name: Generate SBOM using `cyclonedx`
+        working-directory: rq1/uv/crates/uv
+        run: |
+          cargo cyclonedx --format json
+
+      - name: Verify SBOM is created
+        working-directory: rq1/uv/crates/uv
+        run: |
+          if [ -f "uv.cdx.json" ]; then
+            echo "SBOM found."
+          else
+            echo "SBOM file missing!"
+            exit 1
+          fi
+
+      - name: Upload generated SBOM artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: uv-sbom
+          path: rq1/uv/crates/uv/uv.cdx.json
+
+  tarmageddon-zksbom:
+    name: TARmageddon zkSBOM proof generation
+    needs: tarmageddon-sbom
+    uses: ./.github/workflows/reusable-run-zksbom.yml
+    with:
+      zk_method: ${{ github.event.inputs.zk_method || 'ozks' }}
+      sbom_artifact_name: uv-sbom
+      sbom_path: ../uv.cdx.json
+      vendor: uv
+      product: uv
+      version: "0.9.4"
+      zksbom_template: zksbom/config/config_template.toml
+      zksbom_output: zksbom/config/config.toml
+      verifier_template: zksbom-verifier/config/config_template.toml
+      verifier_output: zksbom-verifier/config/config.toml
+      inclusion_check: CVE-2025-62518
+      inclusion_output: tmp/output/uv-proof-inclusion-CVE-2025-62518.txt
+      non_inclusion_check: CVE-2025-55182
+      non_inclusion_output: tmp/output/uv-proof-non-inclusion-CVE-2025-55182.txt
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}

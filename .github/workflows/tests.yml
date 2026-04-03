@@ -102,6 +102,11 @@ jobs:
         run: |
           cp zksbom-verifier/tests/config/config_template.toml \
              zksbom-verifier/tests/config/config.toml
+
+      - name: Configure zksbom-verifier
+        run: |
+          cp zksbom-verifier/tests/config/config_template.toml \
+             zksbom-verifier/tests/config/config.toml
       
       - name: Test Version Extractions
         working-directory: zksbom
