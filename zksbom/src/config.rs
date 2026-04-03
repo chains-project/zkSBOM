@@ -2,7 +2,7 @@ use crate::cli::build_cli;
 use serde::Deserialize;
 use std::fs;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Config {
     pub app: AppConfig,
     pub db_commitment: DatabaseConfig,
@@ -10,7 +10,7 @@ pub struct Config {
     pub db_ozks: DatabaseConfig,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct AppConfig {
     pub log_level: String,
     pub output: String,
@@ -21,9 +21,10 @@ pub struct AppConfig {
     pub timing_analysis: bool,
     pub timing_analysis_output: String,
     pub salt: bool,
+    pub conceal: bool,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct DatabaseConfig {
     pub path: String,
 }
@@ -72,6 +73,9 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
     }
     if let Some(salt) = matches.get_one::<String>("salt") {
         config.app.salt = salt.parse::<bool>()?;
+    }
+    if let Some(conceal) = matches.get_one::<String>("conceal") {
+        config.app.conceal = conceal.parse::<bool>()?;
     }
 
     Ok(config)

@@ -41,8 +41,18 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
                 "Creating inclusion proof for dep_to_proof: {}",
                 stripped_dep
             );
-            let concealed_dep = get_concealed_dependencies(stripped_dep);
-            return inclusion_proof(method, commitment, dependencies, concealed_dep, config);
+            return if config.app.conceal {
+                let concealed_dep = get_concealed_dependencies(stripped_dep);
+                inclusion_proof(method, commitment, dependencies, concealed_dep, config)
+            } else {
+                inclusion_proof(
+                    method,
+                    commitment,
+                    dependencies,
+                    stripped_dep.to_string(),
+                    config,
+                )
+            };
         }
     }
 

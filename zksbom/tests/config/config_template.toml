@@ -10,6 +10,7 @@ github_token = "YOUR_TOKEN"
 timing_analysis = false
 timing_analysis_output = "./tests/tmp/output/timing_analysis.log"
 salt = false
+conceal = false
 
 [db_commitment]
 path = "./tests/tmp/database/commitment.db"

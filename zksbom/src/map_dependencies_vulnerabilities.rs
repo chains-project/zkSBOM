@@ -1,5 +1,5 @@
 use crate::config::Config;
-use log::{debug, error};
+use log::debug;
 use roxmltree::Document;
 use semver::Version;
 use serde_json::Value;

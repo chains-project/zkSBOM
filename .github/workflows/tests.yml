@@ -4,7 +4,6 @@ on:
     push:
       branches: [ master ]
     pull_request:
-      branches: [ master ]
 
 jobs:
   test:
@@ -117,11 +116,15 @@ jobs:
 
       - name: Test CVE Flow
         working-directory: zksbom
-        run: cargo test --package zksbom --test flow test_zksbom_workflow_cve
+        run: |
+          cargo test --package zksbom --test flow test_zksbom_workflow_cve -- --exact
+          cargo test --package zksbom --test flow test_zksbom_workflow_cve_concealed -- --exact
 
       - name: Test Dependency Flow
         working-directory: zksbom
-        run: cargo test --package zksbom --test flow test_zksbom_workflow_dependency
+        run: |
+          cargo test --package zksbom --test flow test_zksbom_workflow_dependency -- --exact
+          cargo test --package zksbom --test flow test_zksbom_workflow_dependency_concealed -- --exact
 
       # ──────────────────────────────────────────────────────────────────────
       # Phase 3 — Test zkSBOM Verifier

@@ -43,27 +43,29 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         vendor, product, version, leaves
     );
 
-    // Add concealed dependency to list of leaves
-    let mut concealed_dependency = Vec::new();
-    for dependency in &leaves {
-        let parts: Vec<&str> = dependency.split('@').collect();
+    if config.app.conceal {
+        // Add concealed dependency to list of leaves
+        let mut concealed_dependency = Vec::new();
+        for dependency in &leaves {
+            let parts: Vec<&str> = dependency.split('@').collect();
 
-        // Keep first and last parts, join with '@'
-        if parts.len() >= 2 {
-            let result = format!("{}@{}", parts.first().unwrap(), parts.last().unwrap());
-            concealed_dependency.push(result);
-        } else {
-            error!("Problem parsing dependency: {}", dependency);
+            // Keep first and last parts, join with '@'
+            if parts.len() >= 2 {
+                let result = format!("{}@{}", parts.first().unwrap(), parts.last().unwrap());
+                concealed_dependency.push(result);
+            } else {
+                error!("Problem parsing dependency: {}", dependency);
+            }
         }
+
+        // Remove duplicates in concealed dependencies, for that we must sort first.
+        concealed_dependency.sort();
+        concealed_dependency.dedup();
+
+        // Append the new prefixes to the original list
+        leaves.extend(concealed_dependency);
+        debug!("Leaves with concealed dependencies: {:?}", leaves);
     }
-
-    // Remove duplicates in concealed dependencies, for that we must sort first.
-    concealed_dependency.sort();
-    concealed_dependency.dedup();
-
-    // Append the new prefixes to the original list
-    leaves.extend(concealed_dependency);
-    debug!("Leaves with concealed dependencies: {:?}", leaves);
 
     // Metadata leaf, only used for MT, SMT, MPT
     let metadata_leaf: String = format!("{};{};v{}", vendor.to_string(), &product, &version);
