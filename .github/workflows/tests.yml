@@ -117,14 +117,14 @@ jobs:
       - name: Test CVE Flow
         working-directory: zksbom
         run: |
-          cargo test --package zksbom --test flow test_zksbom_workflow_cve
-          cargo test --package zksbom --test flow test_zksbom_workflow_cve_concealed
+          cargo test --package zksbom --test flow test_zksbom_workflow_cve -- --exact
+          cargo test --package zksbom --test flow test_zksbom_workflow_cve_concealed -- --exact
 
       - name: Test Dependency Flow
         working-directory: zksbom
         run: |
-          cargo test --package zksbom --test flow test_zksbom_workflow_dependency
-          cargo test --package zksbom --test flow test_zksbom_workflow_dependency_concealed
+          cargo test --package zksbom --test flow test_zksbom_workflow_dependency -- --exact
+          cargo test --package zksbom --test flow test_zksbom_workflow_dependency_concealed -- --exact
 
       # ──────────────────────────────────────────────────────────────────────
       # Phase 3 — Test zkSBOM Verifier
