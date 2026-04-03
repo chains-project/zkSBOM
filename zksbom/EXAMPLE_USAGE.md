@@ -4,7 +4,7 @@
 # Upload SBOM
 target/release/zksbom upload_sbom \
 --api-key 123 \
---sbom "../sboms/other/test_sbom_openssl.cdx.json"
+--sbom ./tests/sboms/test_sbom_openssl.cdx.json
 # > Uploading SBOM completed.
 ```
 
@@ -37,6 +37,7 @@ target/release/zksbom create_proof_no_commitment \
 ```
 
 ## Sparse Merkle Trees (SMT)
+
 ```bash
 # Retrieve Commitment
 target/release/zksbom get_commitment \

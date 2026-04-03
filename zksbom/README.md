@@ -6,6 +6,7 @@ It also automatically performs dependency-to-vulnerability mappings.
 ## Installation
 
 - Copy and edit the configuration file:
+
 ```Bash
 cp ./config/config_template.toml ./config/config.toml
 ```
@@ -16,6 +17,7 @@ This token is required to query the [GitHub Advisory Database](https://github.co
 ### MacOS
 
 Prerequisites:
+
 - Xcode Command Line Tools (`xcode-select --install`)
 - Rust
 - CMake (`brew install cmake`)
@@ -26,6 +28,7 @@ Execute the installation script `./install.sh`.
 ### Linux
 
 Prerequisites:
+
 - build-essential
 - cmake
 - Rust
@@ -36,6 +39,7 @@ Execute the installation script `./install.sh`.
 ### Windows
 
 Prerequisites:
+
 - Git (with Git Bash)
 - Visual Studio 2022 with C++ workload
 - CMake (3.13+)
@@ -53,19 +57,22 @@ Execute the installation script `./install-win.sh`.
 ## Usage
 
 - Upload SBOM to the system:
-```
+
+```Bash
 target/release/zksbom upload_sbom \
 --api-key <api-key> \
 --sbom </path/to/SBOM>
 ```
 
 - Trigger dependency vulnerability mapping:
-```
+
+```Bash
 target/release/zksbom map_vulnerabilities
 ```
 
 - Retrieve commitment from the system:
-```
+
+```Bash
 target/release/zksbom get_commitment \
 --vendor <vendor> \
 --product <product> \
@@ -74,15 +81,18 @@ target/release/zksbom get_commitment \
 ```
 
 - Create proof:
-```
+
+```Bash
 target/release/zksbom get_zkp \
 --api-key <api-key> \
 --method <method> \
 --commitment <commitment> \
 --check <CVE-or-dependency>
 ```
+
 or:
-```
+
+```Bash
 target/release/zksbom get_zkp_full \
 --api-key <api-key> \
 --method <method> \
@@ -104,11 +114,11 @@ Explicit examples can be seen [here](./EXAMPLE_USAGE.md).
     - Merkle Patricia Trie (`merkle-patricia-trie`)
     - Ordered Zero-Knowledge Set (`ozks`)
 - Non-inclusion Proof
-    - Proofs that a vulnerability or dependency is absent from the SBOM.
+  - Proofs that a vulnerability or dependency is absent from the SBOM.
   - Supported by the following methods:
-      - Sparse Merkle Tree (`sparse-merkle-tree`)
-      - Merkle Patricia Trie (`merkle-patricia-trie`)
-      - Ordered Zero-Knowledge Set (`ozks`)
+    - Sparse Merkle Tree (`sparse-merkle-tree`)
+    - Merkle Patricia Trie (`merkle-patricia-trie`)
+    - Ordered Zero-Knowledge Set (`ozks`)
 
 ## Citation
 
