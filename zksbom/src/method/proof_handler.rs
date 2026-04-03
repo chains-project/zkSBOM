@@ -166,7 +166,20 @@ fn write_to_file(payload: String, is_append: bool, config: &Config) {
 }
 
 pub fn get_concealed_dependencies(dependency: &str) -> String {
-    if dependency.contains('@') {
+    // Normal for npm
+    let dependency_str = if dependency.starts_with('@') {
+        // If it starts with @, we ignore that first char for the "contains" check
+        if dependency[1..].contains('@') {
+            let parts: Vec<&str> = dependency.split('@').collect();
+            // Since it starts with @, parts[0] will be empty, parts[1] is the name
+            // We want the name (parts[1]) and the version (parts.last)
+            format!("@{}@{}", parts[1], parts.last().unwrap())
+        } else {
+            error!("Problem parsing dependency: {}", dependency);
+            dependency.to_string()
+        }
+    } else if dependency.contains('@') {
+        // Standard case: no leading @
         let parts: Vec<&str> = dependency.split('@').collect();
         if parts.len() >= 2 {
             format!("{}@{}", parts.first().unwrap(), parts.last().unwrap())
@@ -177,5 +190,6 @@ pub fn get_concealed_dependencies(dependency: &str) -> String {
     } else {
         error!("Problem parsing dependency: {}", dependency);
         dependency.to_string()
-    }
+    };
+    dependency_str
 }

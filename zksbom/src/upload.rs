@@ -67,6 +67,18 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         debug!("Leaves with concealed dependencies: {:?}", leaves);
     }
 
+    for leaf in &mut leaves {
+        if leaf.to_lowercase().contains("npm") {
+            // npm: check if it starts with "%40"
+            if let Some(suffix) = leaf.strip_prefix("%40") {
+                *leaf = format!("@{}", suffix);
+            }
+            *leaf = leaf.replace(':', "/");
+        }
+    }
+
+    println!("Leaves: {:?}", leaves);
+
     // Metadata leaf, only used for MT, SMT, MPT
     let metadata_leaf: String = format!("{};{};v{}", vendor.to_string(), &product, &version);
 
@@ -146,8 +158,9 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
                     "unknown".to_string()
                 }
             } else {
-                component["version"]
-                    .as_str()
+                component
+                    .get("version")
+                    .and_then(|v| v.as_str())
                     .unwrap_or("unknown")
                     .to_string()
             };
