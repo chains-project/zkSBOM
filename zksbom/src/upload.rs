@@ -68,11 +68,13 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     }
 
     for leaf in &mut leaves {
-        // npm: check if it starts with "%40"
-        if let Some(suffix) = leaf.strip_prefix("%40") {
-            *leaf = format!("@{}", suffix);
+        if leaf.to_lowercase().contains("npm") {
+            // npm: check if it starts with "%40"
+            if let Some(suffix) = leaf.strip_prefix("%40") {
+                *leaf = format!("@{}", suffix);
+            }
+            *leaf = leaf.replace(':', "/");
         }
-        *leaf = leaf.replace(':', "/");
     }
 
     println!("Leaves: {:?}", leaves);
