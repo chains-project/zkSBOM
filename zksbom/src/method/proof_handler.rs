@@ -36,7 +36,19 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
     for dep in &dependencies {
         let stripped_dep = dep.split(';').next().unwrap_or(*dep);
 
-        if deps_to_proof.contains(&stripped_dep.to_string()) {
+        let mut stripped_dep_vdb = stripped_dep.to_string();
+
+        if dep
+            .rsplit_once('@')
+            .map(|(_, right)| right)
+            .unwrap_or(dep)
+            .to_lowercase()
+            == "go"
+        {
+            stripped_dep_vdb = stripped_dep.replace(":", "/");
+        }
+
+        if deps_to_proof.contains(&stripped_dep_vdb.to_string()) {
             debug!(
                 "Creating inclusion proof for dep_to_proof: {}",
                 stripped_dep
