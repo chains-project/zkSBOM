@@ -77,8 +77,6 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         }
     }
 
-    println!("Leaves: {:?}", leaves);
-
     // Metadata leaf, only used for MT, SMT, MPT
     let metadata_leaf: String = format!("{};{};v{}", vendor.to_string(), &product, &version);
 

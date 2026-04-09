@@ -241,8 +241,10 @@ pub fn get_vulnerable_versions(all_versions: Vec<String>, version_range: &str) -
     all_versions
         .into_iter()
         .filter(|v_str| {
+            // Strip the 'v' prefix if it exists so the parser doesn't choke
+            let v_clean = v_str.strip_prefix('v').unwrap_or(v_str);
             // Also use loose_parse for the candidate versions (like "2.4")
-            if let Some(version) = loose_parse(v_str) {
+            if let Some(version) = loose_parse(v_clean) {
                 // Check if the version satisfies ALL conditions
                 conditions.iter().all(|(op, target_version)| match *op {
                     ">=" => version >= *target_version,
