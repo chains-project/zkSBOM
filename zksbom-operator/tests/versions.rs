@@ -1,4 +1,4 @@
-use zksbom::map_dependencies_vulnerabilities::{get_all_versions, get_vulnerable_versions};
+use zksbom_operator::map_dependencies_vulnerabilities::{get_all_versions, get_vulnerable_versions};
 
 mod create_inclusion_proof;
 

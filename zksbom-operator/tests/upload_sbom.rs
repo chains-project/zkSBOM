@@ -2,10 +2,10 @@ use rusqlite::Connection;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
-use zksbom::config::Config;
-use zksbom::database::db_commitment::init_db_commitment;
-use zksbom::database::db_dependency::init_db_dependency;
-use zksbom::upload::upload;
+use zksbom_operator::config::Config;
+use zksbom_operator::database::db_commitment::init_db_commitment;
+use zksbom_operator::database::db_dependency::init_db_dependency;
+use zksbom_operator::upload::upload;
 
 pub fn test_upload_sbom(sbom_path: &str, config: Config) {
     let api_key = "";

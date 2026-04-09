@@ -1,6 +1,6 @@
-# zkSBOM
+# zkSBOM Operator
 
-zkSBOM allows vendors to upload their product SBOMs, customers to retrieve commitments for specific SBOMs, and the system to generate cryptographic proofs confirming the presence of vulnerable dependencies.
+zkSBOM Operator allows vendors to upload their product SBOMs, customers to retrieve commitments for specific SBOMs, and the system to generate cryptographic proofs confirming the presence of vulnerable dependencies.
 It also automatically performs dependency-to-vulnerability mappings.
 
 ## Installation
@@ -59,7 +59,7 @@ Execute the installation script `./install-win.sh`.
 - Upload SBOM to the system:
 
 ```Bash
-target/release/zksbom upload_sbom \
+target/release/zksbom-operator upload_sbom \
 --api-key <api-key> \
 --sbom </path/to/SBOM>
 ```
@@ -67,13 +67,13 @@ target/release/zksbom upload_sbom \
 - Trigger dependency vulnerability mapping:
 
 ```Bash
-target/release/zksbom map_vulnerabilities
+target/release/zksbom-operator map_vulnerabilities
 ```
 
 - Retrieve commitment from the system:
 
 ```Bash
-target/release/zksbom get_commitment \
+target/release/zksbom-operator get_commitment \
 --vendor <vendor> \
 --product <product> \
 --version <version> \
@@ -83,7 +83,7 @@ target/release/zksbom get_commitment \
 - Create proof:
 
 ```Bash
-target/release/zksbom get_zkp \
+target/release/zksbom-operator get_zkp \
 --api-key <api-key> \
 --method <method> \
 --commitment <commitment> \
@@ -93,7 +93,7 @@ target/release/zksbom get_zkp \
 or:
 
 ```Bash
-target/release/zksbom get_zkp_full \
+target/release/zksbom-operator get_zkp_full \
 --api-key <api-key> \
 --method <method> \
 --vendor <vendor> \

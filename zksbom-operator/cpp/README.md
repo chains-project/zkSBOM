@@ -1,4 +1,4 @@
-# zksbom C++ FFI Layer
+# zksbom-operator C++ FFI Layer
 
 This directory contains the C++ FFI (Foreign Function Interface) code that bridges Rust and C++ for the zksbom SBOM creation and verification system.
 

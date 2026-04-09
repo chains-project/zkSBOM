@@ -30,16 +30,16 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            zksbom/target
+            zksbom-operator/target
             zksbom-verifier/target
-          key: cargo-${{ hashFiles('zksbom/Cargo.lock', 'zksbom-verifier/Cargo.lock') }}
+          key: cargo-${{ hashFiles('zksbom-operator/Cargo.lock', 'zksbom-verifier/Cargo.lock') }}
           restore-keys: cargo-
 
       - name: Cache vcpkg
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: vcpkg
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('zksbom/third_party/oZKS/CMakeLists.txt') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('zksbom-operator/third_party/oZKS/CMakeLists.txt') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       - name: Install system build dependencies for oZKS
@@ -59,7 +59,7 @@ jobs:
 
       - name: Build oZKS via CMake + vcpkg
         run: |
-          cd zksbom/third_party/oZKS
+          cd zksbom-operator/third_party/oZKS
           cmake -B build \
             -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
@@ -67,13 +67,13 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release
           cmake --build build --parallel
 
-      - name: Build zksbom
+      - name: Build zksbom-operator
         run: |
-          cd zksbom
+          cd zksbom-operator
           CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
             cargo build --release
 
-      - name: Reuse zksbom oZKS build for verifier
+      - name: Reuse zksbom-operator oZKS build for verifier
         run: |
           mkdir -p zksbom-verifier/third_party/oZKS
           ln -sfn "${GITHUB_WORKSPACE}/zksbom/third_party/oZKS/build" \
@@ -92,11 +92,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p zksbom/tmp/output zksbom/tmp/database
+          mkdir -p zksbom-operator/tmp/output zksbom-operator/tmp/database
           sed \
             -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
-            zksbom/tests/config/config_template.toml \
-            > zksbom/tests/config/config.toml
+            zksbom-operator/tests/config/config_template.toml \
+            > zksbom-operator/tests/config/config.toml
 
       - name: Configure zksbom-verifier
         run: |
@@ -104,27 +104,27 @@ jobs:
              zksbom-verifier/tests/config/config.toml
       
       - name: Test Version Extractions
-        working-directory: zksbom
+        working-directory: zksbom-operator
         run: |
-          cargo test --package zksbom --test versions test_get_versions_go
-          cargo test --package zksbom --test versions test_get_versions_maven
-          cargo test --package zksbom --test versions test_get_versions_npm
-          cargo test --package zksbom --test versions test_get_versions_rust
-          cargo test --package zksbom --test versions test_vulnerable_range_less_than
-          cargo test --package zksbom --test versions test_compound_range
-          cargo test --package zksbom --test versions test_pre_release_versions
+          cargo test --package zksbom-operator --test versions test_get_versions_go
+          cargo test --package zksbom-operator --test versions test_get_versions_maven
+          cargo test --package zksbom-operator --test versions test_get_versions_npm
+          cargo test --package zksbom-operator --test versions test_get_versions_rust
+          cargo test --package zksbom-operator --test versions test_vulnerable_range_less_than
+          cargo test --package zksbom-operator --test versions test_compound_range
+          cargo test --package zksbom-operator --test versions test_pre_release_versions
 
       - name: Test CVE Flow
-        working-directory: zksbom
+        working-directory: zksbom-operator
         run: |
-          cargo test --package zksbom --test flow test_zksbom_workflow_cve -- --exact
-          cargo test --package zksbom --test flow test_zksbom_workflow_cve_concealed -- --exact
+          cargo test --package zksbom-operator --test flow test_zksbom_operator_workflow_cve -- --exact
+          cargo test --package zksbom-operator --test flow test_zksbom_operator_workflow_cve_concealed -- --exact
 
       - name: Test Dependency Flow
-        working-directory: zksbom
+        working-directory: zksbom-operator
         run: |
-          cargo test --package zksbom --test flow test_zksbom_workflow_dependency -- --exact
-          cargo test --package zksbom --test flow test_zksbom_workflow_dependency_concealed -- --exact
+          cargo test --package zksbom-operator --test flow test_zksbom_operator_workflow_dependency -- --exact
+          cargo test --package zksbom-operator --test flow test_zksbom_operator_workflow_dependency_concealed -- --exact
 
       # ──────────────────────────────────────────────────────────────────────
       # Phase 3 — Test zkSBOM Verifier

@@ -1,48 +1,57 @@
 use std::fs;
-use zksbom::config::{load_config_from_file, Config};
-use zksbom::method::method_handler::create_proof_no_commitment;
+use zksbom_operator::config::{load_config_from_file, Config};
+use zksbom_operator::method::method_handler::create_proof_no_commitment;
 
-fn assert_valid_proof(proof: &str, name: &str) {
-    assert!(!proof.is_empty(), "{} should not be empty", name);
-    assert!(proof.chars().any(|c| c != '0'), "{} is all zeroes!", name);
-}
-
-pub fn test_create_non_inclusion_proof(config: Config) {
+#[allow(dead_code)] // This is **no** dead code. Rust doesn't recognize this when splitting tests into multiple files
+pub fn test_create_inclusion_proof(config: Config) {
     let api_key = "";
-
-    let methods = ["sparse-merkle-tree", "merkle-patricia-trie", "ozks"];
+    let methods = [
+        "merkle-tree",
+        "sparse-merkle-tree",
+        "merkle-patricia-trie",
+        "ozks",
+    ];
 
     let vendor = "unknown";
     let product = "druid";
     let version = "0.22.0";
-    let check = "CVE-2025-55182";
+    let check = "CVE-2021-44228";
 
     for method in methods {
         create_proof_no_commitment(api_key, method, vendor, product, version, check, &config);
 
         let proof_path = config.app.output.clone();
-        let proof_content =
-            fs::read_to_string(proof_path).expect("Should have been able to read the file");
+        let proof_content = fs::read_to_string(proof_path).expect(
+            format!(
+                "Should have been able to read the file for method: {}",
+                method
+            )
+            .as_str(),
+        );
 
         let expected_file_prefix = "./tests/proof_data/druid-0.22.0.cdx.json";
 
         if config.app.conceal {
             match method {
+                "merkle-tree" => {
+                    let file_path =
+                        format!("{}/mt-inclusion-proof-concealed.txt", expected_file_prefix);
+                    let expected_content = fs::read_to_string(file_path)
+                        .expect("Should have been able to read the file");
+
+                    assert_eq!(proof_content, expected_content);
+                }
                 "sparse-merkle-tree" => {
-                    let file_path = format!(
-                        "{}/smt-non-inclusion-proof-concealed.txt",
-                        expected_file_prefix
-                    );
+                    let file_path =
+                        format!("{}/smt-inclusion-proof-concealed.txt", expected_file_prefix);
                     let expected_content = fs::read_to_string(file_path)
                         .expect("Should have been able to read the file");
 
                     assert_eq!(proof_content, expected_content);
                 }
                 "merkle-patricia-trie" => {
-                    let file_path = format!(
-                        "{}/mpt-non-inclusion-proof-concealed.txt",
-                        expected_file_prefix
-                    );
+                    let file_path =
+                        format!("{}/mpt-inclusion-proof-concealed.txt", expected_file_prefix);
                     let expected_content = fs::read_to_string(file_path)
                         .expect("Should have been able to read the file");
 
@@ -55,15 +64,22 @@ pub fn test_create_non_inclusion_proof(config: Config) {
             }
         } else {
             match method {
+                "merkle-tree" => {
+                    let file_path = format!("{}/mt-inclusion-proof.txt", expected_file_prefix);
+                    let expected_content = fs::read_to_string(file_path)
+                        .expect("Should have been able to read the file");
+
+                    assert_eq!(proof_content, expected_content);
+                }
                 "sparse-merkle-tree" => {
-                    let file_path = format!("{}/smt-non-inclusion-proof.txt", expected_file_prefix);
+                    let file_path = format!("{}/smt-inclusion-proof.txt", expected_file_prefix);
                     let expected_content = fs::read_to_string(file_path)
                         .expect("Should have been able to read the file");
 
                     assert_eq!(proof_content, expected_content);
                 }
                 "merkle-patricia-trie" => {
-                    let file_path = format!("{}/mpt-non-inclusion-proof.txt", expected_file_prefix);
+                    let file_path = format!("{}/mpt-inclusion-proof.txt", expected_file_prefix);
                     let expected_content = fs::read_to_string(file_path)
                         .expect("Should have been able to read the file");
 
@@ -78,15 +94,28 @@ pub fn test_create_non_inclusion_proof(config: Config) {
     }
 }
 
+pub fn assert_valid_proof(proof: &str, name: &str) {
+    assert!(!proof.is_empty(), "{} should not be empty", name);
+    assert!(proof.chars().any(|c| c != '0'), "{} is all zeroes!", name);
+}
+
 #[allow(dead_code)] // This is **no** dead code. Rust doesn't recognize this when splitting tests into multiple files
-pub fn test_create_non_inclusion_proof_dependency() {
+pub fn test_create_inclusion_proof_dependency() {
     let config_path = "./tests/config/config.toml";
+
     let api_key = "";
-    let methods = ["sparse-merkle-tree", "merkle-patricia-trie", "ozks"];
+
+    let methods = [
+        "merkle-tree",
+        "sparse-merkle-tree",
+        "merkle-patricia-trie",
+        "ozks",
+    ];
+
     let vendor = "unknown";
     let product = "druid";
     let version = "0.22.0";
-    let check = "foo@0.0.1@foo";
+    let check = "org.apache.logging.log4j:log4j-core@2.4@MAVEN";
     let config = load_config_from_file(config_path).unwrap();
 
     for method in methods {
@@ -99,15 +128,22 @@ pub fn test_create_non_inclusion_proof_dependency() {
         let expected_file_prefix = "./tests/proof_data/druid-0.22.0.cdx.json";
 
         match method {
+            "merkle-tree" => {
+                let file_path = format!("{}/mt-inclusion-proof-dep.txt", expected_file_prefix);
+                let expected_content =
+                    fs::read_to_string(file_path).expect("Should have been able to read the file");
+
+                assert_eq!(proof_content, expected_content);
+            }
             "sparse-merkle-tree" => {
-                let file_path = format!("{}/smt-non-inclusion-proof-dep.txt", expected_file_prefix);
+                let file_path = format!("{}/smt-inclusion-proof-dep.txt", expected_file_prefix);
                 let expected_content =
                     fs::read_to_string(file_path).expect("Should have been able to read the file");
 
                 assert_eq!(proof_content, expected_content);
             }
             "merkle-patricia-trie" => {
-                let file_path = format!("{}/mpt-non-inclusion-proof-dep.txt", expected_file_prefix);
+                let file_path = format!("{}/mpt-inclusion-proof-dep.txt", expected_file_prefix);
                 let expected_content =
                     fs::read_to_string(file_path).expect("Should have been able to read the file");
 

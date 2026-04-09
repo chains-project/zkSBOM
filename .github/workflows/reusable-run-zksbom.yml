@@ -30,10 +30,10 @@ on:
       non_inclusion_output:
         required: true
         type: string
-      zksbom_template:
+      zksbom_operator_template:
         required: true
         type: string
-      zksbom_output:
+      zksbom_operator_output:
         required: true
         type: string
       verifier_template:
@@ -74,16 +74,16 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            zksbom/target
+            zksbom-operator/target
             zksbom-verifier/target
-          key: cargo-${{ hashFiles('zksbom/Cargo.lock', 'zksbom-verifier/Cargo.lock') }}
+          key: cargo-${{ hashFiles('zksbom-operator/Cargo.lock', 'zksbom-verifier/Cargo.lock') }}
           restore-keys: cargo-
 
       - name: Cache vcpkg
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: vcpkg
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('zksbom/third_party/oZKS/CMakeLists.txt') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('zksbom-operator/third_party/oZKS/CMakeLists.txt') }}
           restore-keys: vcpkg-${{ runner.os }}-
 
       - name: Install system build dependencies for oZKS
@@ -103,7 +103,7 @@ jobs:
 
       - name: Build oZKS via CMake + vcpkg
         run: |
-          cd zksbom/third_party/oZKS
+          cd zksbom-operator/third_party/oZKS
           cmake -B build \
             -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
@@ -111,13 +111,13 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release
           cmake --build build --parallel
 
-      - name: Build zksbom
+      - name: Build zksbom-operator
         run: |
-          cd zksbom
+          cd zksbom-operator
           CMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
             cargo build --release
 
-      - name: Reuse zksbom oZKS build for verifier
+      - name: Reuse operator oZKS build for verifier
         run: |
           mkdir -p zksbom-verifier/third_party/oZKS
           ln -sfn "${GITHUB_WORKSPACE}/zksbom/third_party/oZKS/build" \
@@ -136,31 +136,31 @@ jobs:
           name: ${{ inputs.sbom_artifact_name }}
           path: .
 
-      - name: Configure zksbom
+      - name: Configure zksbom-operator
         env:
           GH_TOKEN: ${{ secrets.gh_token }}
         run: |
-          mkdir -p zksbom/tmp/output zksbom/tmp/database
+          mkdir -p zksbom-operator/tmp/output zksbom-operator/tmp/database
           sed \
             -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
-            "${{ inputs.zksbom_template }}" \
-            > "${{ inputs.zksbom_output }}"
+            "${{ inputs.zksbom_operator_template }}" \
+            > "${{ inputs.zksbom_operator_output }}"
 
       - name: Configure zksbom-verifier
         run: cp "${{ inputs.verifier_template }}" "${{ inputs.verifier_output }}"
 
-      - name: Upload SBOM to zksbom
-        working-directory: zksbom
+      - name: Upload SBOM to zksbom-operator
+        working-directory: zksbom-operator
         run: |
-          ./target/release/zksbom upload_sbom \
+          ./target/release/zksbom-operator upload_sbom \
             --api-key "${{ inputs.api_key }}" \
             --sbom "${{ inputs.sbom_path }}"
 
-      - name: Get zkSBOM commitment
+      - name: Get commitment from zksbom-operator
         id: commitment
-        working-directory: zksbom
+        working-directory: zksbom-operator
         run: |
-          OUTPUT=$(./target/release/zksbom get_commitment \
+          OUTPUT=$(./target/release/zksbom-operator get_commitment \
             --vendor "${{ inputs.vendor }}" \
             --product "${{ inputs.product }}" \
             --version "${{ inputs.version }}" \
@@ -170,9 +170,9 @@ jobs:
           echo "value=${COMMITMENT}" >> "$GITHUB_OUTPUT"
 
       - name: Generate inclusion proof
-        working-directory: zksbom
+        working-directory: zksbom-operator
         run: |
-          ./target/release/zksbom create_proof \
+          ./target/release/zksbom-operator create_proof \
             --api-key "${{ inputs.api_key }}" \
             --method "${{ inputs.zk_method }}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
@@ -185,7 +185,7 @@ jobs:
           OUTPUT=$(./target/release/zksbom-verifier verify \
             --method "${{ inputs.zk_method }}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
-            --proof_path "../zksbom/${{ inputs.inclusion_output }}")
+            --proof_path "../zksbom-operator/${{ inputs.inclusion_output }}")
           echo "$OUTPUT"
           if echo "$OUTPUT" | grep -q "Proof is valid."; then
             echo "Success: Found 'Proof is valid.' in output."
@@ -201,9 +201,9 @@ jobs:
           fi
 
       - name: Generate non-inclusion proof
-        working-directory: zksbom
+        working-directory: zksbom-operator
         run: |
-          ./target/release/zksbom create_proof \
+          ./target/release/zksbom-operator create_proof \
             --api-key "${{ inputs.api_key }}" \
             --method "${{ inputs.zk_method }}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
@@ -216,7 +216,7 @@ jobs:
           OUTPUT=$(./target/release/zksbom-verifier verify \
             --method "${{ inputs.zk_method }}" \
             --commitment "${{ steps.commitment.outputs.value }}" \
-            --proof_path "../zksbom/${{ inputs.non_inclusion_output }}")
+            --proof_path "../zksbom-operator/${{ inputs.non_inclusion_output }}")
           echo "$OUTPUT"
           if echo "$OUTPUT" | grep -q "Proof is valid."; then
             echo "Success: Found 'Proof is valid.' in output."

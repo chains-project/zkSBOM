@@ -23,10 +23,10 @@ jobs:
           components: rustfmt
       
       # ──────────────────────────────────────────────────────────────────────
-      # Phase 1 — Test zkSBOM
+      # Phase 1 — Test zksbom-operator
       # ──────────────────────────────────────────────────────────────────────
-      - name: Check zkSBOM Format
-        working-directory: zksbom
+      - name: Check zksbom-operator Format
+        working-directory: zksbom-operator
         run: cargo fmt --check
 
       # ──────────────────────────────────────────────────────────────────────

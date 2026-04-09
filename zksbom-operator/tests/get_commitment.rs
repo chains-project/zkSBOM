@@ -1,6 +1,6 @@
 use std::fs;
-use zksbom::config::Config;
-use zksbom::method::method_handler::get_commitment;
+use zksbom_operator::config::Config;
+use zksbom_operator::method::method_handler::get_commitment;
 
 pub fn test_get_commitment(config: Config) {
     let vendor = "unknown";

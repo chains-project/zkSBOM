@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# install-windows.sh - Build zkSBOM on Windows (Git Bash)
+# install-windows.sh - Build zksbom-operator on Windows (Git Bash)
 #
 # Prerequisites:
 #   - Git (with Git Bash)
@@ -39,7 +39,7 @@ cd "$SCRIPT_DIR"
 
 echo ""
 echo "=========================================="
-echo " zkSBOM Windows Build"
+echo " zksbom-operator Windows Build"
 echo "=========================================="
 echo ""
 
@@ -178,12 +178,12 @@ cmake --build build --config Release
 echo ""
 echo "[OK] oZKS built successfully."
 
-# -- 7. Build zkSBOM ----------------------------------------------------------
+# -- 7. Build zksbom-operator ----------------------------------------------------------
 cd "$SCRIPT_DIR"
 
 echo ""
 echo "=========================================="
-echo " Building zkSBOM"
+echo " Building zksbom-operator"
 echo "=========================================="
 echo ""
 
@@ -194,4 +194,4 @@ echo "=========================================="
 echo " Build complete!"
 echo "=========================================="
 echo ""
-echo "Binary: target/release/zksbom.exe"
+echo "Binary: target/release/zksbom-operator.exe"
