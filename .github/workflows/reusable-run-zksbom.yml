@@ -120,7 +120,7 @@ jobs:
       - name: Reuse operator oZKS build for verifier
         run: |
           mkdir -p zksbom-verifier/third_party/oZKS
-          ln -sfn "${GITHUB_WORKSPACE}/zksbom/third_party/oZKS/build" \
+          ln -sfn "${GITHUB_WORKSPACE}/zksbom-operator/third_party/oZKS/build" \
             zksbom-verifier/third_party/oZKS/build
 
       - name: Build zksbom-verifier
