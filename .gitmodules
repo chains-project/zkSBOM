@@ -1,7 +1,3 @@
-[submodule "zksbom-operator/third_party/oZKS"]
-	path = zksbom-operator/third_party/oZKS
-	url = https://github.com/chains-project/oZKS.git
-	branch = zkSBOM
 [submodule "zksbom-verifier/third_party/oZKS"]
 	path = zksbom-verifier/third_party/oZKS
 	url = https://github.com/chains-project/oZKS.git
