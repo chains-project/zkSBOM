@@ -6,7 +6,9 @@ use zksbom_operator::database::{
     db_commitment::{delete_db_commitment, init_db_commitment},
     db_dependency::{delete_db_dependency, init_db_dependency},
 };
-use zksbom_operator::method::method_handler::{create_proof, create_proof_no_commitment, get_commitment};
+use zksbom_operator::method::method_handler::{
+    create_proof, create_proof_no_commitment, get_commitment,
+};
 use zksbom_operator::upload::upload;
 
 fn main() {
