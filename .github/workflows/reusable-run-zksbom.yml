@@ -237,5 +237,5 @@ jobs:
         with:
           name: zksbom-proofs
           path: |
-            zksbom/${{ inputs.inclusion_output }}
-            zksbom/${{ inputs.non_inclusion_output }}
+            zksbom-operator/${{ inputs.inclusion_output }}
+            zksbom-operator/${{ inputs.non_inclusion_output }}
