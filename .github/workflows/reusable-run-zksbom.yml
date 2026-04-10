@@ -178,6 +178,12 @@ jobs:
             --commitment "${{ steps.commitment.outputs.value }}" \
             --output "${{ inputs.inclusion_output }}" \
             --check "${{ inputs.inclusion_check }}"
+          # Check if the output file exists and is not empty
+          if [ ! -s "${{ inputs.inclusion_output }}" ]; then
+            echo "::error::Proof generation failed: ${{ inputs.inclusion_output }} is empty or was not created."
+            exit 1
+          fi
+          echo "Proof generated successfully."
 
       - name: Verify inclusion proof
         working-directory: zksbom-verifier
@@ -209,6 +215,12 @@ jobs:
             --commitment "${{ steps.commitment.outputs.value }}" \
             --output "${{ inputs.non_inclusion_output }}" \
             --check "${{ inputs.non_inclusion_check }}"
+          # Check if the output file exists and is not empty
+          if [ ! -s "${{ inputs.non_inclusion_output }}" ]; then
+            echo "::error::Proof generation failed: ${{ inputs.non_inclusion_output }} is empty or was not created."
+            exit 1
+          fi
+          echo "Proof generated successfully."
 
       - name: Verify non-inclusion proof
         working-directory: zksbom-verifier
