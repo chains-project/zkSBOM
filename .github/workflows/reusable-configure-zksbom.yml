@@ -32,7 +32,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.gh_token }}
         run: |
-          mkdir -p zksbom-operator/tmp/output zksbom-operator/tmp/database
           sed \
             -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
             "${{ inputs.zksbom_operator_template }}" \
