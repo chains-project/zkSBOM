@@ -3,10 +3,10 @@ name: Configure zkSBOM tools
 on:
   workflow_call:
     inputs:
-      zksbom_template:
+      zksbom_operator_template:
         required: true
         type: string
-      zksbom_output:
+      zksbom_operator_output:
         required: true
         type: string
       verifier_template:
@@ -28,15 +28,14 @@ jobs:
         with:
           submodules: true
 
-      - name: Configure zksbom
+      - name: Configure zksbom-operator
         env:
           GH_TOKEN: ${{ secrets.gh_token }}
         run: |
-          mkdir -p zksbom/tmp/output zksbom/tmp/database
           sed \
             -e "s|YOUR_TOKEN|${GH_TOKEN}|g" \
-            "${{ inputs.zksbom_template }}" \
-            > "${{ inputs.zksbom_output }}"
+            "${{ inputs.zksbom_operator_template }}" \
+            > "${{ inputs.zksbom_operator_output }}"
 
       - name: Configure zksbom-verifier
         run: cp "${{ inputs.verifier_template }}" "${{ inputs.verifier_output }}"

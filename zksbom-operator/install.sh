@@ -38,10 +38,10 @@ cmake --build build
 
 echo "oZKS built successfully."
 
-# Back to zksbom root
+# Back to zksbom-operator root
 cd ../../
 
-# Build zkSBOM
+# Build zksbom-operator
 cargo build --release
 
-echo "zkSBOM built successfully!"
+echo "zksbom-operator built successfully!"

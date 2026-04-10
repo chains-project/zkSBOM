@@ -20,7 +20,7 @@
         ],
         "component": {
             "type": "application",
-            "bom-ref": "path+file:///Users/tom/Repos/University/zksbom/zksbom#0.1.0",
+            "bom-ref": "zksbom/zksbom#0.1.0",
             "author": "Tom Sorger <sorger@kth.se>",
             "name": "test_openssl",
             "version": "0.1.0"

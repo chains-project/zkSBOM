@@ -18,11 +18,11 @@ target/
 # *.db
 **/*.DS_Store
 
-/zksbom/tmp
-/zksbom/config/config.toml
-/zksbom/tests/tmp
-/zksbom/tests/config/config.toml
+/zksbom-operator/tmp
+/zksbom-operator/config/config.toml
+/zksbom-operator/tests/tmp
+/zksbom-operator/tests/config/config.toml
 
 /zksbom-verifier/tmp
-zksbom-verifier/config/config.toml
-zksbom-verifier/tests/config/config.toml
+/zksbom-verifier/config/config.toml
+/zksbom-verifier/tests/config/config.toml

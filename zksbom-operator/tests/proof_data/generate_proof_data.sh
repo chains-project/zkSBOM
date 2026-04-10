@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e  # Exit immediately if a command exits with a non-zero status
 
-# Always execute from zksbom folder
+# Always execute from zksbom-operator folder
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 cd "$SCRIPT_DIR"
 cd ../../

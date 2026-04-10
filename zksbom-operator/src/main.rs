@@ -1,13 +1,15 @@
 use log::{debug, error, info, LevelFilter};
 use std::str::FromStr;
-use zksbom::cli::build_cli;
-use zksbom::config::load_config;
-use zksbom::database::{
+use zksbom_operator::cli::build_cli;
+use zksbom_operator::config::load_config;
+use zksbom_operator::database::{
     db_commitment::{delete_db_commitment, init_db_commitment},
     db_dependency::{delete_db_dependency, init_db_dependency},
 };
-use zksbom::method::method_handler::{create_proof, create_proof_no_commitment, get_commitment};
-use zksbom::upload::upload;
+use zksbom_operator::method::method_handler::{
+    create_proof, create_proof_no_commitment, get_commitment,
+};
+use zksbom_operator::upload::upload;
 
 fn main() {
     let config = load_config().unwrap();
@@ -18,7 +20,7 @@ fn main() {
     parse_cli(&config);
 }
 
-fn init_logger(config: &zksbom::config::Config) {
+fn init_logger(config: &zksbom_operator::config::Config) {
     let log_level = &config.app.log_level;
 
     match LevelFilter::from_str(log_level) {
@@ -37,13 +39,13 @@ fn init_logger(config: &zksbom::config::Config) {
     debug!("Logger initialized.");
 }
 
-fn init_dbs(config: &zksbom::config::Config) {
+fn init_dbs(config: &zksbom_operator::config::Config) {
     debug!("Initializing the databases...");
     init_db_commitment(config);
     init_db_dependency(config);
 }
 
-fn delete_dbs(is_clean_init: bool, config: &zksbom::config::Config) {
+fn delete_dbs(is_clean_init: bool, config: &zksbom_operator::config::Config) {
     if is_clean_init {
         delete_db_commitment(config);
         delete_db_dependency(config);
@@ -59,7 +61,7 @@ fn delete_dbs(is_clean_init: bool, config: &zksbom::config::Config) {
     }
 }
 
-fn parse_cli(config: &zksbom::config::Config) {
+fn parse_cli(config: &zksbom_operator::config::Config) {
     debug!("Parse cli...");
     let matches = build_cli().get_matches();
 

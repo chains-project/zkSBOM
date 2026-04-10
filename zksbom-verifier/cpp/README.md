@@ -4,7 +4,7 @@ This directory contains the C++ FFI (Foreign Function Interface) code that bridg
 
 ## Overview
 
-Unlike the main `zksbom` project which manages OZKS instances and maintains state, this verifier is stateless and focused on a single responsibility: verifying proofs.
+Unlike the main `zksbom-operator` project which manages OZKS instances and maintains state, this verifier is stateless and focused on a single responsibility: verifying proofs.
 
 ## Architecture
 

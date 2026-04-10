@@ -2,7 +2,7 @@ use clap::{Arg, Command};
 
 /// Build and return the CLI parser
 pub fn build_cli() -> Command {
-    Command::new("zkSBOM")
+    Command::new("zksbom-verifier")
         .version("1.0")
         .author("Tom Sorger <sorger@kth.se>")
         .about("A tool.")
