@@ -6,7 +6,7 @@ use std::fs::create_dir_all;
 use std::path::Path;
 use std::time::Instant;
 
-pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, String) {
+pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, String, String) {
     info!("Creating oZKS commitment...");
     let now = Instant::now();
     let db_path = &config.db_ozks.path;
@@ -19,14 +19,14 @@ pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, S
 
     if let Err(e) = init_sqlite_storage(db_path.as_str()) {
         error!("Failed to init sqlite: {}", e);
-        return ("".to_string(), "".to_string());
+        return ("".to_string(), "".to_string(), "".to_string());
     }
 
     let storage = SQLiteBatchStorage::new(db_path.as_str()).unwrap();
     let ozks_config = OZKSConfig::new();
     let mut ozks = OZKS::new(ozks_config, &storage).unwrap();
 
-    let batch: Vec<(Vec<u8>, Vec<u8>)> = hash_h256_kv(dependencies)
+    let batch: Vec<(Vec<u8>, Vec<u8>)> = hash_h256_kv(dependencies.clone())
         .iter()
         .map(|(k, v)| (k.as_bytes().to_vec(), v.as_bytes().to_vec()))
         .collect();
@@ -44,7 +44,11 @@ pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, S
         .unwrap();
 
     let elapsed = now.elapsed().as_nanos().to_string();
-    (commitment_hex, elapsed)
+    (
+        commitment_hex,
+        elapsed,
+        dependencies.clone().len().to_string(),
+    )
 }
 
 pub fn generate_formatted_proof(

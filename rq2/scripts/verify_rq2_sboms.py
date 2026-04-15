@@ -44,7 +44,7 @@ def validate_sbom(json_file: Path) -> dict:
     return result
 
 
-def validate_all_sboms(sboms_dir: str = "sboms") -> list[dict]:
+def validate_all_sboms(sboms_dir: str = "../sboms") -> list[dict]:
     """
     Validate all JSON files found in the given directory.
 
@@ -106,7 +106,7 @@ def print_report(results: list[dict]) -> None:
 
 def main():
     try:
-        results = validate_all_sboms("sboms")
+        results = validate_all_sboms("../sboms")
     except FileNotFoundError as e:
         print(f"\n{e}")
         return

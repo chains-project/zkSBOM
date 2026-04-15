@@ -24,61 +24,64 @@ pub fn create_commitments(
         d
     };
 
-    // Merkle Tree
-    debug!("Create Merkle Tree commitment");
-    let merkle_tree_commitment = if is_timing_analysis {
-        let now = Instant::now();
-        let c = create_merkle_commitment(dependencies_with_metadata.clone());
-        print_timing(now.elapsed(), "merkle-tree", config);
-        c
-    } else {
-        create_merkle_commitment(dependencies_with_metadata.clone())
-    };
-    debug!("Merkle Tree Commitment: {}", merkle_tree_commitment);
+    let mut result: Vec<String> = vec![];
 
-    // Sparse Merkle Tree
-    debug!("Create Sparse Merkle Tree commitment");
-    let sparse_merkle_tree_commitment = if is_timing_analysis {
-        let now = Instant::now();
-        let c = create_sparse_merkle_commitment(dependencies_with_metadata.clone());
-        print_timing(now.elapsed(), "sparse-merkle-tree", config);
-        c
-    } else {
-        create_sparse_merkle_commitment(dependencies_with_metadata.clone())
-    };
-    debug!(
-        "Sparse Merkle Tree Commitment: {}",
-        sparse_merkle_tree_commitment
-    );
+    if !config.app.only_ozks {
+        // Merkle Tree
+        debug!("Create Merkle Tree commitment");
+        let merkle_tree_commitment = if is_timing_analysis {
+            let now = Instant::now();
+            let c = create_merkle_commitment(dependencies_with_metadata.clone());
+            print_timing(now.elapsed(), "merkle-tree", config);
+            c
+        } else {
+            create_merkle_commitment(dependencies_with_metadata.clone())
+        };
+        debug!("Merkle Tree Commitment: {}", merkle_tree_commitment);
+        result.push(merkle_tree_commitment);
 
-    // Merkle Patricia Trie
-    debug!("Create Merkle Patricia Trie commitment");
-    let merkle_patricia_trie_commitment = if is_timing_analysis {
-        let now = Instant::now();
-        let c = create_merkle_patricia_trie_commitment(dependencies_with_metadata.clone());
-        print_timing(now.elapsed(), "merkle-patricia-trie", config);
-        c
-    } else {
-        create_merkle_patricia_trie_commitment(dependencies_with_metadata.clone())
-    };
-    debug!(
-        "Merkle Patricia Trie Commitment: {}",
-        merkle_patricia_trie_commitment
-    );
+        // Sparse Merkle Tree
+        debug!("Create Sparse Merkle Tree commitment");
+        let sparse_merkle_tree_commitment = if is_timing_analysis {
+            let now = Instant::now();
+            let c = create_sparse_merkle_commitment(dependencies_with_metadata.clone());
+            print_timing(now.elapsed(), "sparse-merkle-tree", config);
+            c
+        } else {
+            create_sparse_merkle_commitment(dependencies_with_metadata.clone())
+        };
+        debug!(
+            "Sparse Merkle Tree Commitment: {}",
+            sparse_merkle_tree_commitment
+        );
+        result.push(sparse_merkle_tree_commitment);
 
+        // Merkle Patricia Trie
+        debug!("Create Merkle Patricia Trie commitment");
+        let merkle_patricia_trie_commitment = if is_timing_analysis {
+            let now = Instant::now();
+            let c = create_merkle_patricia_trie_commitment(dependencies_with_metadata.clone());
+            print_timing(now.elapsed(), "merkle-patricia-trie", config);
+            c
+        } else {
+            create_merkle_patricia_trie_commitment(dependencies_with_metadata.clone())
+        };
+        debug!(
+            "Merkle Patricia Trie Commitment: {}",
+            merkle_patricia_trie_commitment
+        );
+        result.push(merkle_patricia_trie_commitment);
+    }
     // oZKS
     debug!("Create oZKS commitment");
-    let (o_zks_commitment, time_in_ns) = create_ozks_commitment(dependencies.clone(), config);
+    let (o_zks_commitment, time_in_ns, dep_count) =
+        create_ozks_commitment(dependencies.clone(), config);
     if is_timing_analysis {
-        print_timing_ns(&time_in_ns, "oZKS", config);
+        print_timing_ns(&time_in_ns, "oZKS", dep_count.as_str(), config);
     }
+    result.push(o_zks_commitment);
 
-    vec![
-        merkle_tree_commitment,
-        sparse_merkle_tree_commitment,
-        merkle_patricia_trie_commitment,
-        o_zks_commitment,
-    ]
+    result
 }
 
 pub fn get_commitment(
@@ -125,7 +128,7 @@ pub fn create_proof(_api_key: &str, method: &str, commitment: &str, check: &str,
 
     if config.app.timing_analysis && !time_in_ns.is_empty() {
         let print_name = if method == "ozks" { "oZKS" } else { method };
-        print_timing_ns(&time_in_ns, print_name, config);
+        print_timing_ns(&time_in_ns, print_name, "", config);
     }
 }
 
@@ -154,13 +157,13 @@ fn print_timing(elapsed: Duration, method: &str, config: &Config) {
         .unwrap();
     let _ = writeln!(
         file,
-        "Method: {}, Elapsed: {:.5} seconds",
+        "method:{},elapsed:{:.5}seconds",
         method,
         elapsed.as_secs_f64()
     );
 }
 
-fn print_timing_ns(nanoseconds_str: &str, method: &str, config: &Config) {
+fn print_timing_ns(nanoseconds_str: &str, method: &str, dep_count: &str, config: &Config) {
     if let Ok(nanoseconds) = nanoseconds_str.parse::<u64>() {
         let seconds = nanoseconds as f64 / 1_000_000_000.0;
         let path = Path::new(&config.app.timing_analysis_output);
@@ -172,6 +175,14 @@ fn print_timing_ns(nanoseconds_str: &str, method: &str, config: &Config) {
             .append(true)
             .open(path)
             .unwrap();
-        let _ = writeln!(file, "Method: {}, Elapsed: {:.10} seconds", method, seconds);
+        if dep_count != "" {
+            let _ = writeln!(
+                file,
+                "method:{},dependencies:{},elapsed:{:.10}seconds",
+                method, dep_count, seconds
+            );
+        } else {
+            let _ = writeln!(file, "method:{},elapsed:{:.10}seconds", method, seconds);
+        }
     }
 }

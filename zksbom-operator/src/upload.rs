@@ -78,7 +78,7 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     }
 
     // Metadata leaf, only used for MT, SMT, MPT
-    let metadata_leaf: String = format!("{};{};v{}", vendor.to_string(), &product, &version);
+    let metadata_leaf = format!("{};{};v{}", vendor.to_string(), &product, &version);
 
     // Generate Commitments
     let commitments = create_commitments(
@@ -86,10 +86,22 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         metadata_leaf.clone(),
         config,
     );
-    let commitment_merkle_tree = commitments[0].clone();
-    let commitment_sparse_merkle_tree = commitments[1].clone();
-    let commitment_merkle_patricia_trie = commitments[2].clone();
-    let commitment_ozks = commitments[3].clone();
+
+    let commitment_merkle_tree: String;
+    let commitment_sparse_merkle_tree: String;
+    let commitment_merkle_patricia_trie: String;
+    let commitment_ozks: String;
+    if !config.app.only_ozks {
+        commitment_merkle_tree = commitments[0].clone();
+        commitment_sparse_merkle_tree = commitments[1].clone();
+        commitment_merkle_patricia_trie = commitments[2].clone();
+        commitment_ozks = commitments[3].clone();
+    } else {
+        commitment_merkle_tree = "".to_string();
+        commitment_sparse_merkle_tree = "".to_string();
+        commitment_merkle_patricia_trie = "".to_string();
+        commitment_ozks = commitments[0].clone();
+    }
 
     // Save Commitments to database
     let commitment_entry = CommitmentDbEntry {

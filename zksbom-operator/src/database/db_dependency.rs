@@ -31,11 +31,39 @@ pub fn init_db_dependency(config: &Config) {
         }
     }
 
-    // Create the Dependency table if it doesn't exist
-    match Connection::open(db_path.as_str()) {
-        Ok(conn) => {
-            match conn.execute(
-                "CREATE TABLE IF NOT EXISTS dependency (
+    if config.app.only_ozks {
+        // Create the Dependency table if it doesn't exist
+        match Connection::open(db_path.as_str()) {
+            Ok(conn) => {
+                // Removed other commitments as primary key, so it can run in ozks_only mode
+                match conn.execute(
+                    "CREATE TABLE IF NOT EXISTS dependency (
+                    commitment_merkle_tree TEXT NOT NULL,
+                    commitment_sparse_merkle_tree TEXT NOT NULL,
+                    commitment_merkle_patricia_trie TEXT NOT NULL,
+                    commitment_ozks TEXT NOT NULL UNIQUE,
+                    dependencies TEXT NOT NULL,
+                    metadata TEXT NOT NULL,
+                    PRIMARY KEY (commitment_ozks)
+                )",
+                    [],
+                ) {
+                    Ok(_) => {
+                        debug!("Dependency database initialized.");
+                        let _ = conn.close();
+                    }
+                    Err(e) => error!("Error initializing Dependency database: {}", e),
+                };
+            }
+            Err(e) => error!("Error opening database connection: {}", e),
+        };
+    } else {
+        // Create the Dependency table if it doesn't exist
+        match Connection::open(db_path.as_str()) {
+            Ok(conn) => {
+                // Removed other commitments as primary key, so it can run in ozks_only mode
+                match conn.execute(
+                    "CREATE TABLE IF NOT EXISTS dependency (
                     commitment_merkle_tree TEXT NOT NULL UNIQUE,
                     commitment_sparse_merkle_tree TEXT NOT NULL UNIQUE,
                     commitment_merkle_patricia_trie TEXT NOT NULL UNIQUE,
@@ -44,17 +72,18 @@ pub fn init_db_dependency(config: &Config) {
                     metadata TEXT NOT NULL,
                     PRIMARY KEY (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks)
                 )",
-                [],
-            ) {
-                Ok(_) => {
-                    debug!("Dependency database initialized.");
-                    let _ = conn.close();
-                }
-                Err(e) => error!("Error initializing Dependency database: {}", e),
-            };
-        }
-        Err(e) => error!("Error opening database connection: {}", e),
-    };
+                    [],
+                ) {
+                    Ok(_) => {
+                        debug!("Dependency database initialized.");
+                        let _ = conn.close();
+                    }
+                    Err(e) => error!("Error initializing Dependency database: {}", e),
+                };
+            }
+            Err(e) => error!("Error opening database connection: {}", e),
+        };
+    }
 }
 
 fn get_db_dependency_conneciton(config: &Config) -> Connection {

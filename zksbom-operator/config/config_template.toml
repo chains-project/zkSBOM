@@ -11,6 +11,7 @@ timing_analysis = false
 timing_analysis_output = "./tmp/output/timing_analysis.log"
 salt = false
 conceal = false
+only_ozks = false
 
 [db_commitment]
 path = "./tmp/database/commitment.db"
