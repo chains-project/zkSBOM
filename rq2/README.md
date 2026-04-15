@@ -1,3 +1,3 @@
 # Notes
 
-Run `./generate_test_data.sh` to generate test data.
+Run `./run.sh` to trigger the performance meassurement.
