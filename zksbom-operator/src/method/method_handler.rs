@@ -155,12 +155,7 @@ fn print_timing(elapsed: Duration, method: &str, config: &Config) {
         .append(true)
         .open(path)
         .unwrap();
-    let _ = writeln!(
-        file,
-        "{},{:.10}",
-        method,
-        elapsed.as_secs_f64()
-    );
+    let _ = writeln!(file, "{},{:.10}", method, elapsed.as_secs_f64());
 }
 
 fn print_timing_ns(nanoseconds_str: &str, method: &str, dep_count: &str, config: &Config) {
@@ -179,7 +174,9 @@ fn print_timing_ns(nanoseconds_str: &str, method: &str, dep_count: &str, config:
             let _ = writeln!(
                 file,
                 "{},{},{:.10}",
-                method.to_lowercase(), seconds, dep_count
+                method.to_lowercase(),
+                seconds,
+                dep_count
             );
         } else {
             let _ = writeln!(file, "{},{:.10}", method, seconds);

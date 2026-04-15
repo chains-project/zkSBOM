@@ -10,7 +10,12 @@ use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 
-pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &Config) -> (String, String) {
+pub fn execute_proof_flow(
+    method: &str,
+    commitment: &str,
+    check: &str,
+    config: &Config,
+) -> (String, String) {
     let dependency_entry = get_dependencies(commitment.to_string(), method, config);
     let mut dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
 
@@ -55,15 +60,27 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
             );
             return if config.app.conceal {
                 let concealed_dep = get_concealed_dependencies(stripped_dep);
-                (inclusion_proof(method, commitment, dependencies.clone(), concealed_dep, config), dependencies.len().to_string())
+                (
+                    inclusion_proof(
+                        method,
+                        commitment,
+                        dependencies.clone(),
+                        concealed_dep,
+                        config,
+                    ),
+                    dependencies.len().to_string(),
+                )
             } else {
-                (inclusion_proof(
-                    method,
-                    commitment,
-                    dependencies.clone(),
-                    stripped_dep.to_string(),
-                    config,
-                ), dependencies.len().to_string())
+                (
+                    inclusion_proof(
+                        method,
+                        commitment,
+                        dependencies.clone(),
+                        stripped_dep.to_string(),
+                        config,
+                    ),
+                    dependencies.len().to_string(),
+                )
             };
         }
     }
@@ -78,7 +95,16 @@ pub fn execute_proof_flow(method: &str, commitment: &str, check: &str, config: &
         "Creating non inclusion proof for deps_to_proof: {}",
         deps_to_proof.join(", ")
     );
-    (non_inclusion_proof(method, commitment, dependencies.clone(), deps_to_proof, config), dependencies.len().to_string())
+    (
+        non_inclusion_proof(
+            method,
+            commitment,
+            dependencies.clone(),
+            deps_to_proof,
+            config,
+        ),
+        dependencies.len().to_string(),
+    )
 }
 
 fn is_valid_dep(s: &str) -> bool {
