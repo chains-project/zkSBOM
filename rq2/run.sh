@@ -3,6 +3,9 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd $DIR
 
+INCLUSION_CVE="CVE-2021-44228"
+NON_INCLUSION_CVE="CVE-2025-55182"
+
 # #######
 # # Setup
 # #######
@@ -11,9 +14,11 @@ cd $DIR
 rm -rf ./sboms
 
 # Remove previous results
-rm ./results/create_commitment.csv
-rm ./results/create_proofs.csv
-rm ./results/verify_proofs.csv
+rm ./results/create-commitment.csv
+rm ./results/create-inclusion-proofs.csv
+rm ./results/create-non-inclusion-proofs.csv
+rm ./results/verify-inclusion-proofs.csv
+rm ./results/verify-non-inclusion-proofs.csv
 rm ./results/results.txt
 
 # Generate SBOMs
@@ -39,7 +44,7 @@ for i in {1..10}; do
     for file in $DIR/sboms/*; do
     ./target/release/zksbom-operator upload_sbom \
         --timing_analysis true \
-        --timing_analysis_output $DIR/results/create_commitment.csv \
+        --timing_analysis_output $DIR/results/create-commitment.csv \
         --api-key 123 \
         --sbom $file \
         --only_ozks true
@@ -56,15 +61,24 @@ for i in {1..10}; do
         --vendor "RQ2" \
         --product $(basename "$file" .cdx.json) \
         --version "0.1.0" | awk '{print $2}')
-    # Generate proof
+    # Generate inclusion proof
     ./target/release/zksbom-operator create_proof \
-        --timing_analysis_output $DIR/results/create_proofs.csv \
+        --timing_analysis_output $DIR/results/create-inclusion-proofs.csv \
         --timing_analysis true \
         --api-key 123 \
         --method "ozks" \
         --commitment $commitment \
-        --check "CVE-2025-24898" \
-        --output "./tmp/output/proof-$(basename "$file" .cdx.json).txt" 
+        --check "$INCLUSION_CVE" \
+        --output "./tmp/output/inclusion-proof-$(basename "$file" .cdx.json).txt"
+    # Generate non-inclusion proof
+    ./target/release/zksbom-operator create_proof \
+        --timing_analysis_output $DIR/results/create-non-inclusion-proofs.csv \
+        --timing_analysis true \
+        --api-key 123 \
+        --method "ozks" \
+        --commitment $commitment \
+        --check "$NON_INCLUSION_CVE" \
+        --output "./tmp/output/non-inclusion-proof-$(basename "$file" .cdx.json).txt" 
     done
 
 
@@ -72,22 +86,32 @@ for i in {1..10}; do
     # Time proof verification
     #########################
     for file in $DIR/sboms/*; do
-    # Get commitment
+    # Inclusion proof
+    ## Get commitment
     cd $DIR/../zksbom-operator
     commitment=$(./target/release/zksbom-operator get_commitment \
         --method "ozks" \
         --vendor "RQ2" \
         --product $(basename "$file" .cdx.json) \
         --version "0.1.0" | awk '{print $2}')
-    # Verify proof
+    # Verify inclusion proof
     cd $DIR/../zksbom-verifier
     ./target/release/zksbom-verifier verify \
-        --timing_analysis_output $DIR/results/verify_proofs.csv \
+        --timing_analysis_output $DIR/results/verify-inclusion-proofs.csv \
         --timing_analysis true \
         --method "ozks" \
         --commitment "$commitment" \
-        --proof_path "../zksbom-operator/tmp/output/proof-$(basename "$file" .cdx.json).txt"
-        sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" $DIR/results/verify_proofs.csv
+        --proof_path "../zksbom-operator/tmp/output/inclusion-proof-$(basename "$file" .cdx.json).txt"
+        sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" $DIR/results/verify-inclusion-proofs.csv
+    ## Verify non-inclusion proof
+    cd $DIR/../zksbom-verifier
+    ./target/release/zksbom-verifier verify \
+        --timing_analysis_output $DIR/results/verify-non-inclusion-proofs.csv \
+        --timing_analysis true \
+        --method "ozks" \
+        --commitment "$commitment" \
+        --proof_path "../zksbom-operator/tmp/output/non-inclusion-proof-$(basename "$file" .cdx.json).txt"
+        sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" $DIR/results/verify-non-inclusion-proofs.csv
     done
 
 
@@ -99,13 +123,22 @@ done
 cd $DIR
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "--- Create Commitment --------------------------" >> ./results/results.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/create_commitment.csv >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_results.py ./results/create-commitment.csv >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
-echo "--- Create Proof -------------------------------" >> ./results/results.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/create_proofs.csv >> ./results/results.txt 2>&1
+echo "--- Create Inclusion Proof ---------------------" >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_results.py ./results/create-inclusion-proofs.csv >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
-echo "--- Verify Proof -------------------------------" >> ./results/results.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/verify_proofs.csv >> ./results/results.txt 2>&1
+echo "--- Create Non-Inclusion Proof -----------------" >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_results.py ./results/create-non-inclusion-proofs.csv >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "--- Verify Inclsuion Proof ---------------------" >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_results.py ./results/verify-inclusion-proofs.csv >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "--- Verify Non-Inclsuion Proof -----------------" >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_results.py ./results/verify-non-inclusion-proofs.csv >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
