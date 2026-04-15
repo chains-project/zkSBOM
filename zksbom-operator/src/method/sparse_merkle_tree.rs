@@ -7,7 +7,6 @@ use log::debug;
 use sparse_merkle_tree::{
     blake2b::Blake2bHasher, default_store::DefaultStore, traits::Value, SparseMerkleTree, H256,
 };
-use std::time::Instant;
 
 type SMT = SparseMerkleTree<Blake2bHasher, H256, DefaultStore<H256>>;
 
@@ -71,7 +70,7 @@ pub fn generate_formatted_proof(
     commitment: &str,
     dependencies: Vec<&str>,
     dependency: &str,
-) -> (String, String) {
+) -> String {
     let mut tree = SMT::default();
     for dep in dependencies {
         let (key, leaf) = get_kv(dep);
@@ -83,10 +82,8 @@ pub fn generate_formatted_proof(
     }
 
     let (key, value) = get_kv(dependency);
-    let now = Instant::now();
     let proof = tree.merkle_proof(vec![key]).expect("proof");
     let compiled_proof = proof.compile(vec![key]).expect("compile proof");
-    let elapsed = now.elapsed().as_nanos().to_string();
 
     let proof_hex = format!("0x{}", hex::encode(compiled_proof.0.as_slice()));
     let key_hex = format!("0x{}", hex::encode(key.as_slice()));
@@ -97,5 +94,5 @@ pub fn generate_formatted_proof(
         proof_hex, dependency, key_hex, value_hex
     );
 
-    (formatted_payload, elapsed)
+    formatted_payload
 }

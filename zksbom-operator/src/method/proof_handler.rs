@@ -9,13 +9,14 @@ use log::{debug, error, info};
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
+use std::time::Instant;
 
 pub fn execute_proof_flow(
     method: &str,
     commitment: &str,
     check: &str,
     config: &Config,
-) -> (String, String) {
+) -> (String, u128) {
     let dependency_entry = get_dependencies(commitment.to_string(), method, config);
     let mut dependencies: Vec<&str> = dependency_entry.dependencies.split(",").collect();
 
@@ -24,10 +25,13 @@ pub fn execute_proof_flow(
     }
 
     let deps_to_proof: Vec<String>;
+    let mut query_db_time: u128 = 0;
 
     if check.to_lowercase().starts_with("cve") {
         // check is cve
+        let start_query = Instant::now();
         deps_to_proof = get_vulnerable_packages_for_cve(check, config);
+        query_db_time = start_query.elapsed().as_nanos();
     } else {
         // check is dependency
         if is_valid_dep(check) {
@@ -60,27 +64,24 @@ pub fn execute_proof_flow(
             );
             return if config.app.conceal {
                 let concealed_dep = get_concealed_dependencies(stripped_dep);
-                (
-                    inclusion_proof(
-                        method,
-                        commitment,
-                        dependencies.clone(),
-                        concealed_dep,
-                        config,
-                    ),
-                    dependencies.len().to_string(),
-                )
+
+                inclusion_proof(
+                    method,
+                    commitment,
+                    dependencies.clone(),
+                    concealed_dep,
+                    config,
+                );
+                (dependencies.len().to_string(), query_db_time)
             } else {
-                (
-                    inclusion_proof(
-                        method,
-                        commitment,
-                        dependencies.clone(),
-                        stripped_dep.to_string(),
-                        config,
-                    ),
-                    dependencies.len().to_string(),
-                )
+                inclusion_proof(
+                    method,
+                    commitment,
+                    dependencies.clone(),
+                    stripped_dep.to_string(),
+                    config,
+                );
+                (dependencies.len().to_string(), query_db_time)
             };
         }
     }
@@ -88,23 +89,22 @@ pub fn execute_proof_flow(
     // If no inclusion, fallback to non-inclusion
     if method == "merkle-tree" {
         error!("Merkle Tree doesn't support non-inclusion proofs.");
-        return ("".to_string(), "".to_string());
+        return ("".to_string(), query_db_time);
     }
 
     debug!(
         "Creating non inclusion proof for deps_to_proof: {}",
         deps_to_proof.join(", ")
     );
-    (
-        non_inclusion_proof(
-            method,
-            commitment,
-            dependencies.clone(),
-            deps_to_proof,
-            config,
-        ),
-        dependencies.len().to_string(),
-    )
+
+    non_inclusion_proof(
+        method,
+        commitment,
+        dependencies.clone(),
+        deps_to_proof,
+        config,
+    );
+    (dependencies.len().to_string(), query_db_time)
 }
 
 fn is_valid_dep(s: &str) -> bool {
@@ -119,11 +119,9 @@ fn inclusion_proof(
     dependencies: Vec<&str>,
     target_dep: String,
     config: &Config,
-) -> String {
-    let (proof_payload, elapsed) =
-        call_crypto_method(method, commitment, dependencies, &target_dep, config);
+) {
+    let proof_payload = call_crypto_method(method, commitment, dependencies, &target_dep, config);
     write_to_file(proof_payload, false, config);
-    elapsed
 }
 
 fn non_inclusion_proof(
@@ -132,7 +130,7 @@ fn non_inclusion_proof(
     dependencies: Vec<&str>,
     deps_to_proof: Vec<String>,
     config: &Config,
-) -> String {
+) {
     let dep_list = if deps_to_proof.len() == 1 && deps_to_proof[0].to_lowercase().starts_with("cve")
     {
         error!("deps_to_proof[0].as_str(): {:?}", deps_to_proof[0].as_str());
@@ -145,22 +143,18 @@ fn non_inclusion_proof(
     let output_path = &config.app.output;
     let _ = File::create(output_path);
 
-    let mut total_elapsed = "".to_string();
-
     for dep in dep_list {
         info!(
             "Dependency: {} is vulnerable/in the SBOM: {:?}",
             dep, deps_to_proof
         );
-        let (proof_payload, elapsed) =
+        let proof_payload =
             call_crypto_method(method, commitment, dependencies.clone(), &dep, config);
 
         write_to_file(proof_payload, true, config);
-        total_elapsed = elapsed;
     }
 
     println!("Proof written to: {}", output_path);
-    total_elapsed
 }
 
 fn call_crypto_method(
@@ -169,7 +163,7 @@ fn call_crypto_method(
     dependencies: Vec<&str>,
     target_dep: &str,
     config: &Config,
-) -> (String, String) {
+) -> String {
     match method {
         "merkle-tree" => mt_generate(commitment, dependencies, target_dep),
         "sparse-merkle-tree" => smt_generate(commitment, dependencies, target_dep),

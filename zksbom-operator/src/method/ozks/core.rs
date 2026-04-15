@@ -6,7 +6,7 @@ use std::fs::create_dir_all;
 use std::path::Path;
 use std::time::Instant;
 
-pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, String, String) {
+pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, String) {
     info!("Creating oZKS commitment...");
     let now = Instant::now();
     let db_path = &config.db_ozks.path;
@@ -19,14 +19,14 @@ pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, S
 
     if let Err(e) = init_sqlite_storage(db_path.as_str()) {
         error!("Failed to init sqlite: {}", e);
-        return ("".to_string(), "".to_string(), "".to_string());
+        return ("".to_string(), "".to_string());
     }
 
     let storage = SQLiteBatchStorage::new(db_path.as_str()).unwrap();
     let ozks_config = OZKSConfig::new();
     let mut ozks = OZKS::new(ozks_config, &storage).unwrap();
 
-    let batch: Vec<(Vec<u8>, Vec<u8>)> = hash_h256_kv(dependencies.clone())
+    let batch: Vec<(Vec<u8>, Vec<u8>)> = hash_h256_kv(dependencies)
         .iter()
         .map(|(k, v)| (k.as_bytes().to_vec(), v.as_bytes().to_vec()))
         .collect();
@@ -44,11 +44,7 @@ pub fn create_commitment(dependencies: Vec<&str>, config: &Config) -> (String, S
         .unwrap();
 
     let elapsed = now.elapsed().as_nanos().to_string();
-    (
-        commitment_hex,
-        elapsed,
-        dependencies.clone().len().to_string(),
-    )
+    (commitment_hex, elapsed)
 }
 
 pub fn generate_formatted_proof(
@@ -56,8 +52,7 @@ pub fn generate_formatted_proof(
     _dependencies: Vec<&str>, // oZKS pulls from DB, so we don't rebuild the tree in memory
     dependency: &str,
     config: &Config,
-) -> (String, String) {
-    let now = Instant::now();
+) -> String {
     let db_path = &config.db_ozks.path;
 
     init_sqlite_storage(db_path.as_str()).unwrap();
@@ -77,9 +72,7 @@ pub fn generate_formatted_proof(
     let proof_serialized = ozks.query_proof(&key_bytes).unwrap();
 
     let proof_hex = hex::encode(&proof_serialized);
-    let elapsed = now.elapsed().as_nanos().to_string();
-
     let formatted_payload = format!("Proof: {}\nDependency: {}", proof_hex, dependency);
 
-    (formatted_payload, elapsed)
+    formatted_payload
 }

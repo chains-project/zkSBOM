@@ -3,13 +3,14 @@ use crate::config::Config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::github_advisory_database_mapping::get_github_ecosystem_name;
-use crate::method::method_handler::create_commitments;
+use crate::method::method_handler::{create_commitments, print_timing_ns};
 use log::{debug, error, warn};
 use once_cell::sync::Lazy;
 use rand::distr::Alphanumeric;
 use rand::Rng;
 use regex::Regex;
 use serde_json::{from_str, Value};
+use std::time::Instant;
 
 #[derive(Debug, Default)]
 struct SbomParsed {
@@ -20,6 +21,8 @@ struct SbomParsed {
 }
 
 pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
+    let now = Instant::now();
+
     debug!("Uploading SBOM with path: {sbom_path}");
 
     // Get the SBOM file content
@@ -87,27 +90,31 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         config,
     );
 
-    let commitment_merkle_tree: String;
-    let commitment_sparse_merkle_tree: String;
-    let commitment_merkle_patricia_trie: String;
-    let commitment_ozks: String;
-    if !config.app.only_ozks {
-        commitment_merkle_tree = commitments[0].clone();
-        commitment_sparse_merkle_tree = commitments[1].clone();
-        commitment_merkle_patricia_trie = commitments[2].clone();
-        commitment_ozks = commitments[3].clone();
+    let (
+        commitment_merkle_tree,
+        commitment_sparse_merkle_tree,
+        commitment_merkle_patricia_trie,
+        commitment_ozks,
+    ) = if config.app.only_ozks {
+        (
+            String::new(),
+            String::new(),
+            String::new(),
+            commitments[0].clone(),
+        )
     } else {
-        commitment_merkle_tree = "".to_string();
-        commitment_sparse_merkle_tree = "".to_string();
-        commitment_merkle_patricia_trie = "".to_string();
-        commitment_ozks = commitments[0].clone();
-    }
+        (
+            commitments[0].clone(),
+            commitments[1].clone(),
+            commitments[2].clone(),
+            commitments[3].clone(),
+        )
+    };
 
-    // Save Commitments to database
     let commitment_entry = CommitmentDbEntry {
-        vendor: vendor,
-        product: product,
-        version: version,
+        vendor,
+        product,
+        version,
         commitment_merkle_tree: commitment_merkle_tree.clone(),
         commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.clone(),
         commitment_merkle_patricia_trie: commitment_merkle_patricia_trie.clone(),
@@ -115,7 +122,6 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     };
     insert_commitment(commitment_entry, config);
 
-    // Save leaves to database
     let dependency_entry = DependencyDbEntry {
         commitment_merkle_tree,
         commitment_sparse_merkle_tree,
@@ -126,6 +132,19 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     };
     insert_dependency(dependency_entry, config);
 
+    let elapsed = now.elapsed().as_nanos().to_string();
+    if config.app.timing_analysis {
+        print_timing_ns(
+            elapsed.as_str(),
+            if config.app.only_ozks {
+                "ozks"
+            } else {
+                "all_methods"
+            },
+            leaves.len().to_string().as_str(),
+            config,
+        );
+    }
     println!("Uploading SBOM completed.")
 }
 
@@ -138,7 +157,7 @@ fn get_file_content(file_path: &str) -> String {
         }
     };
 
-    return sbom_string;
+    sbom_string
 }
 
 fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
@@ -254,7 +273,7 @@ fn create_salt() -> String {
         .take(64) // length of salt
         .map(char::from)
         .collect();
-    return salt;
+    salt
 }
 
 #[allow(dead_code)]
