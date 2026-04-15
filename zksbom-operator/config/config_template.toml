@@ -1,6 +1,6 @@
 [app]
 log_level = "error"
-output = "./tmp/output/proof.txt"
+output = "./tmp/output/proof.csv"
 clean_init_dbs = false
 # Checks if Rust dependencies in the SBOM are available on crates.io.
 check_dependencies = false

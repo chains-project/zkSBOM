@@ -124,11 +124,11 @@ pub fn get_commitment(
 }
 
 pub fn create_proof(_api_key: &str, method: &str, commitment: &str, check: &str, config: &Config) {
-    let time_in_ns = execute_proof_flow(method, commitment, check, config);
+    let (time_in_ns, dependency_count) = execute_proof_flow(method, commitment, check, config);
 
     if config.app.timing_analysis && !time_in_ns.is_empty() {
         let print_name = if method == "ozks" { "oZKS" } else { method };
-        print_timing_ns(&time_in_ns, print_name, "", config);
+        print_timing_ns(&time_in_ns, print_name, dependency_count.as_str(), config);
     }
 }
 
@@ -157,7 +157,7 @@ fn print_timing(elapsed: Duration, method: &str, config: &Config) {
         .unwrap();
     let _ = writeln!(
         file,
-        "method:{},elapsed:{:.5}seconds",
+        "{},{:.10}",
         method,
         elapsed.as_secs_f64()
     );
@@ -178,11 +178,11 @@ fn print_timing_ns(nanoseconds_str: &str, method: &str, dep_count: &str, config:
         if dep_count != "" {
             let _ = writeln!(
                 file,
-                "method:{},dependencies:{},elapsed:{:.10}seconds",
-                method, dep_count, seconds
+                "{},{},{:.10}",
+                method.to_lowercase(), seconds, dep_count
             );
         } else {
-            let _ = writeln!(file, "method:{},elapsed:{:.10}seconds", method, seconds);
+            let _ = writeln!(file, "{},{:.10}", method, seconds);
         }
     }
 }

@@ -171,5 +171,5 @@ fn print_timing(elapsed: Duration, method: &str, timing_output_path: &str) {
         .unwrap();
 
     let seconds = elapsed.as_secs_f64();
-    _ = writeln!(file, "Method: {}, Elapsed: {:.5} seconds", method, seconds);
+    _ = writeln!(file, "{},{:.10}", method, seconds);
 }

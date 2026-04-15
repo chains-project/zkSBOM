@@ -1,4 +1,4 @@
 [app]
 log_level = "error"
 timing_analysis = false
-timing_analysis_output = "./tmp/output/timing_analysis.log"
+timing_analysis_output = "./tmp/output/timing_analysis.csv"
