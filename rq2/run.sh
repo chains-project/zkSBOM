@@ -87,7 +87,7 @@ for i in {1..10}; do
         --method "ozks" \
         --commitment "$commitment" \
         --proof_path "../zksbom-operator/tmp/output/proof-$(basename "$file" .cdx.json).txt"
-        sed -i "$ s/$/,$(basename "$file" .cdx.json)/" $DIR/results/verify_proofs.csv
+        sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" $DIR/results/verify_proofs.csv
     done
 
 
