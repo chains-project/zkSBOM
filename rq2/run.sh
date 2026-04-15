@@ -28,7 +28,7 @@ cd $DIR/../zksbom-verifier
 cargo build --release
 
 
-for i in {1..2}; do
+for i in {1..10}; do
     # Remove zksbom-operator DBs if present
     rm -rf ../zksbom-operator/tmp
 
@@ -97,15 +97,15 @@ done
 # Analyse Results
 #################
 cd $DIR
-echo "------------------------------------------------" >> ./results/result.txt 2>&1
-echo "--- Create Commitment --------------------------" >> ./results/result.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/create_commitment.csv >> ./results/result.txt 2>&1
-echo "------------------------------------------------" >> ./results/result.txt 2>&1
-echo "------------------------------------------------" >> ./results/result.txt 2>&1
-echo "--- Create Proof -------------------------------" >> ./results/result.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/create_proofs.csv >> ./results/result.txt 2>&1
-echo "------------------------------------------------" >> ./results/result.txt 2>&1
-echo "------------------------------------------------" >> ./results/result.txt 2>&1
-echo "--- Verify Proof -------------------------------" >> ./results/result.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/verify_proofs.csv >> ./results/result.txt 2>&1
-echo "------------------------------------------------" >> ./results/result.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "--- Create Commitment --------------------------" >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_results.py ./results/create_commitment.csv >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "--- Create Proof -------------------------------" >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_results.py ./results/create_proofs.csv >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "--- Verify Proof -------------------------------" >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_results.py ./results/verify_proofs.csv >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
