@@ -41,6 +41,7 @@ pub fn execute_proof_flow(
         }
     }
 
+    let mut is_inclusion_proof = false;
     // Check for Inclusion
     for dep in &dependencies {
         let stripped_dep = dep.split(';').next().unwrap_or(*dep);
@@ -57,33 +58,38 @@ pub fn execute_proof_flow(
             stripped_dep_vdb = stripped_dep.replace(":", "/");
         }
 
+        let mut deps_for_inclusion_proof: Vec<String> = Vec::new();
         if deps_to_proof.contains(&stripped_dep_vdb.to_string()) {
-            debug!(
-                "Creating inclusion proof for dep_to_proof: {}",
-                stripped_dep
-            );
-            return if config.app.conceal {
-                let concealed_dep = get_concealed_dependencies(stripped_dep);
-
-                inclusion_proof(
-                    method,
-                    commitment,
-                    dependencies.clone(),
-                    concealed_dep,
-                    config,
-                );
-                (dependencies.len().to_string(), query_db_time)
-            } else {
-                inclusion_proof(
-                    method,
-                    commitment,
-                    dependencies.clone(),
-                    stripped_dep.to_string(),
-                    config,
-                );
-                (dependencies.len().to_string(), query_db_time)
-            };
+            deps_for_inclusion_proof.push(stripped_dep_vdb.to_string());
         }
+        if !deps_for_inclusion_proof.is_empty() {
+            is_inclusion_proof = true;
+            for dep in deps_for_inclusion_proof {
+                debug!("Creating inclusion proof for dep_to_proof: {}", dep);
+                if config.app.conceal {
+                    let concealed_dep = get_concealed_dependencies(dep.as_str());
+                    inclusion_proof(
+                        method,
+                        commitment,
+                        dependencies.clone(),
+                        concealed_dep,
+                        config,
+                    );
+                } else {
+                    inclusion_proof(
+                        method,
+                        commitment,
+                        dependencies.clone(),
+                        dep.to_string(),
+                        config,
+                    );
+                };
+            }
+        }
+    }
+
+    if is_inclusion_proof {
+        return (dependencies.len().to_string(), query_db_time);
     }
 
     // If no inclusion, fallback to non-inclusion
@@ -121,7 +127,7 @@ fn inclusion_proof(
     config: &Config,
 ) {
     let proof_payload = call_crypto_method(method, commitment, dependencies, &target_dep, config);
-    write_to_file(proof_payload, false, config);
+    write_to_file(proof_payload, true, config);
 }
 
 fn non_inclusion_proof(

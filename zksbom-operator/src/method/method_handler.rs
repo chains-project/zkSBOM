@@ -6,7 +6,7 @@ use crate::method::ozks::create_commitment as create_ozks_commitment;
 use crate::method::proof_handler::execute_proof_flow;
 use crate::method::sparse_merkle_tree::create_commitment as create_sparse_merkle_commitment;
 use log::debug;
-use std::fs::{self, OpenOptions};
+use std::fs::{self, File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -126,6 +126,10 @@ pub fn get_commitment(
 }
 
 pub fn create_proof(_api_key: &str, method: &str, commitment: &str, check: &str, config: &Config) {
+    // Clear the output file before appending non-inclusion proofs
+    let output_path = &config.app.output;
+    let _ = File::create(output_path);
+
     let start = Instant::now();
     let (dependency_count, query_db_time) = execute_proof_flow(method, commitment, check, config);
     let elapsed = start.elapsed().as_nanos();
