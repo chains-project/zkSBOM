@@ -1,0 +1,10 @@
+==============================
+ Results
+==============================
+  Total files found             : 78612
+  Skipped (not JSON)            : 20442
+  Skipped (not CycloneDX)       : 4431
+  Skipped (too many components) : 1682
+  Found good SBOMs              : 52057
+  Errors                        : 8117
+==============================
