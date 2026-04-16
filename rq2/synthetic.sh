@@ -36,7 +36,7 @@ cd $DIR/../zksbom-verifier
 cargo build --release
 
 
-for i in {1..1}; do
+for i in {1..10}; do
     echo "Iteration $i is running..."
 
     # Remove zksbom-operator DBs if present

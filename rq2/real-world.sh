@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------------------
 # Config
 # ------------------------------------------------------------------------------
-SBOM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/sbom-files2" # TODO: change
+SBOM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/sbom-files"
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 INCLUSION_CVE="CVE-2021-44228"
