@@ -6,20 +6,23 @@ cd $DIR
 INCLUSION_CVE="CVE-2021-44228"
 NON_INCLUSION_CVE="CVE-2025-55182"
 
-# #######
-# # Setup
-# #######
+#########
+# Setup #
+#########
 
 # Remove SBOMs if present
-rm -rf ./sboms
+rm -rf ./sboms > /dev/null 2>&1
 
 # Remove previous results
-rm ./results/create-commitment.csv
-rm ./results/create-inclusion-proofs.csv
-rm ./results/create-non-inclusion-proofs.csv
-rm ./results/verify-inclusion-proofs.csv
-rm ./results/verify-non-inclusion-proofs.csv
-rm ./results/results.txt
+rm ./results/create-commitment.csv > /dev/null 2>&1
+rm ./results/create-inclusion-proofs.csv > /dev/null 2>&1
+rm ./results/create-non-inclusion-proofs.csv > /dev/null 2>&1
+rm ./results/verify-inclusion-proofs.csv > /dev/null 2>&1
+rm ./results/verify-non-inclusion-proofs.csv > /dev/null 2>&1
+rm ./results/db-size-bytes.csv > /dev/null 2>&1
+rm ./results/inclusion-proof-size-bytes.csv > /dev/null 2>&1
+rm ./results/non-inclusion-proof-size-bytes.csv > /dev/null 2>&1
+rm ./results/results.txt > /dev/null 2>&1
 
 # Generate SBOMs
 ./scripts/generate_sboms.sh
@@ -34,87 +37,162 @@ cargo build --release
 
 
 for i in {1..10}; do
+    echo "Iteration $i is running..."
+
     # Remove zksbom-operator DBs if present
     rm -rf ../zksbom-operator/tmp
 
-    ###########################################
-    # Time commitment generation for every SBOM
-    ###########################################
-    cd $DIR/../zksbom-operator
     for file in $DIR/sboms/*; do
-    ./target/release/zksbom-operator upload_sbom \
-        --timing_analysis true \
-        --timing_analysis_output $DIR/results/create-commitment.csv \
-        --api-key 123 \
-        --sbom $file \
-        --only_ozks true
+        echo "  Handling SBOM '$file'"
+    
+        #------------#
+        #-- Timing --#
+        #------------#
+
+        ###############
+        # Time Upload #
+        ###############
+        cd $DIR/../zksbom-operator
+        ./target/release/zksbom-operator upload_sbom \
+            --timing_analysis true \
+            --timing_analysis_output $DIR/results/create-commitment.csv \
+            --api-key 123 \
+            --sbom $file \
+            --only_ozks true > /dev/null 2>&1
+        
+        ##################
+        # Get commitment #
+        ##################
+        commitment=$(./target/release/zksbom-operator get_commitment \
+            --method "ozks" \
+            --vendor "RQ2" \
+            --product $(basename "$file" .cdx.json) \
+            --version "0.1.0" | awk '{print $2}')
+
+        ############################
+        # Generate inclusion proof #
+        ############################
+        ./target/release/zksbom-operator create_proof \
+            --timing_analysis_output $DIR/results/create-inclusion-proofs.csv \
+            --timing_analysis true \
+            --api-key 123 \
+            --method "ozks" \
+            --commitment $commitment \
+            --check "$INCLUSION_CVE" \
+            --output "./tmp/output/inclusion-proof-$(basename "$file" .cdx.json).txt" > /dev/null 2>&1
+        
+        ################################
+        # Generate non-inclusion proof #
+        ################################
+        ./target/release/zksbom-operator create_proof \
+            --timing_analysis_output $DIR/results/create-non-inclusion-proofs.csv \
+            --timing_analysis true \
+            --api-key 123 \
+            --method "ozks" \
+            --commitment $commitment \
+            --check "$NON_INCLUSION_CVE" \
+            --output "./tmp/output/non-inclusion-proof-$(basename "$file" .cdx.json).txt" > /dev/null 2>&1
+        
+        ##########################
+        # Verify inclusion proof #
+        ##########################
+        cd $DIR/../zksbom-verifier
+        ./target/release/zksbom-verifier verify \
+            --timing_analysis_output $DIR/results/verify-inclusion-proofs.csv \
+            --timing_analysis true \
+            --method "ozks" \
+            --commitment "$commitment" \
+            --proof_path "../zksbom-operator/tmp/output/inclusion-proof-$(basename "$file" .cdx.json).txt" > /dev/null 2>&1
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS requires the empty string argument
+                sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/verify-inclusion-proofs.csv"
+            else
+                # Linux (GNU) does NOT want the empty string argument
+                sed -i "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/verify-inclusion-proofs.csv"
+            fi
+        
+        ##############################
+        # Verify non-inclusion proof #
+        ##############################
+        cd $DIR/../zksbom-verifier
+        ./target/release/zksbom-verifier verify \
+            --timing_analysis_output $DIR/results/verify-non-inclusion-proofs.csv \
+            --timing_analysis true \
+            --method "ozks" \
+            --commitment "$commitment" \
+            --proof_path "../zksbom-operator/tmp/output/non-inclusion-proof-$(basename "$file" .cdx.json).txt" > /dev/null 2>&1
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS requires the empty string argument
+                sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/verify-non-inclusion-proofs.csv"
+            else
+                # Linux (GNU) does NOT want the empty string argument
+                sed -i "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/verify-non-inclusion-proofs.csv"
+            fi
+
+        #-------------#
+        #-- Storage --#
+        #-------------#
+
+        ############
+        # Database #
+        ############
+        cd "$DIR/../zksbom-operator/tmp/database"
+
+        ALL_DB_SIZE=0
+        for db_file in $DIR/../zksbom-operator/tmp/database/*; do
+        
+            # Skip if it's a directory
+            [ -f "$db_file" ] || continue
+
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS / BSD
+                SIZE=$(stat -f%z "$db_file")
+            else
+                # Linux / GNU
+                SIZE=$(stat -c%s "$db_file")
+            fi
+
+             # Use (( )) for arithmetic
+            (( ALL_DB_SIZE += SIZE ))
+        done
+       
+        echo "ozks,$ALL_DB_SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/db-size-bytes.csv
+
+        #####################
+        # Proof file sizes #
+        ####################
+        cd "$DIR/../zksbom-operator/tmp/output"
+
+        for proof_file in $DIR/../zksbom-operator/tmp/output/*; do
+            [ -f "$proof_file" ] || continue
+
+            filename=$(basename "$proof_file")
+
+            if [[ "$filename" == non-inclusion-proof* ]]; then
+                if [[ "$OSTYPE" == "darwin"* ]]; then
+                    SIZE=$(stat -f%z "$proof_file")
+                else
+                    SIZE=$(stat -c%s "$proof_file")
+                fi
+                echo "ozks,$SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/non-inclusion-proof-size-bytes.csv
+
+            elif [[ "$filename" == inclusion-proof* ]]; then
+               if [[ "$filename" == inclusion-proof-0000* ]]; then
+                    continue
+                else
+                    if [[ "$OSTYPE" == "darwin"* ]]; then
+                        SIZE=$(stat -f%z "$proof_file")
+                    else
+                        SIZE=$(stat -c%s "$proof_file")
+                    fi
+                    echo "ozks,$SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/inclusion-proof-size-bytes.csv
+                fi
+            fi
+        done
+
+        # Remove zksbom-operator DBs and output files
+        rm -rf ../zksbom-operator/tmp
     done
-
-
-    #######################
-    # Time proof generation
-    #######################
-    for file in $DIR/sboms/*; do
-    # Get commitment
-    commitment=$(./target/release/zksbom-operator get_commitment \
-        --method "ozks" \
-        --vendor "RQ2" \
-        --product $(basename "$file" .cdx.json) \
-        --version "0.1.0" | awk '{print $2}')
-    # Generate inclusion proof
-    ./target/release/zksbom-operator create_proof \
-        --timing_analysis_output $DIR/results/create-inclusion-proofs.csv \
-        --timing_analysis true \
-        --api-key 123 \
-        --method "ozks" \
-        --commitment $commitment \
-        --check "$INCLUSION_CVE" \
-        --output "./tmp/output/inclusion-proof-$(basename "$file" .cdx.json).txt"
-    # Generate non-inclusion proof
-    ./target/release/zksbom-operator create_proof \
-        --timing_analysis_output $DIR/results/create-non-inclusion-proofs.csv \
-        --timing_analysis true \
-        --api-key 123 \
-        --method "ozks" \
-        --commitment $commitment \
-        --check "$NON_INCLUSION_CVE" \
-        --output "./tmp/output/non-inclusion-proof-$(basename "$file" .cdx.json).txt" 
-    done
-
-
-    #########################
-    # Time proof verification
-    #########################
-    for file in $DIR/sboms/*; do
-    # Inclusion proof
-    ## Get commitment
-    cd $DIR/../zksbom-operator
-    commitment=$(./target/release/zksbom-operator get_commitment \
-        --method "ozks" \
-        --vendor "RQ2" \
-        --product $(basename "$file" .cdx.json) \
-        --version "0.1.0" | awk '{print $2}')
-    # Verify inclusion proof
-    cd $DIR/../zksbom-verifier
-    ./target/release/zksbom-verifier verify \
-        --timing_analysis_output $DIR/results/verify-inclusion-proofs.csv \
-        --timing_analysis true \
-        --method "ozks" \
-        --commitment "$commitment" \
-        --proof_path "../zksbom-operator/tmp/output/inclusion-proof-$(basename "$file" .cdx.json).txt"
-        sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" $DIR/results/verify-inclusion-proofs.csv
-    ## Verify non-inclusion proof
-    cd $DIR/../zksbom-verifier
-    ./target/release/zksbom-verifier verify \
-        --timing_analysis_output $DIR/results/verify-non-inclusion-proofs.csv \
-        --timing_analysis true \
-        --method "ozks" \
-        --commitment "$commitment" \
-        --proof_path "../zksbom-operator/tmp/output/non-inclusion-proof-$(basename "$file" .cdx.json).txt"
-        sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" $DIR/results/verify-non-inclusion-proofs.csv
-    done
-
-
 done
 
 #################
@@ -123,22 +201,33 @@ done
 cd $DIR
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "--- Create Commitment --------------------------" >> ./results/results.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/create-commitment.csv >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/create-commitment.csv >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "--- Create Inclusion Proof ---------------------" >> ./results/results.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/create-inclusion-proofs.csv >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/create-inclusion-proofs.csv >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "--- Create Non-Inclusion Proof -----------------" >> ./results/results.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/create-non-inclusion-proofs.csv >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/create-non-inclusion-proofs.csv >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "--- Verify Inclsuion Proof ---------------------" >> ./results/results.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/verify-inclusion-proofs.csv >> ./results/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/verify-inclusion-proofs.csv >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1
 echo "--- Verify Non-Inclsuion Proof -----------------" >> ./results/results.txt 2>&1
-python3 ./scripts/analyse_results.py ./results/verify-non-inclusion-proofs.csv >> ./results/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/verify-non-inclusion-proofs.csv >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "--- DB Sizes------------------ -----------------" >> ./results/results.txt 2>&1
+ python3 ./scripts/analyse_size.py ./results/db-size-bytes.csv >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "--- Inclusion Proof Sizes ----------------------" >> ./results/results.txt 2>&1
+ python3 ./scripts/analyse_size.py ./results/inclusion-proof-size-bytes.csv >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/results.txt 2>&1
+echo "--- Non-Inclusion Proof Sizes ------------------" >> ./results/results.txt 2>&1
+ python3 ./scripts/analyse_size.py ./results/non-inclusion-proof-size-bytes.csv >> ./results/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/results.txt 2>&1

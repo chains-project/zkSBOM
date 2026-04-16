@@ -40,7 +40,7 @@ def make_sbom(count: int) -> dict:
         "metadata": {
             "component": {
                 "author": "RQ2",
-                "name": f"{count:03d}",
+                "name": f"{count:04d}",
                 "version": "0.1.0",
             }
         },
