@@ -9,8 +9,7 @@ GENERATE_SCRIPT="./create_dummy_data.py"
 VERIFY_SCRIPT="verify_rq2_sboms.py"
 # The component counts you want to generate.
 # Each number N produces a file called <NNN>.cdx.json with N components.
-# COUNTS=(0 10 30 50 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000)
-COUNTS=(0 10 30 50 100 150 200)
+COUNTS=(0 10 30 50 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000)
 
 OPENSSL_ENTRY='{
     "type" : "library",
