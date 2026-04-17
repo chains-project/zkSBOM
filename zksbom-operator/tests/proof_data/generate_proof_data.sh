@@ -20,7 +20,7 @@ cargo run -- upload_sbom \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2021-44228" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mt-inclusion-proof.txt \
     --conceal false
@@ -29,7 +29,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "sparse-merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2021-44228" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/smt-inclusion-proof.txt \
     --conceal false
@@ -38,7 +38,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-patricia-trie" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2021-44228" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mpt-inclusion-proof.txt \
     --conceal false
@@ -47,7 +47,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "ozks" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2021-44228" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/ozks-inclusion-proof.txt \
     --conceal false
@@ -57,7 +57,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "org.apache.logging.log4j:log4j-core@2.4@MAVEN" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mt-inclusion-proof-dep.txt \
     --conceal false
@@ -66,7 +66,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "sparse-merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "org.apache.logging.log4j:log4j-core@2.4@MAVEN" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/smt-inclusion-proof-dep.txt \
     --conceal false
@@ -75,7 +75,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-patricia-trie" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "org.apache.logging.log4j:log4j-core@2.4@MAVEN" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mpt-inclusion-proof-dep.txt \
     --conceal false
@@ -84,7 +84,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "ozks" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "org.apache.logging.log4j:log4j-core@2.4@MAVEN" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/ozks-inclusion-proof-dep.txt \
     --conceal false
@@ -94,7 +94,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "sparse-merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2025-55182" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/smt-non-inclusion-proof.txt \
     --conceal false
@@ -103,7 +103,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-patricia-trie" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2025-55182" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mpt-non-inclusion-proof.txt \
     --conceal false
@@ -112,7 +112,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "ozks" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2025-55182" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/ozks-non-inclusion-proof.txt \
     --conceal false
@@ -122,7 +122,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "sparse-merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "foo@0.0.1@foo" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/smt-non-inclusion-proof-dep.txt \
     --conceal false
@@ -131,7 +131,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-patricia-trie" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "foo@0.0.1@foo" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mpt-non-inclusion-proof-dep.txt \
     --conceal false
@@ -140,7 +140,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "ozks" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "foo@0.0.1@foo" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/ozks-non-inclusion-proof-dep.txt \
     --conceal false
@@ -148,7 +148,7 @@ cargo run -- create_proof_no_commitment \
 # Get Commitments
 ## MT
 cargo run -- get_commitment \
---vendor "unknown" \
+--vendor "The Apache Software Foundation" \
 --product "druid" \
 --version "0.22.0" \
 --method "merkle-tree" \
@@ -157,7 +157,7 @@ cargo run -- get_commitment \
 
 ## SMT
 cargo run -- get_commitment \
---vendor "unknown" \
+--vendor "The Apache Software Foundation" \
 --product "druid" \
 --version "0.22.0" \
 --method "sparse-merkle-tree" \
@@ -166,7 +166,7 @@ cargo run -- get_commitment \
 
 ## MT
 cargo run -- get_commitment \
---vendor "unknown" \
+--vendor "The Apache Software Foundation" \
 --product "druid" \
 --version "0.22.0" \
 --method "merkle-patricia-trie" \
@@ -175,7 +175,7 @@ cargo run -- get_commitment \
 
 ## oZKS
 cargo run -- get_commitment \
---vendor "unknown" \
+--vendor "The Apache Software Foundation" \
 --product "druid" \
 --version "0.22.0" \
 --method "ozks" \
@@ -197,7 +197,7 @@ cargo run -- upload_sbom \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2021-44228" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mt-inclusion-proof-concealed.txt \
     --conceal true
@@ -206,7 +206,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "sparse-merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2021-44228" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/smt-inclusion-proof-concealed.txt \
     --conceal true
@@ -215,7 +215,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-patricia-trie" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2021-44228" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mpt-inclusion-proof-concealed.txt \
     --conceal true
@@ -224,7 +224,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "ozks" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2021-44228" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/ozks-inclusion-proof-concealed.txt \
     --conceal true
@@ -234,7 +234,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "org.apache.logging.log4j:log4j-core@2.4@MAVEN" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mt-inclusion-proof-concealed-dep.txt \
     --conceal true
@@ -243,7 +243,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "sparse-merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "org.apache.logging.log4j:log4j-core@2.4@MAVEN" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/smt-inclusion-proof-concealed-dep.txt \
     --conceal true
@@ -252,7 +252,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-patricia-trie" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "org.apache.logging.log4j:log4j-core@2.4@MAVEN" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mpt-inclusion-proof-concealed-dep.txt \
     --conceal true
@@ -261,7 +261,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "ozks" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "org.apache.logging.log4j:log4j-core@2.4@MAVEN" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/ozks-inclusion-proof-concealed-dep.txt \
     --conceal true
@@ -271,7 +271,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "sparse-merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2025-55182" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/smt-non-inclusion-proof-concealed.txt \
     --conceal true
@@ -280,7 +280,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-patricia-trie" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2025-55182" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mpt-non-inclusion-proof-concealed.txt \
     --conceal true
@@ -289,7 +289,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "ozks" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "CVE-2025-55182" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/ozks-non-inclusion-proof-concealed.txt \
     --conceal true
@@ -300,7 +300,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "sparse-merkle-tree" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "foo@0.0.1@foo" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/smt-non-inclusion-proof-concealed-dep.txt \
     --conceal true
@@ -309,7 +309,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "merkle-patricia-trie" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "foo@0.0.1@foo" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/mpt-non-inclusion-proof-concealed-dep.txt \
     --conceal true
@@ -318,7 +318,7 @@ cargo run -- create_proof_no_commitment \
 cargo run -- create_proof_no_commitment \
     --api-key "123" \
     --method "ozks" \
-    --vendor "unknown" --product druid --version "0.22.0" \
+    --vendor "The Apache Software Foundation" --product druid --version "0.22.0" \
     --check "foo@0.0.1@foo" \
     --output ./tests/proof_data/druid-0.22.0.cdx.json/ozks-non-inclusion-proof-concealed-dep.txt \
     --conceal true
@@ -326,7 +326,7 @@ cargo run -- create_proof_no_commitment \
 # Get Commitments Concealed
 ## MT
 cargo run -- get_commitment \
---vendor "unknown" \
+--vendor "The Apache Software Foundation" \
 --product "druid" \
 --version "0.22.0" \
 --method "merkle-tree" \
@@ -335,7 +335,7 @@ cargo run -- get_commitment \
 
 ## SMT
 cargo run -- get_commitment \
---vendor "unknown" \
+--vendor "The Apache Software Foundation" \
 --product "druid" \
 --version "0.22.0" \
 --method "sparse-merkle-tree" \
@@ -344,7 +344,7 @@ cargo run -- get_commitment \
 
 ## MT
 cargo run -- get_commitment \
---vendor "unknown" \
+--vendor "The Apache Software Foundation" \
 --product "druid" \
 --version "0.22.0" \
 --method "merkle-patricia-trie" \
@@ -353,7 +353,7 @@ cargo run -- get_commitment \
 
 ## oZKS
 cargo run -- get_commitment \
---vendor "unknown" \
+--vendor "The Apache Software Foundation" \
 --product "druid" \
 --version "0.22.0" \
 --method "ozks" \

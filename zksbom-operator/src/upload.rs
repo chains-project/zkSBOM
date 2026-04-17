@@ -167,12 +167,8 @@ fn parse_sbom(sbom_content: &str, sbom_path: &str, config: &Config) -> SbomParse
     // Deserialize the JSON
     let json: Value = from_str(&json_str).expect("Failed to parse JSON");
 
-
-
     // Extract component information
-    let component = json
-        .get("metadata")
-        .and_then(|m| m.get("component"));
+    let component = json.get("metadata").and_then(|m| m.get("component"));
 
     let (vendor, product, version) = if let Some(component) = component {
         // Try multiple fields for vendor: author → publisher → supplier → "unknown"
@@ -197,7 +193,7 @@ fn parse_sbom(sbom_content: &str, sbom_path: &str, config: &Config) -> SbomParse
             .unwrap_or("");
 
         // If name contains ":", treat it as "product:version"
-        let (_product, inline_version) = if raw_name.contains(':') {
+        let (product, inline_version) = if raw_name.contains(':') {
             let mut parts = raw_name.splitn(2, ':');
             let p = parts.next().unwrap_or("").trim().to_string();
             let v = parts.next().unwrap_or("").trim().to_string();
@@ -207,7 +203,11 @@ fn parse_sbom(sbom_content: &str, sbom_path: &str, config: &Config) -> SbomParse
             )
         } else {
             (
-                if raw_name.is_empty() { None } else { Some(raw_name.to_string()) },
+                if raw_name.is_empty() {
+                    None
+                } else {
+                    Some(raw_name.to_string())
+                },
                 None,
             )
         };
@@ -224,8 +224,23 @@ fn parse_sbom(sbom_content: &str, sbom_path: &str, config: &Config) -> SbomParse
             })
             .unwrap_or_else(|| "unknown".to_string());
 
-        // Product: parsed name > sbom filename stem > "unknown"
-        let product = sbom_path.to_string();
+        // Product: parsed name > sbom filename
+        let product = product
+            .or_else(|| {
+                component
+                    .get("name")
+                    .and_then(|n| n.as_str())
+                    .map(|s| s.trim())
+                    .filter(|s| !s.is_empty())
+                    .map(|s| s.to_string())
+            })
+            .unwrap_or_else(|| {
+                sbom_path
+                    .rsplit_once('/')
+                    .map(|(_, text)| text)
+                    .unwrap()
+                    .to_string()
+            });
 
         (vendor, product, version)
     } else {
@@ -233,14 +248,20 @@ fn parse_sbom(sbom_content: &str, sbom_path: &str, config: &Config) -> SbomParse
         warn!("No metadata.component found in SBOM, falling back to filename.");
         let product = sbom_path;
 
-        ("unknown".to_string(), product.to_string(), "unknown".to_string())
+        (
+            "unknown".to_string(),
+            product.to_string(),
+            "unknown".to_string(),
+        )
     };
 
-    debug!("Vendor: {}, Product: {}, Version: {}", vendor, product, version);
+    debug!(
+        "Vendor: {}, Product: {}, Version: {}",
+        vendor, product, version
+    );
     sbom_parsed.vendor = vendor;
     sbom_parsed.product = product;
     sbom_parsed.version = version;
-
 
     // Extract dependency information (if present)
     if let Some(components) = json["components"].as_array() {

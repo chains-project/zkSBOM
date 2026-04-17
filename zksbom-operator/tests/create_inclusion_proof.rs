@@ -12,7 +12,7 @@ pub fn test_create_inclusion_proof(config: Config) {
         "ozks",
     ];
 
-    let vendor = "unknown";
+    let vendor = "The Apache Software Foundation";
     let product = "druid";
     let version = "0.22.0";
     let check = "CVE-2021-44228";
@@ -112,7 +112,7 @@ pub fn test_create_inclusion_proof_dependency() {
         "ozks",
     ];
 
-    let vendor = "unknown";
+    let vendor = "The Apache Software Foundation̈́";
     let product = "druid";
     let version = "0.22.0";
     let check = "org.apache.logging.log4j:log4j-core@2.4@MAVEN";
