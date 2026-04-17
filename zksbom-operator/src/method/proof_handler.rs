@@ -114,7 +114,11 @@ pub fn execute_proof_flow(
 }
 
 fn is_valid_dep(s: &str) -> bool {
-    let parts: Vec<&str> = s.split('@').collect();
+    let mut dep = s;
+    if s.starts_with("@") {
+        dep = s.strip_prefix('@').unwrap();
+    }
+    let parts: Vec<&str> = dep.split('@').collect();
     // Ensures 3 parts exist and none of them are empty strings
     parts.len() == 3 && parts.iter().all(|p| !p.is_empty())
 }
