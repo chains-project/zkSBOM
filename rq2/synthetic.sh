@@ -39,9 +39,6 @@ cargo build --release
 for i in {1..10}; do
     echo "Iteration $i is running..."
 
-    # Remove zksbom-operator DBs if present
-    rm -rf ../zksbom-operator/tmp
-
     for file in $DIR/sboms/*; do
         echo "  Handling SBOM '$file'"
     
@@ -53,6 +50,8 @@ for i in {1..10}; do
         # Time Upload #
         ###############
         cd $DIR/../zksbom-operator
+        # Remove zksbom-operator DBs if present
+        rm -rf ./tmp
         ./target/release/zksbom-operator upload_sbom \
             --timing_analysis true \
             --timing_analysis_output $DIR/results/synthetic/create-commitment.csv \
