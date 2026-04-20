@@ -6,12 +6,11 @@ set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SBOMS_DIR="../sboms"
 GENERATE_SCRIPT="./create_dummy_data.py"
-VERIFY_SCRIPT="verify_rq2_sboms.py"
 # The component counts you want to generate.
 # Each number N produces a file called <NNN>.cdx.json with N components.
-COUNTS=(0 10 30 50 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000)
+COUNTS=(0 10 30 50 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 1500 2000 2500 3000 3500 4000 4500 5000 5500 6000 6500 7000 7500 8000 8500 9000 9500 10000)
 
-OPENSSL_ENTRY='{
+ENTRY='{
     "type" : "library",
       "bom-ref" : "pkg:maven/org.apache.logging.log4j/log4j-core@2.8.2?type=jar",
       "publisher" : "The Apache Software Foundation",
@@ -86,7 +85,7 @@ OPENSSL_ENTRY='{
 # Checks
 # -------------------------------------------------------
 cd $DIR
-for script in "$GENERATE_SCRIPT" "$VERIFY_SCRIPT"; do
+for script in "$GENERATE_SCRIPT"; do
   if [[ ! -f "$script" ]]; then
     echo "Required script not found: $script"
     exit 1
@@ -99,7 +98,7 @@ echo "Creating '$SBOMS_DIR/' directory..."
 mkdir -p "$SBOMS_DIR"
 echo "Generating ${#COUNTS[@]} SBOM file(s)..."
 for count in "${COUNTS[@]}"; do
-  filename=$(printf "%04d" "$count").cdx.json
+  filename=$(printf "%05d" "$count").cdx.json
   output_path="$SBOMS_DIR/$filename"
   python3 "$GENERATE_SCRIPT" --sbom "$count" > "$output_path"
 
@@ -108,7 +107,7 @@ for count in "${COUNTS[@]}"; do
 import json, random, sys
 
 path = sys.argv[1]
-entry = $OPENSSL_ENTRY
+entry = $ENTRY
 
 with open(path) as f:
     sbom = json.load(f)
@@ -124,11 +123,3 @@ PYEOF
 
   echo "$output_path  ($count component(s))"
 done
-# -------------------------------------------------------
-# Verify SBOMs
-# -------------------------------------------------------
-echo ""
-echo "Running verification..."
-echo ""
-cd $DIR
-python3 "$VERIFY_SCRIPT"

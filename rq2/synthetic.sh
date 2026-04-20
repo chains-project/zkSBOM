@@ -3,6 +3,8 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd $DIR
 
+VERIFY_SCRIPT="verify_rq2_sboms.py"
+
 INCLUSION_CVE="CVE-2021-44228"
 NON_INCLUSION_CVE="CVE-2025-55182"
 
@@ -28,6 +30,13 @@ rm ./results/synthetic/results.txt > /dev/null 2>&1
 ./scripts/generate_sboms.sh
 # Insert `CVE-2021-44228.cdx.json` SBOM
 cp ./CVE-2021-44228.cdx.json ./sboms/CVE-2021-44228.cdx.json
+
+# -------------------------------------------------------
+# Verify SBOMs
+# -------------------------------------------------------
+echo "Veryfing SBOMs..."
+cd $DIR/scripts/
+python3 -u "$VERIFY_SCRIPT"
 
 # Build zksbom-operator
 cd $DIR/../zksbom-operator

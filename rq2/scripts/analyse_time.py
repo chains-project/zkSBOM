@@ -34,7 +34,7 @@ def analyze(filepath):
 
     for method, points in sorted(by_method.items()):
         print(f"% {method}")
-        coords = " ".join(f"({dep},{med:.3f})" for dep, med in points)
+        coords = " ".join(f"({dep},{med:.9f})" for dep, med in points)
         print(f"\\{{{coords}}}")
 
 if __name__ == "__main__":

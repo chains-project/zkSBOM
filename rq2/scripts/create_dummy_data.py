@@ -24,23 +24,11 @@ def make_components(count: int) -> list[dict]:
 
 
 def make_sbom(count: int) -> dict:
-    """
-    Factory function that generates a full SBOM document.
-
-    The metadata name is zero-padded to 3 digits (e.g. 0 -> "000", 10 -> "010"),
-    matching the filename convention used for verification.
-
-    Args:
-        count: Number of components to include.
-
-    Returns:
-        A full SBOM dict with metadata and components list.
-    """
     return {
         "metadata": {
             "component": {
                 "author": "RQ2",
-                "name": f"{count:04d}",
+                "name": f"{count:05d}",
                 "version": "0.1.0",
             }
         },
