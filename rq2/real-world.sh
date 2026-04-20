@@ -54,10 +54,10 @@ while IFS= read -r -d '' file; do
         continue
     fi
 
-    # Skip SBOMs thaat have more than 1.000 components
-    # This is because we only have our syntethic benchmark until up to 1.000.
+    # Skip SBOMs thaat have more than 10.000 components
+    # This is because we only have our syntethic benchmark until up to 10.000.
     component_count=$(jq '.components | length' "$file" 2>/dev/null)
-    if [[ "$component_count" -gt 1000 ]]; then
+    if [[ "$component_count" -gt 10000 ]]; then
         (( count_skipped_too_large++ )) || true
         continue
     fi
