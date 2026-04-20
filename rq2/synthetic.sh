@@ -26,6 +26,8 @@ rm ./results/synthetic/results.txt > /dev/null 2>&1
 
 # Generate SBOMs
 ./scripts/generate_sboms.sh
+# Insert `CVE-2021-44228.cdx.json` SBOM
+cp ./CVE-2021-44228.cdx.json ./sboms/CVE-2021-44228.cdx.json
 
 # Build zksbom-operator
 cd $DIR/../zksbom-operator
