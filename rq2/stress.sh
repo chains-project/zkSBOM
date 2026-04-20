@@ -16,18 +16,19 @@ NON_INCLUSION_CVE="CVE-2025-55182"
 rm -rf ./sboms > /dev/null 2>&1
 
 # Remove previous results
-rm ./results/synthetic/create-commitment.csv > /dev/null 2>&1
-rm ./results/synthetic/create-inclusion-proofs.csv > /dev/null 2>&1
-rm ./results/synthetic/create-non-inclusion-proofs.csv > /dev/null 2>&1
-rm ./results/synthetic/verify-inclusion-proofs.csv > /dev/null 2>&1
-rm ./results/synthetic/verify-non-inclusion-proofs.csv > /dev/null 2>&1
-rm ./results/synthetic/db-size-bytes.csv > /dev/null 2>&1
-rm ./results/synthetic/inclusion-proof-size-bytes.csv > /dev/null 2>&1
-rm ./results/synthetic/non-inclusion-proof-size-bytes.csv > /dev/null 2>&1
-rm ./results/synthetic/results.txt > /dev/null 2>&1
+rm ./results/stress/create-commitment.csv > /dev/null 2>&1
+rm ./results/stress/create-inclusion-proofs.csv > /dev/null 2>&1
+rm ./results/stress/create-non-inclusion-proofs.csv > /dev/null 2>&1
+rm ./results/stress/verify-inclusion-proofs.csv > /dev/null 2>&1
+rm ./results/stress/verify-non-inclusion-proofs.csv > /dev/null 2>&1
+rm ./results/stress/db-size-bytes.csv > /dev/null 2>&1
+rm ./results/stress/inclusion-proof-size-bytes.csv > /dev/null 2>&1
+rm ./results/stress/non-inclusion-proof-size-bytes.csv > /dev/null 2>&1
+rm ./results/stress/results.txt > /dev/null 2>&1
 
 # Generate SBOMs
-./scripts/generate_sboms.sh
+mkdir ./sboms
+cp ./CVE-2021-44228.cdx.json ./sboms/10000.cdx.json
 
 # -------------------------------------------------------
 # Verify SBOMs
@@ -63,7 +64,7 @@ for i in {1..10}; do
         rm -rf ./tmp
         ./target/release/zksbom-operator upload_sbom \
             --timing_analysis true \
-            --timing_analysis_output $DIR/results/synthetic/create-commitment.csv \
+            --timing_analysis_output $DIR/results/stress/create-commitment.csv \
             --api-key 123 \
             --sbom $file \
             --only_ozks true > /dev/null 2>&1
@@ -81,7 +82,7 @@ for i in {1..10}; do
         # Generate inclusion proof #
         ############################
         ./target/release/zksbom-operator create_proof \
-            --timing_analysis_output $DIR/results/synthetic/create-inclusion-proofs.csv \
+            --timing_analysis_output $DIR/results/stress/create-inclusion-proofs.csv \
             --timing_analysis true \
             --api-key 123 \
             --method "ozks" \
@@ -93,7 +94,7 @@ for i in {1..10}; do
         # Generate non-inclusion proof #
         ################################
         ./target/release/zksbom-operator create_proof \
-            --timing_analysis_output $DIR/results/synthetic/create-non-inclusion-proofs.csv \
+            --timing_analysis_output $DIR/results/stress/create-non-inclusion-proofs.csv \
             --timing_analysis true \
             --api-key 123 \
             --method "ozks" \
@@ -106,17 +107,17 @@ for i in {1..10}; do
         ##########################
         cd $DIR/../zksbom-verifier
         ./target/release/zksbom-verifier verify \
-            --timing_analysis_output $DIR/results/synthetic/verify-inclusion-proofs.csv \
+            --timing_analysis_output $DIR/results/stress/verify-inclusion-proofs.csv \
             --timing_analysis true \
             --method "ozks" \
             --commitment "$commitment" \
             --proof_path "../zksbom-operator/tmp/output/inclusion-proof-$(basename "$file" .cdx.json).txt" > /dev/null 2>&1
             if [[ "$OSTYPE" == "darwin"* ]]; then
                 # macOS requires the empty string argument
-                sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/synthetic/verify-inclusion-proofs.csv"
+                sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/stress/verify-inclusion-proofs.csv"
             else
                 # Linux (GNU) does NOT want the empty string argument
-                sed -i "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/synthetic/verify-inclusion-proofs.csv"
+                sed -i "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/stress/verify-inclusion-proofs.csv"
             fi
         
         ##############################
@@ -124,17 +125,17 @@ for i in {1..10}; do
         ##############################
         cd $DIR/../zksbom-verifier
         ./target/release/zksbom-verifier verify \
-            --timing_analysis_output $DIR/results/synthetic/verify-non-inclusion-proofs.csv \
+            --timing_analysis_output $DIR/results/stress/verify-non-inclusion-proofs.csv \
             --timing_analysis true \
             --method "ozks" \
             --commitment "$commitment" \
             --proof_path "../zksbom-operator/tmp/output/non-inclusion-proof-$(basename "$file" .cdx.json).txt" > /dev/null 2>&1
             if [[ "$OSTYPE" == "darwin"* ]]; then
                 # macOS requires the empty string argument
-                sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/synthetic/verify-non-inclusion-proofs.csv"
+                sed -i '' "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/stress/verify-non-inclusion-proofs.csv"
             else
                 # Linux (GNU) does NOT want the empty string argument
-                sed -i "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/synthetic/verify-non-inclusion-proofs.csv"
+                sed -i "$ s/$/,$(basename "$file" .cdx.json)/" "$DIR/results/stress/verify-non-inclusion-proofs.csv"
             fi
 
         #-------------#
@@ -164,7 +165,7 @@ for i in {1..10}; do
             (( ALL_DB_SIZE += SIZE ))
         done
        
-        echo "ozks,$ALL_DB_SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/synthetic/db-size-bytes.csv
+        echo "ozks,$ALL_DB_SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/stress/db-size-bytes.csv
 
         #####################
         # Proof file sizes #
@@ -182,7 +183,7 @@ for i in {1..10}; do
                 else
                     SIZE=$(stat -c%s "$proof_file")
                 fi
-                echo "ozks,$SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/synthetic/non-inclusion-proof-size-bytes.csv
+                echo "ozks,$SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/stress/non-inclusion-proof-size-bytes.csv
 
             elif [[ "$filename" == inclusion-proof* ]]; then
                if [[ "$filename" == inclusion-proof-0000* ]]; then
@@ -193,7 +194,7 @@ for i in {1..10}; do
                     else
                         SIZE=$(stat -c%s "$proof_file")
                     fi
-                    echo "ozks,$SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/synthetic/inclusion-proof-size-bytes.csv
+                    echo "ozks,$SIZE,$(basename "$file" .cdx.json)" >> $DIR/results/stress/inclusion-proof-size-bytes.csv
                 fi
             fi
         done
@@ -207,35 +208,35 @@ done
 # Analyse Results
 #################
 cd $DIR
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- Create Commitment --------------------------" >> ./results/synthetic/results.txt 2>&1
-python3 ./scripts/analyse_time.py ./results/synthetic/create-commitment.csv >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- Create Inclusion Proof ---------------------" >> ./results/synthetic/results.txt 2>&1
-python3 ./scripts/analyse_time.py ./results/synthetic/create-inclusion-proofs.csv >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- Create Non-Inclusion Proof -----------------" >> ./results/synthetic/results.txt 2>&1
-python3 ./scripts/analyse_time.py ./results/synthetic/create-non-inclusion-proofs.csv >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- Verify Inclsuion Proof ---------------------" >> ./results/synthetic/results.txt 2>&1
-python3 ./scripts/analyse_time.py ./results/synthetic/verify-inclusion-proofs.csv >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- Verify Non-Inclsuion Proof -----------------" >> ./results/synthetic/results.txt 2>&1
-python3 ./scripts/analyse_time.py ./results/synthetic/verify-non-inclusion-proofs.csv >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- DB Sizes------------------ -----------------" >> ./results/synthetic/results.txt 2>&1
- python3 ./scripts/analyse_size.py ./results/synthetic/db-size-bytes.csv >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- Inclusion Proof Sizes ----------------------" >> ./results/synthetic/results.txt 2>&1
- python3 ./scripts/analyse_size.py ./results/synthetic/inclusion-proof-size-bytes.csv >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- Non-Inclusion Proof Sizes ------------------" >> ./results/synthetic/results.txt 2>&1
- python3 ./scripts/analyse_size.py ./results/synthetic/non-inclusion-proof-size-bytes.csv >> ./results/synthetic/results.txt 2>&1
-echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "--- Create Commitment --------------------------" >> ./results/stress/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/stress/create-commitment.csv >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "--- Create Inclusion Proof ---------------------" >> ./results/stress/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/stress/create-inclusion-proofs.csv >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "--- Create Non-Inclusion Proof -----------------" >> ./results/stress/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/stress/create-non-inclusion-proofs.csv >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "--- Verify Inclsuion Proof ---------------------" >> ./results/stress/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/stress/verify-inclusion-proofs.csv >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "--- Verify Non-Inclsuion Proof -----------------" >> ./results/stress/results.txt 2>&1
+python3 ./scripts/analyse_time.py ./results/stress/verify-non-inclusion-proofs.csv >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "--- DB Sizes------------------ -----------------" >> ./results/stress/results.txt 2>&1
+ python3 ./scripts/analyse_size.py ./results/stress/db-size-bytes.csv >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "--- Inclusion Proof Sizes ----------------------" >> ./results/stress/results.txt 2>&1
+ python3 ./scripts/analyse_size.py ./results/stress/inclusion-proof-size-bytes.csv >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
+echo "--- Non-Inclusion Proof Sizes ------------------" >> ./results/stress/results.txt 2>&1
+ python3 ./scripts/analyse_size.py ./results/stress/non-inclusion-proof-size-bytes.csv >> ./results/stress/results.txt 2>&1
+echo "------------------------------------------------" >> ./results/stress/results.txt 2>&1
