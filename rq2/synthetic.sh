@@ -65,7 +65,7 @@ for i in {1..10}; do
         commitment=$(./target/release/zksbom-operator get_commitment \
             --method "ozks" \
             --vendor "RQ2" \
-            --product $file \
+            --product $(basename "$file" .cdx.json) \
             --version "0.1.0" | awk '{print $2}')
 
         ############################
