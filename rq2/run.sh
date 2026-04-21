@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 ./synthetic.sh
-./stress.sh
+./different_vulnerability_count.sh
 ./real-world.sh
