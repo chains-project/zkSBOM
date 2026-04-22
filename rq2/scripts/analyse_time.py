@@ -8,6 +8,8 @@ def analyze(filepath):
     with open(filepath, newline="") as f:
         reader = csv.reader(f)
         for row in reader:
+            if len(row) == 4:
+                row = row[:3]
             if len(row) != 3:
                 continue
             method, time_str, dep_str = row
