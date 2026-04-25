@@ -1157,26 +1157,26 @@ def main() -> None:
     if len(safe_indices) < 1000:
         sys.exit(
             f"ERROR: only {len(safe_indices)} components are safe to replace "
-            f"(need 73). Reduce the injection list or use a larger base SBOM."
+            f"(need 1000). Reduce the injection list or use a larger base SBOM."
         )
 
     # Use the first 1000 safe slots — deterministic, reproducible
     replace_indices = safe_indices[:1000]
 
-    # Pre-build all 73 component objects
+    # Pre-build all 1000 component objects
     inject_components = [make_component(e) for e in LIST_ENTRIES]
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"Generating 1000 SBOM files into {output_dir} …\n")
-    for n in range(1, 1001):
-        # Deep-copy the base SBOM for each file
+    COUNTS = [0, 10, 30, 50] + list(range(100, 1001, 50))
+    print(f"Generating {len(COUNTS)} SBOM files into {output_dir} …\n")
+    for n in COUNTS:
         sbom = json.loads(json.dumps(base_sbom))
         comps: list = sbom["components"]
 
         formatted_n = f"{int(n):05d}"
         sbom["metadata"]["component"]["name"] = formatted_n
-        # Inject the first N list components, each replacing a safe slot
+
         for i in range(n):
             comps[replace_indices[i]] = inject_components[i]
 
@@ -1188,7 +1188,8 @@ def main() -> None:
 
         print(f"  {out_path}  — {n} list component(s) injected")
 
-    print(f"\nDone. {1000} files written to {output_dir}/")
+    print(f"\nDone. {len(COUNTS)} files written to {output_dir}/")
+
 
 
 if __name__ == "__main__":

@@ -2,20 +2,22 @@ import requests
 import subprocess
 import time
 import os
+import platform
 
 # --- Configuration ---
 BASE_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0"
-RESULTS_PER_PAGE = 2000       # Max 2000
-UPPER_LIMIT = 345786            # Adjust this to your desired limit
+RESULTS_PER_PAGE = 2000        # Max 2000
+UPPER_LIMIT = 345786           # Adjust this to your desired limit
 DELAY_SECONDS = 8              # Increased delay for safety without API key
-PROOF_PATH = "./tmp/output/proof.csv"
+PROOF_PATH = "./tmp/output/proof.txt"
 
 def process_cves(commitment: str):
-    start_index = 340786 # Last 5,000 entries
+    start_index = 345760 # Last 5,000 entries
     total_processed = 0
     failed = 0
+    skipped = 0
     
-    while total_processed < UPPER_LIMIT:
+    while total_processed  < UPPER_LIMIT:
         print(f"\n--- Fetching page starting at index {start_index} ---")
         
         params = {
@@ -62,7 +64,7 @@ def process_cves(commitment: str):
                         "--commitment", commitment,
                         "--check", cve_id,
                         "--timing_analysis", "true",
-                        "--timing_analysis_output", "../rq2/results/non-inclusion-variation/create-proof.csv"
+                        "--timing_analysis_output", "../rq2/results/non-inclusion/create-proof.csv"
                     ]
                     result = subprocess.run(cmd, check=False, capture_output=True, text=True)
                     if "panicked" in result.stdout or "panicked" in result.stderr:
@@ -78,10 +80,20 @@ def process_cves(commitment: str):
                 count = get_proofed_component_count(PROOF_PATH)
                 if count == 0:
                     print("\tProof was computed for 0 components... skip")
-                    remove_last_line("../rq2/results/non-inclusion-variation/create-proof.csv")
+                    remove_last_line("../rq2/results/non-inclusion/create-proof.csv")
+                    skipped += 1
                     continue
-                append_count_to_csv("../rq2/results/non-inclusion-variation/create-proof.csv", count)
-                append_count_to_csv("../rq2/results/non-inclusion-variation/create-proof.csv", cve_id)
+                append_to_csv("../rq2/results/non-inclusion/create-proof.csv", count)
+                append_to_csv("../rq2/results/non-inclusion/create-proof.csv", cve_id)
+
+
+                # Get Proof File Size
+                size = os.path.getsize(PROOF_PATH)
+
+                write_to_csv("../rq2/results/non-inclusion/non-inclusion-proof-file-size.csv", "ozks")
+                append_to_csv("../rq2/results/non-inclusion/non-inclusion-proof-file-size.csv", size)
+                append_to_csv("../rq2/results/non-inclusion/non-inclusion-proof-file-size.csv", count)
+                append_to_csv("../rq2/results/non-inclusion/non-inclusion-proof-file-size.csv", cve_id)
 
 
                 # Verify Proof
@@ -94,15 +106,15 @@ def process_cves(commitment: str):
                         "--commitment", commitment,
                         "--proof_path", PROOF_PATH,
                         "--timing_analysis", "true",
-                        "--timing_analysis_output", "../rq2/results/non-inclusion-variation/verify-proof.csv"
+                        "--timing_analysis_output", "../rq2/results/non-inclusion/verify-proof.csv"
                     ]
                     result = subprocess.run(cmd, check=False, capture_output=True, text=True)
                 except Exception as e:
                     print(f"\tRun failed (verifier): : {e}")
                     failed += 1
 
-                append_count_to_csv("../rq2/results/non-inclusion-variation/verify-proof.csv", count)
-                append_count_to_csv("../rq2/results/non-inclusion-variation/verify-proof.csv", cve_id)
+                append_to_csv("../rq2/results/non-inclusion/verify-proof.csv", count)
+                append_to_csv("../rq2/results/non-inclusion/verify-proof.csv", cve_id)
 
             os.chdir('../zksbom-operator')
             # Prepare for next page
@@ -123,6 +135,8 @@ def process_cves(commitment: str):
             time.sleep(10)
 
     print(f"\nDone. Processed {total_processed} CVEs total.")
+    print(f"Failed CVEs: {failed}")
+    print(f"Skipped CVEs: {skipped}")
 
 def remove_last_line(csv_path: str):
     try:
@@ -160,7 +174,7 @@ def remove_last_line(csv_path: str):
         print(f"Failed to remove last line: {e}")
 
 
-def append_count_to_csv(csv_path: str, count: int):
+def append_to_csv(csv_path: str, count: int):
     try:
         if not os.path.exists(csv_path) or os.path.getsize(csv_path) == 0:
             return
@@ -185,6 +199,22 @@ def append_count_to_csv(csv_path: str, count: int):
             
             # Now we are at the end of the text line, add our data and a NEW newline
             f.write(f",{count}\n".encode('utf-8'))
+            
+    except Exception as e:
+        print(f"Failed to update CSV: {e}")
+
+def write_to_csv(csv_path: str, count: int):
+    try:
+        if not os.path.exists(csv_path):
+            return
+
+        # Open in 'read/write' mode
+        with open(csv_path, 'rb+') as f:
+            # Move to the very end of the file
+            f.seek(0, os.SEEK_END)
+            
+            # Now we are at the end of the text line, add our data and a NEW newline
+            f.write(f"{count}\n".encode('utf-8'))
             
     except Exception as e:
         print(f"Failed to update CSV: {e}")
@@ -215,9 +245,7 @@ def upload_sbom():
         "--api-key", "123",
         "--sbom", "../rq2/scripts/1000.cdx.json"
     ]
-    subprocess.run(cmd, check=False, capture_output=True)
-    
-    pass
+    res = subprocess.run(cmd, check=False, capture_output=True)
 
 
 def get_commitment():

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-./synthetic.sh
-./different_vulnerability_count.sh
-./real-world.sh
+# ./synthetic.sh
+# ./inclusion.sh
+./non-inclusion.sh
+# ./real-world.sh

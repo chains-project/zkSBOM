@@ -208,7 +208,7 @@ done
 #################
 cd $DIR
 echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
-echo "--- Create Commitment --------------------------" >> ./results/synthetic/results.txt 2>&1
+echo "--- Create Commitment (Synthetic) --------------" >> ./results/synthetic/results.txt 2>&1
 python3 ./scripts/analyse_time.py ./results/synthetic/create-commitment.csv >> ./results/synthetic/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/synthetic/results.txt 2>&1
