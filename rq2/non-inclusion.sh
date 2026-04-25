@@ -11,6 +11,7 @@ mkdir ./results/ > /dev/null 2>&1
 mkdir ./results/non-inclusion/ > /dev/null 2>&1
 touch ./results/non-inclusion/non-inclusion-proof-file-size.csv > /dev/null 2>&1
 touch ./results/non-inclusion/create-proof.csv > /dev/null 2>&1
+touch ./results/non-inclusion/verify-proof.csv > /dev/null 2>&1
 
 # Build zksbom-operator
 cd $DIR/../zksbom-operator
@@ -47,14 +48,13 @@ remove_sbom_count ./create-proof.csv
 
 cd $DIR
 echo "------------------------------------------------" >> ./results/non-inclusion/results.txt 2>&1
-echo "--- Create Proof------------------ -----------------" >> ./results/non-inclusion/results.txt 2>&1
+echo "--- Create Proof--------------------------------" >> ./results/non-inclusion/results.txt 2>&1
 python3 ./scripts/analyse_time.py ./results/non-inclusion/create-proof.csv >> ./results/non-inclusion/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/non-inclusion/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/non-inclusion/results.txt 2>&1
-echo "--- Verify Proof------------------ -----------------" >> ./results/non-inclusion/results.txt 2>&1
+echo "--- Verify Proof--------------------------------" >> ./results/non-inclusion/results.txt 2>&1
 python3 ./scripts/analyse_time.py ./results/non-inclusion/verify-proof.csv >> ./results/non-inclusion/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/non-inclusion/results.txt 2>&1
+echo "--- Non-Inclusion Proof Sizes ------------------" >> ./results/non-inclusion/results.txt 2>&1
+ python3 ./scripts/analyse_size.py ./results/non-inclusion/non-inclusion-proof-file-size.csv >> ./results/non-inclusion/results.txt 2>&1
 echo "------------------------------------------------" >> ./results/non-inclusion/results.txt 2>&1
-
-
-
