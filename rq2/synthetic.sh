@@ -6,7 +6,7 @@ cd $DIR
 VERIFY_SCRIPT="verify_rq2_sboms.py"
 
 INCLUSION_CVE="CVE-2021-44228"
-NON_INCLUSION_CVE="CVE-2025-55182"
+NON_INCLUSION_CVE="CVE-2026-35613" # has only one dependency
 
 #########
 # Setup #
