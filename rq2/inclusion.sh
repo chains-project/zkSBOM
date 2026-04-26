@@ -5,7 +5,7 @@ cd $DIR
 
 VERIFY_SCRIPT="verify_rq2_sboms.py"
 
-INCLUSION_CVE="CVE-2021-44228"
+INCLUSION_CVE="CVE-2026-39356"
 
 #########
 # Setup #
