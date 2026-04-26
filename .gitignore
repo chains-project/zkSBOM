@@ -29,3 +29,4 @@ target/
 /rq2/sboms
 /rq2/sbom-files.tar.ztsd
 /rq2/sbom-files
+/rq2/venv/
