@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generates 73 SBOM files from a base ./1000.cdx.json.
+Generates 1000 SBOM files from a base ./1000.cdx.json.
 
 File N (00001.cdx.json … 00073.cdx.json) contains exactly N components
 from the fixed 73-entry list injected into the base SBOM, replacing
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# The 73 fixed list entries (version + purl)
+# The 1000 fixed list entries (version + purl)
 # ---------------------------------------------------------------------------
 LIST_ENTRIES = [
 {"version": "1.0.0-beta.19", "purl": "pkg:npm/drizzle-orm@1.0.0-beta.19"},
@@ -1168,7 +1168,7 @@ def main() -> None:
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    COUNTS = [0, 10, 30, 50] + list(range(100, 1001, 50))
+    COUNTS = [1, 10, 30, 50] + list(range(100, 1001, 50))
     print(f"Generating {len(COUNTS)} SBOM files into {output_dir} …\n")
     for n in COUNTS:
         sbom = json.loads(json.dumps(base_sbom))
