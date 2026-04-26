@@ -108,7 +108,7 @@ def process_cves(commitment: str):
                         "verify",
                         "--method", "ozks",
                         "--commitment", commitment,
-                        "--proof_path", PROOF_PATH,
+                        "--proof_path", f"../zksbom-operator/{PROOF_PATH}",
                         "--timing_analysis", "true",
                         "--timing_analysis_output", "../rq2/results/non-inclusion/verify-proof.csv"
                     ]
