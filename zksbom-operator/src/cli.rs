@@ -97,6 +97,13 @@ pub fn build_cli() -> Command {
                 .help("")
                 .global(true),
         )
+        .arg(
+            Arg::new("only_ozks")
+                .long("only_ozks")
+                .value_name("ONLY_OZKS")
+                .help("Only run oZKS method")
+                .global(true),
+        )
         .subcommand(
             Command::new("upload_sbom")
                 .about("Upload or update an SBOM")

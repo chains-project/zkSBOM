@@ -9,6 +9,7 @@ use zksbom_verifier::method::method_handler::{
     verify, verify_merkle_patricia_trie_detailed, verify_ozks_detailed,
     verify_sparse_merkle_tree_detailed,
 };
+use zksbom_verifier::method::ozks::VerificationResult;
 
 fn main() {
     let config = load_config().unwrap();
@@ -51,7 +52,8 @@ fn parse_cli(app_config: &zksbom_verifier::config::AppConfig) {
 
             // For OZKS and Sparse Merkle Tree, use detailed verification to handle multiple proofs
             if method == "ozks" {
-                let result = verify_ozks_detailed(commitment, proof_path, app_config);
+                let result: VerificationResult =
+                    verify_ozks_detailed(commitment, proof_path, app_config);
                 let status = if result.is_valid {
                     "Proof is valid."
                 } else {
@@ -59,9 +61,25 @@ fn parse_cli(app_config: &zksbom_verifier::config::AppConfig) {
                 };
                 println!("{}", status);
 
-                // If multiple proofs (non-inclusion), display details
+                // If multiple proofs, display details
                 if result.details.len() > 1 {
-                    println!("\nNon-inclusion proof verification details:");
+                    let mut proof_type = "";
+                    for (_, detail) in result.details.iter().enumerate() {
+                        if detail.is_member {
+                            if proof_type == "" || proof_type == "Inclusion" {
+                                proof_type = "Inclusion";
+                            } else {
+                                panic!("Mixed up proofs...")
+                            }
+                        } else {
+                            if proof_type == "" || proof_type == "Non-Inclusion" {
+                                proof_type = "Non-Inclusion";
+                            } else {
+                                panic!("Mixed up proofs...")
+                            }
+                        }
+                    }
+                    println!("\n{} proof verification details:", proof_type);
                     for (idx, detail) in result.details.iter().enumerate() {
                         let member_status = if detail.is_member {
                             "Yes (member)"

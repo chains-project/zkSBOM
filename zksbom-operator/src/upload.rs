@@ -3,13 +3,14 @@ use crate::config::Config;
 use crate::database::db_commitment::{insert_commitment, CommitmentDbEntry};
 use crate::database::db_dependency::{insert_dependency, DependencyDbEntry};
 use crate::github_advisory_database_mapping::get_github_ecosystem_name;
-use crate::method::method_handler::create_commitments;
+use crate::method::method_handler::{create_commitments, print_timing_ns};
 use log::{debug, error, warn};
 use once_cell::sync::Lazy;
 use rand::distr::Alphanumeric;
 use rand::Rng;
 use regex::Regex;
 use serde_json::{from_str, Value};
+use std::time::Instant;
 
 #[derive(Debug, Default)]
 struct SbomParsed {
@@ -20,13 +21,15 @@ struct SbomParsed {
 }
 
 pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
+    let now = Instant::now();
+
     debug!("Uploading SBOM with path: {sbom_path}");
 
     // Get the SBOM file content
     let sbom_content = get_file_content(&sbom_path);
 
     // Parse SBOM file for dependencies, vendor, product, and version
-    let parsed_sbom = parse_sbom(&sbom_content, config);
+    let parsed_sbom = parse_sbom(&sbom_content, &sbom_path, config);
     debug!("Parsed SBOM: {:?}", parsed_sbom);
 
     let vendor = parsed_sbom.vendor;
@@ -78,7 +81,7 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     }
 
     // Metadata leaf, only used for MT, SMT, MPT
-    let metadata_leaf: String = format!("{};{};v{}", vendor.to_string(), &product, &version);
+    let metadata_leaf = format!("{};{};v{}", vendor.to_string(), &product, &version);
 
     // Generate Commitments
     let commitments = create_commitments(
@@ -86,16 +89,32 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
         metadata_leaf.clone(),
         config,
     );
-    let commitment_merkle_tree = commitments[0].clone();
-    let commitment_sparse_merkle_tree = commitments[1].clone();
-    let commitment_merkle_patricia_trie = commitments[2].clone();
-    let commitment_ozks = commitments[3].clone();
 
-    // Save Commitments to database
+    let (
+        commitment_merkle_tree,
+        commitment_sparse_merkle_tree,
+        commitment_merkle_patricia_trie,
+        commitment_ozks,
+    ) = if config.app.only_ozks {
+        (
+            String::new(),
+            String::new(),
+            String::new(),
+            commitments[0].clone(),
+        )
+    } else {
+        (
+            commitments[0].clone(),
+            commitments[1].clone(),
+            commitments[2].clone(),
+            commitments[3].clone(),
+        )
+    };
+
     let commitment_entry = CommitmentDbEntry {
-        vendor: vendor,
-        product: product,
-        version: version,
+        vendor,
+        product,
+        version,
         commitment_merkle_tree: commitment_merkle_tree.clone(),
         commitment_sparse_merkle_tree: commitment_sparse_merkle_tree.clone(),
         commitment_merkle_patricia_trie: commitment_merkle_patricia_trie.clone(),
@@ -103,7 +122,6 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     };
     insert_commitment(commitment_entry, config);
 
-    // Save leaves to database
     let dependency_entry = DependencyDbEntry {
         commitment_merkle_tree,
         commitment_sparse_merkle_tree,
@@ -114,6 +132,19 @@ pub fn upload(_api_key: &str, sbom_path: &str, config: &Config) {
     };
     insert_dependency(dependency_entry, config);
 
+    let elapsed = now.elapsed().as_nanos().to_string();
+    if config.app.timing_analysis {
+        print_timing_ns(
+            elapsed.as_str(),
+            if config.app.only_ozks {
+                "ozks"
+            } else {
+                "all_methods"
+            },
+            leaves.len().to_string().as_str(),
+            config,
+        );
+    }
     println!("Uploading SBOM completed.")
 }
 
@@ -126,10 +157,10 @@ fn get_file_content(file_path: &str) -> String {
         }
     };
 
-    return sbom_string;
+    sbom_string
 }
 
-fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
+fn parse_sbom(sbom_content: &str, sbom_path: &str, config: &Config) -> SbomParsed {
     let json_str = sbom_content;
     let mut sbom_parsed = SbomParsed::default();
 
@@ -137,46 +168,100 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
     let json: Value = from_str(&json_str).expect("Failed to parse JSON");
 
     // Extract component information
-    if let Some(metadata) = json["metadata"].as_object() {
-        if let Some(component) = metadata["component"].as_object() {
-            let vendor = component
-                .get("author")
-                .and_then(|v| v.as_str())
-                .unwrap_or("unknown")
-                .to_string();
-            let mut product = component["name"].as_str().unwrap_or("unknown").to_string(); // Make product mutable
-            let version = if product.contains(":") {
-                let parts: Vec<&str> = product.split(":").collect();
-                if parts.len() == 2 {
-                    let product_name = parts[0].to_string();
-                    let product_version = parts[1].to_string();
-                    product = product_name;
-                    product_version
+    let component = json.get("metadata").and_then(|m| m.get("component"));
+
+    let (vendor, product, version) = if let Some(component) = component {
+        // Try multiple fields for vendor: author → publisher → supplier → "unknown"
+        let vendor = ["author", "publisher", "supplier"]
+            .iter()
+            .find_map(|&field| {
+                component
+                    .get(field)
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.trim())
+                    .filter(|s| !s.is_empty())
+            })
+            .unwrap_or("unknown")
+            .to_string();
+
+        // Raw name field, fall back to sbom filename stem
+        let raw_name = component
+            .get("name")
+            .and_then(|v| v.as_str())
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .unwrap_or("");
+
+        // If name contains ":", treat it as "product:version"
+        let (product, inline_version) = if raw_name.contains(':') {
+            let mut parts = raw_name.splitn(2, ':');
+            let p = parts.next().unwrap_or("").trim().to_string();
+            let v = parts.next().unwrap_or("").trim().to_string();
+            (
+                if p.is_empty() { None } else { Some(p) },
+                if v.is_empty() { None } else { Some(v) },
+            )
+        } else {
+            (
+                if raw_name.is_empty() {
+                    None
                 } else {
-                    "unknown".to_string()
-                }
-            } else {
+                    Some(raw_name.to_string())
+                },
+                None,
+            )
+        };
+
+        // Version: inline > explicit field > "unknown"
+        let version = inline_version
+            .or_else(|| {
                 component
                     .get("version")
                     .and_then(|v| v.as_str())
-                    .unwrap_or("unknown")
+                    .map(|s| s.trim())
+                    .filter(|s| !s.is_empty())
+                    .map(|s| s.to_string())
+            })
+            .unwrap_or_else(|| "unknown".to_string());
+
+        // Product: parsed name > sbom filename
+        let product = product
+            .or_else(|| {
+                component
+                    .get("name")
+                    .and_then(|n| n.as_str())
+                    .map(|s| s.trim())
+                    .filter(|s| !s.is_empty())
+                    .map(|s| s.to_string())
+            })
+            .unwrap_or_else(|| {
+                sbom_path
+                    .rsplit_once('/')
+                    .map(|(_, text)| text)
+                    .unwrap()
                     .to_string()
-            };
+            });
 
-            debug!(
-                "Vendor: {}, Product: {}, Version: {}",
-                vendor, product, version
-            );
-
-            sbom_parsed.vendor = vendor;
-            sbom_parsed.product = product;
-            sbom_parsed.version = version;
-        } else {
-            error!("No component found in the metadata.");
-        }
+        (vendor, product, version)
     } else {
-        error!("No metadata found in the SBOM.");
-    }
+        // No metadata/component at all — use filename as product
+        warn!("No metadata.component found in SBOM, falling back to filename.");
+        let product = sbom_path;
+
+        (
+            "unknown".to_string(),
+            product.to_string(),
+            "unknown".to_string(),
+        )
+    };
+
+    debug!(
+        "Vendor: {}, Product: {}, Version: {}",
+        vendor, product, version
+    );
+    sbom_parsed.vendor = vendor;
+    sbom_parsed.product = product;
+    sbom_parsed.version = version;
 
     // Extract dependency information (if present)
     if let Some(components) = json["components"].as_array() {
@@ -193,7 +278,8 @@ fn parse_sbom(sbom_content: &str, config: &Config) -> SbomParsed {
 
             let ecosystem = get_github_ecosystem_name(parsed_purl.pkg_type.as_str());
             if ecosystem.is_none() {
-                panic!("Ecosystem not found in metadata JSON");
+                eprintln!("Ecosystem not found in metadata JSON");
+                std::process::exit(1);
             }
             let ecosystem = ecosystem.unwrap();
 
@@ -242,7 +328,7 @@ fn create_salt() -> String {
         .take(64) // length of salt
         .map(char::from)
         .collect();
-    return salt;
+    salt
 }
 
 #[allow(dead_code)]

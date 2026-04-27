@@ -1,0 +1,5 @@
+Reached the end of the entire NVD database.
+
+Done. Processed 5000 CVEs total.
+Failed CVEs: 465
+Skipped CVEs: 4019

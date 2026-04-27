@@ -31,11 +31,39 @@ pub fn init_db_dependency(config: &Config) {
         }
     }
 
-    // Create the Dependency table if it doesn't exist
-    match Connection::open(db_path.as_str()) {
-        Ok(conn) => {
-            match conn.execute(
-                "CREATE TABLE IF NOT EXISTS dependency (
+    if config.app.only_ozks {
+        // Create the Dependency table if it doesn't exist
+        match Connection::open(db_path.as_str()) {
+            Ok(conn) => {
+                // Removed other commitments as primary key, so it can run in ozks_only mode
+                match conn.execute(
+                    "CREATE TABLE IF NOT EXISTS dependency (
+                    commitment_merkle_tree TEXT NOT NULL,
+                    commitment_sparse_merkle_tree TEXT NOT NULL,
+                    commitment_merkle_patricia_trie TEXT NOT NULL,
+                    commitment_ozks TEXT NOT NULL UNIQUE,
+                    dependencies TEXT NOT NULL,
+                    metadata TEXT NOT NULL,
+                    PRIMARY KEY (commitment_ozks)
+                )",
+                    [],
+                ) {
+                    Ok(_) => {
+                        debug!("Dependency database initialized.");
+                        let _ = conn.close();
+                    }
+                    Err(e) => error!("Error initializing Dependency database: {}", e),
+                };
+            }
+            Err(e) => error!("Error opening database connection: {}", e),
+        };
+    } else {
+        // Create the Dependency table if it doesn't exist
+        match Connection::open(db_path.as_str()) {
+            Ok(conn) => {
+                // Removed other commitments as primary key, so it can run in ozks_only mode
+                match conn.execute(
+                    "CREATE TABLE IF NOT EXISTS dependency (
                     commitment_merkle_tree TEXT NOT NULL UNIQUE,
                     commitment_sparse_merkle_tree TEXT NOT NULL UNIQUE,
                     commitment_merkle_patricia_trie TEXT NOT NULL UNIQUE,
@@ -44,20 +72,21 @@ pub fn init_db_dependency(config: &Config) {
                     metadata TEXT NOT NULL,
                     PRIMARY KEY (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks)
                 )",
-                [],
-            ) {
-                Ok(_) => {
-                    debug!("Dependency database initialized.");
-                    let _ = conn.close();
-                }
-                Err(e) => error!("Error initializing Dependency database: {}", e),
-            };
-        }
-        Err(e) => error!("Error opening database connection: {}", e),
-    };
+                    [],
+                ) {
+                    Ok(_) => {
+                        debug!("Dependency database initialized.");
+                        let _ = conn.close();
+                    }
+                    Err(e) => error!("Error initializing Dependency database: {}", e),
+                };
+            }
+            Err(e) => error!("Error opening database connection: {}", e),
+        };
+    }
 }
 
-fn get_db_dependency_conneciton(config: &Config) -> Connection {
+fn get_db_dependency_connection(config: &Config) -> Connection {
     debug!("Getting the dependency database connection...");
     let db_path = &config.db_dependency.path;
 
@@ -74,7 +103,7 @@ fn get_db_dependency_conneciton(config: &Config) -> Connection {
 
 pub fn insert_dependency(dependency: DependencyDbEntry, config: &Config) {
     debug!("Inserting dependency into the database...");
-    let conn = get_db_dependency_conneciton(config);
+    let conn = get_db_dependency_connection(config);
 
     match conn.execute(
         "INSERT INTO dependency (commitment_merkle_tree, commitment_sparse_merkle_tree, commitment_merkle_patricia_trie, commitment_ozks, dependencies, metadata) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
@@ -92,7 +121,7 @@ pub fn insert_dependency(dependency: DependencyDbEntry, config: &Config) {
 
 pub fn get_dependencies(commitment: String, method: &str, config: &Config) -> DependencyDbEntry {
     debug!("Getting dependency from the database...");
-    let conn = get_db_dependency_conneciton(config);
+    let conn = get_db_dependency_connection(config);
 
     let sql_string: &str;
     match method {
@@ -142,13 +171,13 @@ pub fn get_dependencies(commitment: String, method: &str, config: &Config) -> De
 
 pub fn delete_db_dependency(config: &Config) {
     debug!("Deleting the dependency database...");
-    let conn = get_db_dependency_conneciton(config);
+    let conn = get_db_dependency_connection(config);
     _ = conn.execute("DELETE FROM dependency", []);
 }
 
 pub fn get_all_dependencies(config: &Config) -> Result<Vec<String>, rusqlite::Error> {
     debug!("Getting all dependency strings from the database...");
-    let conn = get_db_dependency_conneciton(config);
+    let conn = get_db_dependency_connection(config);
     let mut stmt = conn.prepare("SELECT dependencies FROM dependency")?;
     let rows = stmt.query_map([], |row| row.get::<_, String>(0))?;
 

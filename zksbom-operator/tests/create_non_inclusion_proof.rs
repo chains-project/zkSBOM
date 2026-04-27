@@ -12,7 +12,7 @@ pub fn test_create_non_inclusion_proof(config: Config) {
 
     let methods = ["sparse-merkle-tree", "merkle-patricia-trie", "ozks"];
 
-    let vendor = "unknown";
+    let vendor = "The Apache Software Foundation";
     let product = "druid";
     let version = "0.22.0";
     let check = "CVE-2025-55182";
@@ -83,7 +83,7 @@ pub fn test_create_non_inclusion_proof_dependency() {
     let config_path = "./tests/config/config.toml";
     let api_key = "";
     let methods = ["sparse-merkle-tree", "merkle-patricia-trie", "ozks"];
-    let vendor = "unknown";
+    let vendor = "The Apache Software Foundation";
     let product = "druid";
     let version = "0.22.0";
     let check = "foo@0.0.1@foo";

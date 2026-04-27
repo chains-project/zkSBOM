@@ -3,7 +3,7 @@ use zksbom_operator::config::Config;
 use zksbom_operator::method::method_handler::get_commitment;
 
 pub fn test_get_commitment(config: Config) {
-    let vendor = "unknown";
+    let vendor = "The Apache Software Foundation";
     let product = "druid";
     let version = "0.22.0";
     let methods = [

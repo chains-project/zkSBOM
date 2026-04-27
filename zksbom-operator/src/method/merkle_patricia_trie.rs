@@ -1,6 +1,5 @@
 use crate::hasher::hash_h256_kv;
 use reference_trie::NoExtensionLayout;
-use std::time::Instant;
 use trie_db::{
     proof::generate_proof as generate_proof_trie, DBValue, TrieDBMutBuilder, TrieLayout, TrieMut,
 };
@@ -27,7 +26,7 @@ pub fn generate_formatted_proof(
     commitment: &str,
     dependencies: Vec<&str>,
     dependency: &str,
-) -> (String, String) {
+) -> String {
     let mut db = <MemoryDB<NoExtensionLayout>>::default();
     let mut root = Default::default();
     {
@@ -45,9 +44,7 @@ pub fn generate_formatted_proof(
     let key_u8 = kv.get(0).unwrap().0.as_bytes();
     let key = vec![key_u8];
 
-    let now = Instant::now();
     let proof = generate_proof_trie::<_, NoExtensionLayout, _, _>(&db, &root, &key).unwrap();
-    let elapsed = now.elapsed().as_nanos().to_string();
 
     let mut proof_hex = String::new();
     for proof_item in &proof {
@@ -63,5 +60,5 @@ pub fn generate_formatted_proof(
         proof_hex, dependency, target_key_hex, target_value_hex
     );
 
-    (formatted_payload, elapsed)
+    formatted_payload
 }

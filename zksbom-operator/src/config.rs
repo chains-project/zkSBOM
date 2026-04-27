@@ -22,6 +22,7 @@ pub struct AppConfig {
     pub timing_analysis_output: String,
     pub salt: bool,
     pub conceal: bool,
+    pub only_ozks: bool,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -76,6 +77,9 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
     }
     if let Some(conceal) = matches.get_one::<String>("conceal") {
         config.app.conceal = conceal.parse::<bool>()?;
+    }
+    if let Some(only_ozks) = matches.get_one::<String>("only_ozks") {
+        config.app.only_ozks = only_ozks.parse::<bool>()?;
     }
 
     Ok(config)

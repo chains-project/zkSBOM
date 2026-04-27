@@ -76,7 +76,7 @@ fn test_commitment_db_contents(db_path: &str, is_concealed: bool) {
         let commitment_ozks: String = row.get(6).unwrap();
 
         // Product information
-        assert_eq!(vendor, "unknown");
+        assert_eq!(vendor, "The Apache Software Foundation");
         assert_eq!(product, "druid");
         assert_eq!(version, "0.22.0");
 

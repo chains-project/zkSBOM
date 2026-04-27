@@ -52,8 +52,7 @@ pub fn generate_formatted_proof(
     _dependencies: Vec<&str>, // oZKS pulls from DB, so we don't rebuild the tree in memory
     dependency: &str,
     config: &Config,
-) -> (String, String) {
-    let now = Instant::now();
+) -> String {
     let db_path = &config.db_ozks.path;
 
     init_sqlite_storage(db_path.as_str()).unwrap();
@@ -73,9 +72,7 @@ pub fn generate_formatted_proof(
     let proof_serialized = ozks.query_proof(&key_bytes).unwrap();
 
     let proof_hex = hex::encode(&proof_serialized);
-    let elapsed = now.elapsed().as_nanos().to_string();
-
     let formatted_payload = format!("Proof: {}\nDependency: {}", proof_hex, dependency);
 
-    (formatted_payload, elapsed)
+    formatted_payload
 }
