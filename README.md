@@ -10,6 +10,7 @@ Supported cryptographic methods:
 - Ordered Zero-Knowledge Sets (oZKS)
 
 The project is divided into two tools
+
 - [zkSBOM Operator](./zksbom-operator/)
   - Allows vendors to upload their product SBOMs, customers to retrieve commitments for specific SBOMs, and the system to generate cryptographic proofs confirming the presence of vulnerable dependencies.
   It also performs regular dependency-to-vulnerability mappings.
@@ -32,15 +33,3 @@ Follow the installation section in the corresponding README.md to install [zkSBO
 ## Usage
 
 See the usage guide in the corresponding README.md for [zkSBOM Operator](./zksbom-operator/README.md#Usage) or [zkSBOM Verifier](./zksbom-verifier/README.md#Usage).
-
-## Citation
-
-Sorger, T. (2025). Towards Zero-Knowledge Software Bill of Materials [Computer software]. https://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-369919
-
-## License
-
-MIT License
-
-## Contact
-
-[Tom Sorger](mailto:sorger@kth.se)

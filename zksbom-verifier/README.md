@@ -58,15 +58,3 @@ target/release/zksbom-verifier verify \
 ```
 
 Explicit examples can be seen [here](./EXAMPLE_USAGE.md).
-
-## Citation
-
-Sorger, T. (2025). Towards Zero-Knowledge Software Bill of Materials [Computer software]. https://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-369919
-
-## License
-
-MIT License
-
-## Contact
-
-[Tom Sorger](mailto:sorger@kth.se)
