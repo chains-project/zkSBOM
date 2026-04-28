@@ -28,15 +28,15 @@ for ((page=1; page<=pages; page++)); do
 	echo "Fetching page ${page} ..."
 
 	url="https://packages.ecosyste.ms/api/v1/registries/repo1.maven.org/package_names?page=${page}&per_page=${PAGE_SIZE}&sort=${METRIC}"
-	tmp=""; ok=0
-	for ((attempt=1; attempt<=3; attempt++)); do
+	tmp=""; ok=0; max=3
+	for ((attempt=1; attempt<=max; attempt++)); do
 		response=$(curl -sX 'GET' "${url}" -H 'accept: application/json')
 		if tmp=$(echo "${response}" | jq -er 'if type=="array" then .[] else error("not an array") end' 2>/dev/null); then
 			ok=1; break
 		fi
-		echo "  ! jq parse error (attempt ${attempt}/3) on: ${url}"
+		echo "  ! jq parse error (attempt ${attempt}/${max}) on: ${url}"
 		echo "  ! response: ${response}" | head -c 200
-		[[ ${attempt} -lt 3 ]] && sleep 2
+		[[ ${attempt} -lt ${max} ]] && echo "Sleeping for $(((attempt+1)*5))s" && sleep $(((attempt+1)*5))
 	done
 	if [[ ${ok} -eq 0 ]]; then
 		echo "  ! giving up on page ${page}"
@@ -55,7 +55,7 @@ while IFS= read -r package; do
 	mkdir tmp/
 	cd tmp/
 
-  echo "Evaluating '${package}' ..."
+	echo "Evaluating '${package}' ..."
 
 	# Maven requires an explicit version in pom.xml; fetch it from the registry
 	encoded=$(jq -rn --arg p "${package}" '$p | @uri')
