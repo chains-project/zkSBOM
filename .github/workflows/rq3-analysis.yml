@@ -1,0 +1,170 @@
+name: Analysis
+on:
+  workflow_dispatch:
+    inputs:
+      total:
+        description: The total number of packages to consider
+        require: true
+        type: number
+      page_size:
+        description: The page size to fetch from ecosyste.ms (`total` should be `n*page_size`)
+        require: true
+        type: number
+      run_go:
+        description: Go (pkg.go.dev)
+        type: boolean
+        default: true
+      run_npm:
+        description: JavaScript (npm)
+        type: boolean
+        default: true
+      run_mvn:
+        description: Java (Maven)
+        type: boolean
+        default: true
+      run_rust:
+        description: Rust (crates.io)
+        type: boolean
+        default: true
+
+permissions: read-all
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      targets: ${{ steps.targets.outputs.value }}
+    steps:
+      - name: Generate target matrix
+        id: targets
+        run: |
+          targets=()
+          [[ '${{ inputs.run_go }}' == 'true' ]] && targets+=('go')
+          [[ '${{ inputs.run_npm }}' == 'true' ]] && targets+=('npm')
+          [[ '${{ inputs.run_mvn }}' == 'true' ]] && targets+=('mvn')
+          [[ '${{ inputs.run_rust }}' == 'true' ]] && targets+=('rust')
+          printf -v json '"%s",' "${targets[@]}"
+          echo "value=[${json%,}]" >> "$GITHUB_OUTPUT"
+
+  run-analysis:
+    needs: generate-matrix
+    name: ${{ matrix.target }}, ${{ matrix.metric }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.generate-matrix.outputs.targets) }}
+        metric:
+          - downloads
+          - dependent_repos_count
+          - docker_dependents_count
+          - docker_downloads_count
+    env:
+      LOG_FILE: ${{ matrix.target }}-${{ matrix.metric }}-${{ inputs.total }}.log
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+      - name: Go environment
+        if: ${{ matrix.target == 'go' }}
+        run: |
+          echo 'Go'
+          go version
+      - name: Node.js environment
+        if: ${{ matrix.target == 'npm' }}
+        run: |
+          echo 'Node.js'
+          node --version
+
+          echo 'npm'
+          npm --version
+      - name: Maven environment
+        if: ${{ matrix.target == 'mvn' }}
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Rust environment
+        if: ${{ matrix.target == 'rust' }}
+        run: |
+          echo 'Rust (compiler)'
+          rustc --version
+
+          echo 'Cargo'
+          cargo --version
+      - name: Run analysis
+        working-directory: rq3/${{ matrix.target }}
+        run: ./pipeline.sh "${TOTAL}" "${PAGE_SIZE}" "${METRIC}" 'clean' | tee "../../${LOG_FILE}"
+        env:
+          TOTAL: ${{ inputs.total }}
+          PAGE_SIZE: ${{ inputs.page_size}}
+          METRIC: ${{ matrix.metric }}
+      - name: Upload analysis log
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          archive: false
+          name: ${{ env.LOG_FILE }}
+          path: ${{ env.LOG_FILE }}
+
+  summary:
+    name: Summary
+    needs: [generate-matrix, run-analysis]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download all logs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: '*-${{ inputs.total }}.log'
+          path: logs/
+          merge-multiple: true
+      - name: Write consolidated summary
+        run: |
+          metrics=("downloads" "dependent_repos_count" "docker_dependents_count" "docker_downloads_count")
+          targets=("go" "npm" "mvn" "rust")
+
+          {
+            echo "## Transitive Dependency Metric"
+            echo ""
+            echo "| metric | go | npm | mvn | rust |"
+            echo "| :--- | :---: | :---: | :---: | :---: |"
+
+            for metric in "${metrics[@]}"; do
+              row="| \`${metric}\` |"
+              for target in "${targets[@]}"; do
+                log="logs/${target}-${metric}-${{ inputs.total }}.log"
+                if [[ -f "${log}" ]]; then
+                  value=$(grep '^avg # deps' "${log}" | head -1 | sed 's/^avg # deps : //')
+                  row="${row} ${value} |"
+                else
+                  row="${row} - |"
+                fi
+              done
+              echo "${row}"
+            done
+
+            echo ""
+            echo "## Peer Dependency Metric"
+            echo ""
+            echo "| metric | go | npm | mvn | rust |"
+            echo "| :--- | :---: | :---: | :---: | :---: |"
+
+            for metric in "${metrics[@]}"; do
+              row="| \`${metric}\` |"
+              for target in "${targets[@]}"; do
+                log="logs/${target}-${metric}-${{ inputs.total }}.log"
+                if [[ -f "${log}" ]]; then
+                  if [[ "${target}" == 'npm' || "${target}" == 'mvn' ]]; then
+                    value=$(grep '^avg # peers' "${log}" | head -1 | sed 's/^avg # peers: //')
+                    row="${row} ${value} |"
+                  else
+                    row="${row} - |"
+                  fi
+                else
+                  row="${row} - |"
+                fi
+              done
+              echo "${row}"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
