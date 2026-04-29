@@ -1,6 +1,6 @@
 # Zero-Knowledge SBOM (zkSBOM)
 
-This repository contains a proof-of-concept (PoC) implementation for disclosing limited but verifiable SBOM (Software Bill of Materials) information to authorized users using cryptographic methods.
+This repository contains a prototype implementation for disclosing limited but verifiable SBOM (Software Bill of Materials) information to authorized users using cryptographic methods.
 
 Supported cryptographic methods:
 
