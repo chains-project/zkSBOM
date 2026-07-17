@@ -22,40 +22,69 @@ echo "Using page size ${PAGE_SIZE}"
 
 echo ''
 echo '== COLLECTING PACKAGE NAMES =='
+MAX_TRIES=100
 packages=''
 pages=$(( (TOTAL + PAGE_SIZE - 1) / PAGE_SIZE ))
 for ((page=1; page<=pages; page++)); do
-	echo "Fetching page ${page} ..."
+	echo "  Fetching page ${page} ..."
 
 	url="https://packages.ecosyste.ms/api/v1/registries/repo1.maven.org/package_names?page=${page}&per_page=${PAGE_SIZE}&sort=${METRIC}"
-	tmp=""; ok=0; max=3
+	tmp=""; ok=0; max=$MAX_TRIES
 	for ((attempt=1; attempt<=max; attempt++)); do
 		response=$(curl -sX 'GET' "${url}" -H 'accept: application/json')
 		if tmp=$(echo "${response}" | jq -er 'if type=="array" then .[] else error("not an array") end' 2>/dev/null); then
 			ok=1; break
 		fi
-		echo "  ! jq parse error (attempt ${attempt}/${max}) on: ${url}"
-		echo "  ! response: ${response}" | head -c 200
-		[[ ${attempt} -lt ${max} ]] && echo "Sleeping for $(((attempt+1)*5))s" && sleep $(((attempt+1)*5))
+		echo "    ! jq parse error (attempt ${attempt}/${max}) on: ${url}"
+		echo '    === DEBUG START ==='       1>&2
+		echo "${response}" | sed 's/^/    /' 1>&2
+		echo '    ===  DEBUG END  ==='       1>&2
+		timeout=2 # $(((attempt+1)*5))
+		[[ ${attempt} -lt ${max} ]] && echo "    Sleeping for ${timeout}s" && sleep "${timeout}"
 	done
 	if [[ ${ok} -eq 0 ]]; then
-		echo "  ! giving up on page ${page}"
+		echo "    ! giving up on page ${page}"
 		continue
 	fi
 	packages="${packages}${tmp}
 "
 done
+packages="$(printf "%s" "${packages}")"
+
+echo "DEB retrieved $(echo "${packages}" | wc -l) packages from the API"
+echo "DEB of which  $(echo "${packages}" | sort | uniq | wc -l) are unique"
+
+echo '*** start obtained list of packages ***'
+echo "${packages}" | sed 's/^/  /'
+echo '***  end  obtained list of packages ***'
+
+packages=$(echo "${packages}" | sort)
+packages="$(printf "%s" "${packages}")"
+echo '*** start sorted list of packages ***'
+echo "${packages}" | sed 's/^/  /'
+echo '***  end  sorted list of packages ***'
+
+packages=$(echo "${packages}" | uniq)
+packages="$(printf "%s" "${packages}")"
+echo '*** start deduplicated packages ***'
+echo "${packages}" | sed 's/^/  /'
+echo '***  end  deduplicated packages ***'
 
 echo ''
 echo '== DETERMINING TRANSITIVE COUNT =='
 counts_transitive=''
 counts_peer=''
 while IFS= read -r package; do
+    echo '  DEB rm -rf ~/.m2/repository/'
+    rm -rf ~/.m2/repository/
+    echo '  DEB rm -rf tmp/'
 	rm -rf tmp/
+	echo '  DEB mkdir tmp/'
 	mkdir tmp/
+	echo '  DEB cd tmp/'
 	cd tmp/
 
-	echo "Evaluating '${package}' ..."
+	echo "  Evaluating '${package}' ..."
 
 	# Maven requires an explicit version in pom.xml; fetch it from the registry
 	encoded=$(jq -rn --arg p "${package}" '$p | @uri')
@@ -72,30 +101,39 @@ while IFS= read -r package; do
   <artifactId>analysis</artifactId>
   <version>1.0</version>
   <dependencies>
-    <dependency>
-      <groupId>${group_id}</groupId>
-      <artifactId>${artifact_id}</artifactId>
-      <version>${version}</version>
-    </dependency>
+	<dependency>
+	  <groupId>${group_id}</groupId>
+	  <artifactId>${artifact_id}</artifactId>
+	  <version>${version}</version>
+	</dependency>
   </dependencies>
 </project>
 POMEOF
 
-	mvn_stderr=$(mktemp)
-	timeout 60s mvn -B -q -Dmaven.repo.local="${HOME}/.m2/repository" org.apache.maven.plugins:maven-dependency-plugin:3.10.0:tree -DoutputType=json -DoutputFile=dependencies.json >/dev/null 2>"${mvn_stderr}"
+	mvn_stdout="$(mktemp)"
+	mvn_stderr="$(mktemp)"
+	timeout 300s mvn -X -B -q -Dmaven.repo.local="${HOME}/.m2/repository" org.apache.maven.plugins:maven-dependency-plugin:3.10.0:tree -DoutputType=json -DoutputFile=dependencies.json >"${mvn_stdout}" 2>"${mvn_stderr}"
 	mvn_exit=$?
 	if [[ ${mvn_exit} -eq 124 ]]; then
-		echo '  ! timed out'
-		rm -f "${mvn_stderr}"
+		echo '    ! timed out'
+		rm -f "${mvn_stdout}" "${mvn_stderr}"
 		cd ..
 		continue
 	elif [[ ${mvn_exit} -ne 0 ]]; then
-		echo "  ! maven failed: $(grep -m1 'ERROR\|Could not\|Failed' "${mvn_stderr}" || echo 'unknown error')"
-		rm -f "${mvn_stderr}"
+		echo "    ! maven failed: $(grep -m1 'ERROR\|Could not\|Failed' "${mvn_stderr}" || echo "unknown error, code: ${mvn_exit}")"
+		echo '    === DEBUG START ==='
+		echo '    ***stdout start***'
+		cat "${mvn_stdout}" | sed 's/^/    /'
+		echo '    ***stdout end***'
+		echo '    ***stderr start***'
+		cat "${mvn_stderr}" | sed 's/^/    /'
+		echo '    ***stderr end***'
+		echo '    ===  DEBUG END  ==='
+		rm -f "${mvn_stdout}" "${mvn_stderr}"
 		cd ..
 		continue
 	fi
-	rm -f "${mvn_stderr}"
+	rm -f "${mvn_stdout}" "${mvn_stderr}"
 
 	transitive_count=$(jq '
 		[.. | objects | select(has("groupId") and (.scope? != "test"))] |
@@ -105,11 +143,10 @@ POMEOF
 	# length counts all nodes including the tree root (com.example:analysis) and the
 	# package under analysis itself, so subtract 2 to get only its transitive deps
 	if [[ "${transitive_count}" -lt 0 ]]; then
-		echo '  ! dependency count could not be determined'
-		echo ''
-		echo '=== DEBUG START ==='
-		cat dependencies.json
-		echo '===  DEBUG END  ==='
+		echo '    ! dependency count could not be determined'
+		echo '    === DEBUG START ==='          1>&2
+		cat dependencies.json | sed 's/^/    /' 1>&2
+		echo '    ===  DEBUG END  ==='          1>&2
 		cd ..
 		continue
 	fi
@@ -126,16 +163,16 @@ tag = root.tag
 ns = tag.split('}')[0] + '}' if tag.startswith('{') else ''
 count = 0
 for dep in root.findall(f'.//{ns}dependencies/{ns}dependency'):
-    scope = dep.find(f'{ns}scope')
-    if scope is not None and scope.text == 'provided':
-        count += 1
+	scope = dep.find(f'{ns}scope')
+	if scope is not None and scope.text == 'provided':
+		count += 1
 print(count)
 " 2>/dev/null || echo 0)
 	fi
 
-	echo "  got ${version}"
-	echo "  has ${transitive_count} dependencies"
-	echo "  has ${peer_count} peers"
+	echo "    got ${version}"
+	echo "    has ${transitive_count} dependencies"
+	echo "    has ${peer_count} peers"
 
 	counts_transitive="${counts_transitive}${transitive_count}
 "
@@ -150,20 +187,31 @@ echo '== COMPUTING STATS =='
 transitive_count=0
 transitive_sum=0
 while IFS= read -r n; do
-	echo "tran: $n"
-  transitive_count=$((transitive_count + 1))
-  transitive_sum=$((transitive_sum + n))
+	echo "  tran: $n"
+	transitive_count=$((transitive_count + 1))
+	transitive_sum=$((transitive_sum + n))
 done <<<"$(printf "%s\n" "$counts_transitive" | awk 'NF')"
 
 peer_count=0
 peer_sum=0
 while IFS= read -r n; do
-	echo "peer: $n"
-  peer_count=$((peer_count + 1))
-  peer_sum=$((peer_sum + n))
+	echo "  peer: $n"
+	peer_count=$((peer_count + 1))
+	peer_sum=$((peer_sum + n))
 done <<<"$(printf "%s\n" "$counts_peer" | awk 'NF')"
 
 echo ''
 echo '== RESULTS =='
-echo "avg # deps : $(echo "scale=2; ${transitive_sum} / ${transitive_count}" | bc) (=${transitive_sum}/${transitive_count})"
-echo "avg # peers: $(echo "scale=2; ${peer_sum} / ${peer_count}" | bc) (=${peer_sum}/${peer_count})"
+echo "  avg # deps : $(echo "scale=2; ${transitive_sum} / ${transitive_count}" | bc) (=${transitive_sum}/${transitive_count})"
+echo "  avg # peers: $(echo "scale=2; ${peer_sum} / ${peer_count}" | bc) (=${peer_sum}/${peer_count})"
+
+edc=$(echo "scale=2; ${transitive_sum} / ${transitive_count}" | bc)
+epc=$(echo "scale=2; ${peer_sum} / ${peer_count}" | bc)
+pac=$(awk -v n="${epc}" 'function floor(x) { return (x == int(x)) ? x : (x < 0 ? int(x) - 1 : int(x)) } BEGIN{ print (10^floor(log(n) / log(10))) / 10 }')
+edcu=$(awk -v pac="${pac}" -v edc="${edc}" 'BEGIN{ print pac * edc }')
+
+eli=$(awk -v pac="${pac}" -v edc="${edc}" -v epc="${epc}" 'BEGIN{ printf "%.2f", ((1-pac) * (edc + epc * (1 + edc))) + (pac * edc) }')
+ele=$(awk -v pac="${pac}" -v edcu="${edcu}" -v epc="${epc}" 'BEGIN{ printf "%.2f", ((1-pac) * (edcu + epc * (1 + edcu))) + (pac * (1 + edcu)) }')
+
+echo "  E[L_i] = $eli = (1-${pac}) * (${edc} + ${epc} * (1+${edc})) + ${pac} * ${edc}"
+echo "  E[L_e] = $ele = (1-${pac}) * (${edcu} + ${epc} * (1+${edcu})) + ${pac} * (1 + ${edcu})"
